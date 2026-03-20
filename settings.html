@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Dashboard | Settings</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2); }
+        .menu-item.active i { color: white; }
+        .dropdown-menu { animation: slideDown 0.2s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+        .settings-card { transition: all 0.3s ease; }
+        .settings-card:hover { transform: translateY(-2px); }
+        .settings-tab.active-tab { border-left-color: #3b82f6; background-color: #eff6ff; color: #3b82f6; }
+        .settings-tab.active-tab i { color: #3b82f6; }
+        
+        /* Custom toggle switch styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+
+    <script>
+    // Check if user is logged in
+    function checkAuth() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn || isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Run auth check on page load
+    checkAuth();
+    </script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg">
+        <i class="fas fa-bars text-gray-700 text-xl"></i>
+    </button>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+            <div class="p-6 border-b border-gray-100">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1>
+                        <p class="text-xs text-gray-400">Website Management</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+                <a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-th-large w-5"></i><span>Dashboard</span></a>
+                <a href="clients.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-users w-5"></i><span>Clients</span></a>
+                <a href="projects.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-folder-open w-5"></i><span>Projects</span></a>
+                <a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-chart-line w-5"></i><span>Analytics</span></a>
+                <a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-file-alt w-5"></i><span>Reports</span></a>
+                <a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-cog w-5"></i><span>Settings</span></a>
+            </nav>
+            <div class="p-4 border-t border-gray-100">
+                <button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button>
+                <p class="text-xs text-gray-400 text-center mt-3">© 2024 AgencyDash</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-800">Settings</h2>
+                    <div class="relative">
+                        <button id="profileDropdownBtn" class="flex items-center space-x-3 focus:outline-none group">
+                            <span class="text-right hidden sm:block">
+                                <span class="block text-sm font-semibold text-gray-700">Alex Johnson</span>
+                                <span class="block text-xs text-gray-400">Admin</span>
+                            </span>
+                            <span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
+                            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i>
+                        </button>
+                        <div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                            <div class="p-3 border-b border-gray-100">
+                                <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                <p class="text-sm text-gray-500">alex@agency.com</p>
+                            </div>
+                            <div class="py-2">
+                                <a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"><i class="fas fa-user w-5 text-gray-400"></i><span>Profile</span></a>
+                                <a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"><i class="fas fa-cog w-5 text-gray-400"></i><span>Settings</span></a>
+                            </div>
+                            <div class="border-t border-gray-100 py-2">
+                                <button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Settings Content -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Settings Sidebar -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-2xl shadow-sm overflow-hidden sticky top-24">
+                            <div class="p-4 border-b border-gray-100">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">AJ</div>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                        <p class="text-xs text-gray-500">Administrator</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="py-2">
+                                <a href="#general" class="settings-tab flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition border-l-4 border-transparent active-tab" data-tab="general">
+                                    <i class="fas fa-sliders-h w-5 text-gray-400"></i>
+                                    <span>General Settings</span>
+                                </a>
+                                <a href="#notifications" class="settings-tab flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition border-l-4 border-transparent" data-tab="notifications">
+                                    <i class="fas fa-bell w-5 text-gray-400"></i>
+                                    <span>Notifications</span>
+                                </a>
+                                <a href="#security" class="settings-tab flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition border-l-4 border-transparent" data-tab="security">
+                                    <i class="fas fa-lock w-5 text-gray-400"></i>
+                                    <span>Security</span>
+                                </a>
+                                <a href="#appearance" class="settings-tab flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition border-l-4 border-transparent" data-tab="appearance">
+                                    <i class="fas fa-palette w-5 text-gray-400"></i>
+                                    <span>Appearance</span>
+                                </a>
+                                <a href="#integrations" class="settings-tab flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 transition border-l-4 border-transparent" data-tab="integrations">
+                                    <i class="fas fa-plug w-5 text-gray-400"></i>
+                                    <span>Integrations</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Content Area -->
+                    <div class="lg:col-span-2">
+                        <!-- General Settings -->
+                        <div id="general" class="settings-content bg-white rounded-2xl shadow-sm p-6">
+                            <h3 class="font-bold text-xl text-gray-800 mb-4">General Settings</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Agency Name</label>
+                                    <input type="text" value="AgencyDash" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Agency Email</label>
+                                    <input type="email" value="info@agencydash.com" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Website URL</label>
+                                    <input type="url" value="https://agencydash.com" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Time Zone</label>
+                                    <select class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                        <option>UTC (GMT)</option>
+                                        <option selected>Asia/Dhaka (GMT+6)</option>
+                                        <option>America/New York (GMT-5)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Language</label>
+                                    <select class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                        <option>English</option>
+                                        <option>Bengali</option>
+                                        <option>Spanish</option>
+                                    </select>
+                                </div>
+                                <div class="pt-4">
+                                    <button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notifications Settings - FIXED: Replaced div inside label with span -->
+                        <div id="notifications" class="settings-content bg-white rounded-2xl shadow-sm p-6 hidden">
+                            <h3 class="font-bold text-xl text-gray-800 mb-4">Notification Preferences</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Email Notifications</p>
+                                        <p class="text-sm text-gray-500">Receive email updates about your account</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Push Notifications</p>
+                                        <p class="text-sm text-gray-500">Browser push notifications</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Project Updates</p>
+                                        <p class="text-sm text-gray-500">Get notified when project status changes</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between py-3">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Weekly Digest</p>
+                                        <p class="text-sm text-gray-500">Weekly summary of activities</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="pt-4">
+                                <button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Save Preferences</button>
+                            </div>
+                        </div>
+
+                        <!-- Security Settings -->
+                        <div id="security" class="settings-content bg-white rounded-2xl shadow-sm p-6 hidden">
+                            <h3 class="font-bold text-xl text-gray-800 mb-4">Security Settings</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Current Password</label>
+                                    <input type="password" placeholder="Enter current password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">New Password</label>
+                                    <input type="password" placeholder="Enter new password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Confirm New Password</label>
+                                    <input type="password" placeholder="Confirm new password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-t border-gray-100 pt-4">
+                                    <div>
+                                        <p class="font-medium text-gray-800">Two-Factor Authentication</p>
+                                        <p class="text-sm text-gray-500">Add an extra layer of security</p>
+                                    </div>
+                                    <button class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">Enable 2FA</button>
+                                </div>
+                                <div class="pt-4">
+                                    <button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Update Password</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appearance Settings - FIXED: Replaced p with span inside buttons -->
+                        <div id="appearance" class="settings-content bg-white rounded-2xl shadow-sm p-6 hidden">
+                            <h3 class="font-bold text-xl text-gray-800 mb-4">Appearance Settings</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Theme Mode</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <button class="border-2 border-blue-500 rounded-lg p-4 text-center hover:bg-gray-50 transition">
+                                            <i class="fas fa-sun text-yellow-500 text-2xl mb-2"></i>
+                                            <span class="block font-medium">Light Mode</span>
+                                        </button>
+                                        <button class="border-2 border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition">
+                                            <i class="fas fa-moon text-gray-600 text-2xl mb-2"></i>
+                                            <span class="block font-medium">Dark Mode</span>
+                                            <span class="block text-xs text-gray-400">Coming soon</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Sidebar Color</label>
+                                    <div class="flex space-x-3">
+                                        <div class="w-10 h-10 bg-white border-2 border-blue-500 rounded-full cursor-pointer shadow"></div>
+                                        <div class="w-10 h-10 bg-gray-800 rounded-full cursor-pointer hover:ring-2 hover:ring-gray-400"></div>
+                                        <div class="w-10 h-10 bg-blue-600 rounded-full cursor-pointer hover:ring-2 hover:ring-blue-400"></div>
+                                        <div class="w-10 h-10 bg-purple-600 rounded-full cursor-pointer hover:ring-2 hover:ring-purple-400"></div>
+                                    </div>
+                                </div>
+                                <div class="pt-4">
+                                    <button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Save Appearance</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Integrations Settings -->
+                        <div id="integrations" class="settings-content bg-white rounded-2xl shadow-sm p-6 hidden">
+                            <h3 class="font-bold text-xl text-gray-800 mb-4">Integrations</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 border rounded-xl hover:shadow-md transition">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fab fa-google text-2xl text-blue-500"></i>
+                                        <div>
+                                            <p class="font-semibold text-gray-800">Google Analytics</p>
+                                            <p class="text-sm text-gray-500">Connect your Google Analytics account</p>
+                                        </div>
+                                    </div>
+                                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">Connect</button>
+                                </div>
+                                <div class="flex items-center justify-between p-4 border rounded-xl hover:shadow-md transition">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fab fa-slack text-2xl text-purple-500"></i>
+                                        <div>
+                                            <p class="font-semibold text-gray-800">Slack</p>
+                                            <p class="text-sm text-gray-500">Get notifications in Slack</p>
+                                        </div>
+                                    </div>
+                                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">Connect</button>
+                                </div>
+                                <div class="flex items-center justify-between p-4 border rounded-xl hover:shadow-md transition">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fab fa-stripe text-2xl text-blue-600"></i>
+                                        <div>
+                                            <p class="font-semibold text-gray-800">Stripe</p>
+                                            <p class="text-sm text-gray-500">Connect payment processing</p>
+                                        </div>
+                                    </div>
+                                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">Connect</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-sign-out-alt text-red-500 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                <div class="flex gap-3">
+                    <button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">Logout</button>
+                    <button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Set active menu based on current page
+    const currentPage = window.location.pathname.split('/').pop();
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if(href === currentPage) {
+            item.classList.add('active');
+        }
+    });
+    
+    // Check if user is logged in
+    function checkAuth() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn || isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Run auth check on page load
+    checkAuth();
+
+    // Profile Dropdown
+    const profileBtn = document.getElementById('profileDropdownBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const dropdownIcon = document.getElementById('dropdownIcon');
+
+    if(profileBtn) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+            if(dropdownIcon) {
+                dropdownIcon.style.transform = profileDropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if(profileBtn && !profileBtn.contains(e.target) && profileDropdown && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+            if(dropdownIcon) dropdownIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // Mobile Sidebar Toggle
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if(mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    }
+
+    // Settings Tab Navigation
+    const tabs = document.querySelectorAll('.settings-tab');
+    const contents = document.querySelectorAll('.settings-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            tabs.forEach(t => {
+                t.classList.remove('active-tab');
+            });
+            
+            tab.classList.add('active-tab');
+            
+            contents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            const tabId = tab.getAttribute('data-tab');
+            const selectedContent = document.getElementById(tabId);
+            if(selectedContent) {
+                selectedContent.classList.remove('hidden');
+            }
+        });
+    });
+
+    // Show Center Toast Message
+    function showCenterToast(message, type = 'success') {
+        const existingToast = document.getElementById('centerToast');
+        if(existingToast) {
+            existingToast.remove();
+        }
+        
+        const toast = document.createElement('div');
+        toast.id = 'centerToast';
+        
+        let bgColor = 'bg-green-500';
+        let icon = 'fa-check-circle';
+        if(type === 'error') {
+            bgColor = 'bg-red-500';
+            icon = 'fa-exclamation-circle';
+        } else if(type === 'info') {
+            bgColor = 'bg-blue-500';
+            icon = 'fa-info-circle';
+        } else if(type === 'warning') {
+            bgColor = 'bg-yellow-500';
+            icon = 'fa-exclamation-triangle';
+        }
+        
+        toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bgColor} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`;
+        toast.style.animation = 'fadeInScale 0.3s ease-out';
+        toast.innerHTML = `
+            <i class="fas ${icon} text-2xl"></i>
+            <span class="text-lg font-medium">${message}</span>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInScale {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+            @keyframes fadeOutScale {
+                from {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                to {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        setTimeout(() => {
+            toast.style.animation = 'fadeOutScale 0.3s ease-out';
+            setTimeout(() => {
+                toast.remove();
+                style.remove();
+            }, 300);
+        }, 2000);
+    }
+
+    // Logout Modal Logic
+    const logoutModal = document.getElementById('logoutModal');
+    const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
+    const dropdownLogoutBtn = document.getElementById('dropdownLogoutBtn');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+
+    function showLogoutModal() {
+        if(logoutModal) {
+            logoutModal.classList.remove('hidden');
+            logoutModal.classList.add('flex');
+        }
+    }
+
+    function hideLogoutModal() {
+        if(logoutModal) {
+            logoutModal.classList.add('hidden');
+            logoutModal.classList.remove('flex');
+        }
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        sessionStorage.removeItem('userEmail');
+        
+        showCenterToast('Logged out successfully!', 'success');
+        hideLogoutModal();
+        
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1500);
+    }
+
+    if(sidebarLogoutBtn) sidebarLogoutBtn.addEventListener('click', showLogoutModal);
+    if(dropdownLogoutBtn) dropdownLogoutBtn.addEventListener('click', showLogoutModal);
+    if(confirmLogoutBtn) confirmLogoutBtn.addEventListener('click', handleLogout);
+    if(cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', hideLogoutModal);
+    if(modalBackdrop) modalBackdrop.addEventListener('click', hideLogoutModal);
+    </script>
+</body>
+</html>

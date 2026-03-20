@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AgencyDash | Login</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin: 0;
+            overflow-y: auto;
+        }
+        
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+            padding: 8px 0;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        /* Make sure all content is visible */
+        .login-content {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .input-group {
+            transition: all 0.3s ease;
+        }
+        
+        .input-group:focus-within {
+            transform: translateX(5px);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-login {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        }
+        
+        .social-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-2px);
+            background: #f3f4f6;
+        }
+        
+        .error-message {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        /* Center Toast Styles */
+        @keyframes centerFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        @keyframes centerFadeOut {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+                align-items: flex-start;
+            }
+            
+            .login-wrapper {
+                padding: 4px 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+        }
+        
+        /* Ensure all text is visible */
+        .demo-credentials {
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Animated Background Particles -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="particle" style="width: 100px; height: 100px; top: 10%; left: 5%; animation-delay: 0s;"></div>
+        <div class="particle" style="width: 150px; height: 150px; bottom: 15%; right: 8%; animation-delay: 2s;"></div>
+        <div class="particle" style="width: 70px; height: 70px; top: 60%; left: 15%; animation-delay: 4s;"></div>
+        <div class="particle" style="width: 120px; height: 120px; bottom: 30%; right: 20%; animation-delay: 1s;"></div>
+        <div class="particle" style="width: 50px; height: 50px; top: 20%; right: 25%; animation-delay: 3s;"></div>
+    </div>
+
+    <!-- Login Wrapper -->
+    <div class="login-wrapper">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-5 text-center">
+                <div class="inline-flex items-center justify-center w-14 h-14 bg-white/20 rounded-2xl mb-3">
+                    <i class="fas fa-chart-line text-white text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Agency<span class="font-light">Dash</span></h1>
+                <p class="text-blue-100 text-sm mt-1">Website Management Dashboard</p>
+            </div>
+            
+            <!-- Login Form Content -->
+            <div class="px-6 py-6">
+                <div class="text-center mb-5">
+                    <h2 class="text-xl font-bold text-gray-800">Welcome Back!</h2>
+                    <p class="text-gray-500 text-sm mt-1">Sign in to your account to continue</p>
+                </div>
+                
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden bg-red-50 border-l-4 border-red-500 p-3 mb-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                        <p class="text-red-700 text-sm" id="errorText">Invalid email or password</p>
+                    </div>
+                </div>
+                
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <!-- Email Input -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-semibold mb-2">
+                            <i class="fas fa-envelope mr-2 text-blue-500"></i>Email Address
+                        </label>
+                        <input type="email" id="email" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition"
+                               placeholder="admin@agency.com">
+                    </div>
+                    
+                    <!-- Password Input -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-semibold mb-2">
+                            <i class="fas fa-lock mr-2 text-blue-500"></i>Password
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="password" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 transition"
+                                   placeholder="••••••••">
+                            <button type="button" onclick="togglePassword()" 
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i id="toggleIcon" class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between mb-6">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+                            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700 hover:underline">Forgot Password?</a>
+                    </div>
+                    
+                    <!-- Login Button -->
+                    <button type="submit" class="btn-login w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition shadow-lg">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    </button>
+                </form>
+                
+                <!-- Divider -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-3 bg-white text-gray-500">Or continue with</span>
+                    </div>
+                </div>
+                
+                <!-- Social Login Buttons -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="socialLogin('google')" class="social-btn flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition">
+                        <i class="fab fa-google text-red-500"></i>
+                        <span class="text-sm text-gray-700">Google</span>
+                    </button>
+                    <button onclick="socialLogin('github')" class="social-btn flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition">
+                        <i class="fab fa-github text-gray-800"></i>
+                        <span class="text-sm text-gray-700">GitHub</span>
+                    </button>
+                </div>
+                
+                <!-- Sign Up Link -->
+                <p class="text-center text-sm text-gray-600">
+                    Don't have an account?
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-semibold hover:underline">Create account</a>
+                </p>
+            </div>
+            
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-3 text-center border-t border-gray-200">
+                <p class="text-xs text-gray-500">
+                    <i class="fas fa-shield-alt mr-1"></i>Secure login • Protected by SSL encryption
+                </p>
+            </div>
+        </div>
+        
+        <!-- Demo Credentials Info -->
+        <div class="demo-credentials text-center text-white/80">
+            <p class="mb-2 text-sm font-medium">🔐 Demo Credentials:</p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <span class="bg-white/20 px-3 py-1.5 rounded-full text-sm">Email: admin@agency.com</span>
+                <span class="bg-white/20 px-3 py-1.5 rounded-full text-sm">Password: admin123</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show Center Toast Message
+        function showCenterToast(message, type = 'success') {
+            const existingToast = document.getElementById('centerToast');
+            if(existingToast) {
+                existingToast.remove();
+            }
+            
+            const toast = document.createElement('div');
+            toast.id = 'centerToast';
+            
+            let bgColor = 'bg-green-500';
+            let icon = 'fa-check-circle';
+            if(type === 'error') {
+                bgColor = 'bg-red-500';
+                icon = 'fa-exclamation-circle';
+            } else if(type === 'info') {
+                bgColor = 'bg-blue-500';
+                icon = 'fa-info-circle';
+            } else if(type === 'warning') {
+                bgColor = 'bg-yellow-500';
+                icon = 'fa-exclamation-triangle';
+            }
+            
+            toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bgColor} text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center space-x-2 z-50`;
+            toast.style.animation = 'centerFadeIn 0.3s ease-out';
+            toast.innerHTML = `
+                <i class="fas ${icon} text-lg"></i>
+                <span class="text-sm font-medium">${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'centerFadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+        
+        // Handle Login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const errorMessageDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            const validEmail = 'admin@agency.com';
+            const validPassword = 'admin123';
+            
+            if (email === validEmail && password === validPassword) {
+                if (rememberMe) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                } else {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('userEmail', email);
+                }
+                
+                showCenterToast('Login successful! Redirecting...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } else {
+                errorText.textContent = 'Invalid email or password. Please try again.';
+                errorMessageDiv.classList.remove('hidden');
+                
+                errorMessageDiv.classList.add('error-message');
+                setTimeout(() => {
+                    errorMessageDiv.classList.remove('error-message');
+                }, 500);
+                
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        }
+        
+        // Toggle Password Visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Social Login Demo
+        function socialLogin(provider) {
+            showCenterToast(`Login with ${provider} is demo only. Use demo credentials.`, 'info');
+        }
+        
+        // Check if already logged in
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                window.location.href = 'index.html';
+            }
+        }
+        
+        checkAuth();
+        
+        // Enter key support
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+        
+        // Auto-fill demo credentials on page load
+        window.addEventListener('load', function() {
+            if (document.getElementById('email').value === '') {
+                document.getElementById('email').value = 'admin@agency.com';
+                document.getElementById('password').value = 'admin123';
+            }
+        });
+    </script>
+</body>
+</html>

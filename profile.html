@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Dashboard | Profile</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2); }
+        .menu-item.active i { color: white; }
+        .dropdown-menu { animation: slideDown 0.2s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+    </style>
+
+    <script>
+    // Check if user is logged in
+    function checkAuth() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn || isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Run auth check on page load
+    checkAuth();
+</script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg">
+        <i class="fas fa-bars text-gray-700 text-xl"></i>
+    </button>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+            <div class="p-6 border-b border-gray-100">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1>
+                        <p class="text-xs text-gray-400">Website Management</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+                <a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-th-large w-5"></i><span>Dashboard</span></a>
+                <a href="clients.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-users w-5"></i><span>Clients</span></a>
+                <a href="projects.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-folder-open w-5"></i><span>Projects</span></a>
+                <a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-chart-line w-5"></i><span>Analytics</span></a>
+                <a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-file-alt w-5"></i><span>Reports</span></a>
+                <a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-cog w-5"></i><span>Settings</span></a>
+            </nav>
+            <div class="p-4 border-t border-gray-100">
+                <button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button>
+                <p class="text-xs text-gray-400 text-center mt-3">© 2024 AgencyDash</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-800">Profile</h2>
+                    <div class="relative">
+                        <!-- FIXED: Changed div to span and p to span inside button -->↩
+                        <button id="profileDropdownBtn" class="flex items-center space-x-3 focus:outline-none group">↩
+                            <span class="text-right hidden sm:block">
+                                <span class="block text-sm font-semibold text-gray-700">Alex Johnson</span>↩
+                                <span class="block text-xs text-gray-400">Admin</span>↩
+                            </span>
+                            <span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>↩
+                            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i>↩
+                        </button>
+                        <div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                            <div class="p-3 border-b"><p class="font-semibold">Alex Johnson</p><p class="text-sm text-gray-500">alex@agency.com</p></div>
+                            <div class="py-2"><a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50"><i class="fas fa-user w-5 text-gray-400"></i><span>Profile</span></a><a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50"><i class="fas fa-cog w-5 text-gray-400"></i><span>Settings</span></a></div>
+                            <div class="border-t py-2"><button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Profile Content -->
+            <div class="p-6">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Profile Header -->
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-32"></div>
+                        <div class="px-6 pb-6 relative">
+                            <div class="flex flex-col sm:flex-row items-center sm:items-end -mt-16 mb-4">
+                                <div class="w-32 h-32 rounded-full border-4 border-white bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                                    AJ
+                                </div>
+                                <div class="sm:ml-6 mt-4 sm:mt-0 text-center sm:text-left">
+                                    <h2 class="text-2xl font-bold text-gray-800">Alex Johnson</h2>
+                                    <p class="text-gray-500">Administrator</p>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs"><i class="fas fa-check-circle"></i> Verified</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"><i class="fas fa-star"></i> Pro Member</span>
+                                    </div>
+                                </div>
+                                <div class="sm:ml-auto mt-4 sm:mt-0">
+                                    <button class="border border-blue-500 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-50 transition"><i class="fas fa-edit mr-2"></i>Edit Profile</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Personal Information -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-2xl shadow-sm p-6">
+                                <h3 class="font-bold text-lg text-gray-800 mb-4">Personal Information</h3>
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-gray-500 text-sm mb-1">Full Name</label>
+                                            <p class="text-gray-800 font-medium">Alex Johnson</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-500 text-sm mb-1">Username</label>
+                                            <p class="text-gray-800 font-medium">@alexjohnson</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-500 text-sm mb-1">Email Address</label>
+                                        <p class="text-gray-800 font-medium">alex@agency.com</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-500 text-sm mb-1">Phone Number</label>
+                                        <p class="text-gray-800 font-medium">+1 (234) 567-8900</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-500 text-sm mb-1">Location</label>
+                                        <p class="text-gray-800 font-medium">New York, United States</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-500 text-sm mb-1">Bio</label>
+                                        <p class="text-gray-700">Experienced agency manager with over 5 years in digital marketing and team leadership.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Activity Timeline -->
+                            <div class="bg-white rounded-2xl shadow-sm p-6 mt-6">
+                                <h3 class="font-bold text-lg text-gray-800 mb-4">Recent Activity</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-user-plus text-green-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-800">Added new client <span class="font-semibold">Creative Studio</span></p>
+                                            <p class="text-xs text-gray-400">2 hours ago</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-check-circle text-blue-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-800">Completed project <span class="font-semibold">Brand Identity</span></p>
+                                            <p class="text-xs text-gray-400">Yesterday</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-calendar-alt text-purple-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-800">Meeting scheduled with <span class="font-semibold">ABC Corp</span></p>
+                                            <p class="text-xs text-gray-400">Tomorrow, 10:00 AM</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-chart-line text-yellow-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-800">Generated monthly report for <span class="font-semibold">March 2024</span></p>
+                                            <p class="text-xs text-gray-400">3 days ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <!-- Stats Card -->
+                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+                                <i class="fas fa-chart-line text-3xl mb-3"></i>
+                                <h3 class="text-2xl font-bold">85%</h3>
+                                <p class="text-blue-100 text-sm">Profile Completion</p>
+                                <div class="w-full bg-white/20 rounded-full h-2 mt-3">
+                                    <div class="bg-white h-2 rounded-full w-[85%]"></div>
+                                </div>
+                                <p class="text-blue-100 text-xs mt-2">Complete your profile to get started</p>
+                            </div>
+
+                            <!-- Contact Info Card -->
+                            <div class="bg-white rounded-2xl shadow-sm p-6">
+                                <h3 class="font-semibold text-gray-800 mb-3">Contact Information</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center space-x-3 text-gray-600">
+                                        <i class="fas fa-envelope w-5 text-gray-400"></i>
+                                        <span class="text-sm">alex@agency.com</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3 text-gray-600">
+                                        <i class="fas fa-phone w-5 text-gray-400"></i>
+                                        <span class="text-sm">+1 (234) 567-8900</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3 text-gray-600">
+                                        <i class="fab fa-linkedin w-5 text-gray-400"></i>
+                                        <span class="text-sm">linkedin.com/in/alexjohnson</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3 text-gray-600">
+                                        <i class="fab fa-github w-5 text-gray-400"></i>
+                                        <span class="text-sm">github.com/alexjohnson</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Skills Card -->
+                            <div class="bg-white rounded-2xl shadow-sm p-6">
+                                <h3 class="font-semibold text-gray-800 mb-3">Skills</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Project Management</span>
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Team Leadership</span>
+                                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">Digital Marketing</span>
+                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">SEO</span>
+                                    <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm">Analytics</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-sign-out-alt text-red-500 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                <div class="flex gap-3">
+                    <button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button>
+                    <button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    // Set active menu based on current page
+    const currentPage = window.location.pathname.split('/').pop();
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if(href === currentPage) {
+            item.classList.add('active');
+        }
+    });
+    
+    // Check if user is logged in
+    function checkAuth() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn || isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Run auth check on page load
+    checkAuth();
+
+    // Profile Dropdown
+    const profileBtn = document.getElementById('profileDropdownBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const dropdownIcon = document.getElementById('dropdownIcon');
+
+    if(profileBtn) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+            if(dropdownIcon) {
+                dropdownIcon.style.transform = profileDropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if(profileBtn && !profileBtn.contains(e.target) && profileDropdown && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+            if(dropdownIcon) dropdownIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // Mobile Sidebar Toggle
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if(mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    }
+
+    // Show Center Toast Message
+    function showCenterToast(message, type = 'success') {
+        // Remove existing toast if any
+        const existingToast = document.getElementById('centerToast');
+        if(existingToast) {
+            existingToast.remove();
+        }
+        
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.id = 'centerToast';
+        
+        // Set background color based on type
+        let bgColor = 'bg-green-500';
+        let icon = 'fa-check-circle';
+        if(type === 'error') {
+            bgColor = 'bg-red-500';
+            icon = 'fa-exclamation-circle';
+        } else if(type === 'info') {
+            bgColor = 'bg-blue-500';
+            icon = 'fa-info-circle';
+        } else if(type === 'warning') {
+            bgColor = 'bg-yellow-500';
+            icon = 'fa-exclamation-triangle';
+        }
+        
+        toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bgColor} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`;
+        toast.style.animation = 'fadeInScale 0.3s ease-out';
+        toast.innerHTML = `
+            <i class="fas ${icon} text-2xl"></i>
+            <span class="text-lg font-medium">${message}</span>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInScale {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+            @keyframes fadeOutScale {
+                from {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                to {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Remove toast after 2 seconds
+        setTimeout(() => {
+            toast.style.animation = 'fadeOutScale 0.3s ease-out';
+            setTimeout(() => {
+                toast.remove();
+                style.remove();
+            }, 300);
+        }, 2000);
+    }
+
+    // Logout Modal Logic
+    const logoutModal = document.getElementById('logoutModal');
+    const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
+    const dropdownLogoutBtn = document.getElementById('dropdownLogoutBtn');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+
+    function showLogoutModal() {
+        if(logoutModal) {
+            logoutModal.classList.remove('hidden');
+            logoutModal.classList.add('flex');
+        }
+    }
+
+    function hideLogoutModal() {
+        if(logoutModal) {
+            logoutModal.classList.add('hidden');
+            logoutModal.classList.remove('flex');
+        }
+    }
+
+    function handleLogout() {
+        // Clear login storage
+        localStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        sessionStorage.removeItem('userEmail');
+        
+        // Show center toast message
+        showCenterToast('Logged out successfully!', 'success');
+        
+        // Hide modal
+        hideLogoutModal();
+        
+        // Redirect to login page after toast
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1500);
+    }
+
+    if(sidebarLogoutBtn) sidebarLogoutBtn.addEventListener('click', showLogoutModal);
+    if(dropdownLogoutBtn) dropdownLogoutBtn.addEventListener('click', showLogoutModal);
+    if(confirmLogoutBtn) confirmLogoutBtn.addEventListener('click', handleLogout);
+    if(cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', hideLogoutModal);
+    if(modalBackdrop) modalBackdrop.addEventListener('click', hideLogoutModal);
+</script>
+</body>
+</html>

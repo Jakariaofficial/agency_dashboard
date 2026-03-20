@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Dashboard | Projects</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .menu-item.active i { color: white; }
+        .dropdown-menu { animation: slideDown 0.2s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+    </style>
+
+    <script>
+    // Check if user is logged in
+    function checkAuth() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn || isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Run auth check on page load
+    checkAuth();
+    </script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg">
+        <i class="fas fa-bars text-gray-700 text-xl"></i>
+    </button>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+            <div class="p-6 border-b border-gray-100">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1>
+                        <p class="text-xs text-gray-400">Website Management</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+                <a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-th-large w-5"></i><span>Dashboard</span></a>
+                <a href="clients.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-users w-5"></i><span>Clients</span></a>
+                <a href="projects.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-folder-open w-5"></i><span>Projects</span></a>
+                <a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-chart-line w-5"></i><span>Analytics</span></a>
+                <a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-file-alt w-5"></i><span>Reports</span></a>
+                <a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-cog w-5"></i><span>Settings</span></a>
+            </nav>
+            <div class="p-4 border-t border-gray-100">
+                <button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button>
+                <p class="text-xs text-gray-400 text-center mt-3">© 2024 AgencyDash</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-800">Projects</h2>
+                    <div class="relative">
+                        <!-- FIXED: Changed div to span and p to span inside button -->
+                        <button id="profileDropdownBtn" class="flex items-center space-x-3 focus:outline-none group">
+                            <span class="text-right hidden sm:block">
+                                <span class="block text-sm font-semibold text-gray-700">Alex Johnson</span>
+                                <span class="block text-xs text-gray-400">Admin</span>
+                            </span>
+                            <span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
+                            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i>
+                        </button>
+                        <div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                            <div class="p-3 border-b border-gray-100">
+                                <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                <p class="text-sm text-gray-500">alex@agency.com</p>
+                            </div>
+                            <div class="py-2">
+                                <a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"><i class="fas fa-user w-5 text-gray-400"></i><span>Profile</span></a>
+                                <a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"><i class="fas fa-cog w-5 text-gray-400"></i><span>Settings</span></a>
+                            </div>
+                            <div class="border-t border-gray-100 py-2">
+                                <button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Projects Content -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-gray-800">Brand Identity</h3>
+                            <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">75%</span>
+                        </div>
+                        <p class="text-gray-500 text-sm">Client: Creative Studio</p>
+                        <p class="text-gray-500 text-sm mb-3">Deadline: Apr 10, 2024</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full w-3/4"></div></div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-gray-800">E-commerce Website</h3>
+                            <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">50%</span>
+                        </div>
+                        <p class="text-gray-500 text-sm">Client: Nova Agency</p>
+                        <p class="text-gray-500 text-sm mb-3">Deadline: Apr 20, 2024</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full w-1/2"></div></div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-gray-800">SEO Campaign</h3>
+                            <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded">60%</span>
+                        </div>
+                        <p class="text-gray-500 text-sm">Client: WebExperts</p>
+                        <p class="text-gray-500 text-sm mb-3">Deadline: May 05, 2024</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-yellow-500 h-2 rounded-full w-3/5"></div></div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-gray-800">Mobile App Development</h3>
+                            <span class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">30%</span>
+                        </div>
+                        <p class="text-gray-500 text-sm">Client: Pixel Perfect</p>
+                        <p class="text-gray-500 text-sm mb-3">Deadline: Jun 15, 2024</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2"><div class="bg-purple-500 h-2 rounded-full w-1/3"></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-sign-out-alt text-red-500 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                <div class="flex gap-3">
+                    <button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">Logout</button>
+                    <button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Set active menu based on current page
+    const currentPage = window.location.pathname.split('/').pop();
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if(href === currentPage) {
+            item.classList.add('active');
+        }
+    });
+    
+    // Check if user is logged in
+    function checkAuth() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn || isLoggedIn !== 'true') {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Run auth check on page load
+    checkAuth();
+
+    // Profile Dropdown
+    const profileBtn = document.getElementById('profileDropdownBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const dropdownIcon = document.getElementById('dropdownIcon');
+
+    if(profileBtn) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+            if(dropdownIcon) {
+                dropdownIcon.style.transform = profileDropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if(profileBtn && !profileBtn.contains(e.target) && profileDropdown && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+            if(dropdownIcon) dropdownIcon.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    // Mobile Sidebar Toggle
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if(mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    }
+
+    // Show Center Toast Message
+    function showCenterToast(message, type = 'success') {
+        // Remove existing toast if any
+        const existingToast = document.getElementById('centerToast');
+        if(existingToast) {
+            existingToast.remove();
+        }
+        
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.id = 'centerToast';
+        
+        // Set background color based on type
+        let bgColor = 'bg-green-500';
+        let icon = 'fa-check-circle';
+        if(type === 'error') {
+            bgColor = 'bg-red-500';
+            icon = 'fa-exclamation-circle';
+        } else if(type === 'info') {
+            bgColor = 'bg-blue-500';
+            icon = 'fa-info-circle';
+        } else if(type === 'warning') {
+            bgColor = 'bg-yellow-500';
+            icon = 'fa-exclamation-triangle';
+        }
+        
+        toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bgColor} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`;
+        toast.style.animation = 'fadeInScale 0.3s ease-out';
+        toast.innerHTML = `
+            <i class="fas ${icon} text-2xl"></i>
+            <span class="text-lg font-medium">${message}</span>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInScale {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+            @keyframes fadeOutScale {
+                from {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                to {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Remove toast after 2 seconds
+        setTimeout(() => {
+            toast.style.animation = 'fadeOutScale 0.3s ease-out';
+            setTimeout(() => {
+                toast.remove();
+                style.remove();
+            }, 300);
+        }, 2000);
+    }
+
+    // Logout Modal Logic
+    const logoutModal = document.getElementById('logoutModal');
+    const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
+    const dropdownLogoutBtn = document.getElementById('dropdownLogoutBtn');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+
+    function showLogoutModal() {
+        if(logoutModal) {
+            logoutModal.classList.remove('hidden');
+            logoutModal.classList.add('flex');
+        }
+    }
+
+    function hideLogoutModal() {
+        if(logoutModal) {
+            logoutModal.classList.add('hidden');
+            logoutModal.classList.remove('flex');
+        }
+    }
+
+    function handleLogout() {
+        // Clear login storage
+        localStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        sessionStorage.removeItem('userEmail');
+        
+        // Show center toast message
+        showCenterToast('Logged out successfully!', 'success');
+        
+        // Hide modal
+        hideLogoutModal();
+        
+        // Redirect to login page after toast
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1500);
+    }
+
+    if(sidebarLogoutBtn) sidebarLogoutBtn.addEventListener('click', showLogoutModal);
+    if(dropdownLogoutBtn) dropdownLogoutBtn.addEventListener('click', showLogoutModal);
+    if(confirmLogoutBtn) confirmLogoutBtn.addEventListener('click', handleLogout);
+    if(cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', hideLogoutModal);
+    if(modalBackdrop) modalBackdrop.addEventListener('click', hideLogoutModal);
+    </script>
+</body>
+</html>
