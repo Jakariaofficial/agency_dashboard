@@ -85,31 +85,216 @@
 
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
-            <div class="p-6 border-b border-gray-100">
-                <a href="index.html" class="flex items-center space-x-3 group">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="fas fa-chart-line text-white text-xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1>
-                        <p class="text-xs text-gray-400">Website Management</p>
-                    </div>
-                </a>
+           <!-- Sidebar - Professional Agency Version with Grouping -->
+<aside
+  id="sidebar"
+  class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto"
+  :class="sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'"
+>
+  <!-- Logo Section -->
+  <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+    <a href="index.html" class="flex items-center space-x-3 group" :class="sidebarCollapsed ? 'lg:justify-center lg:w-full' : ''">
+      <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+        <i class="fas fa-chart-line text-white text-xl"></i>
+      </div>
+      <div :class="sidebarCollapsed ? 'lg:hidden' : ''">
+        <h1 class="text-xl font-bold text-gray-800">
+          Agency<span class="text-blue-600">Dash</span>
+        </h1>
+        <p class="text-xs text-gray-400">Professional Agency Suite</p>
+      </div>
+    </a>
+    
+    <!-- Collapse Toggle Button -->
+    <button
+      id="collapseSidebarBtn"
+      class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200 transition flex-shrink-0"
+    >
+      <i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300" id="collapseIcon"></i>
+    </button>
+  </div>
+
+  <!-- Navigation Menu with Categories -->
+  <nav class="flex-1 px-4 py-4 space-y-6">
+    
+    <!-- MAIN Section -->
+    <div>
+      <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</p>
+      </div>
+      <div class="space-y-1">
+        <a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Dashboard">
+          <i class="fas fa-th-large w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Dashboard</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Dashboard</div>
+        </a>
+        
+        <a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Analytics">
+          <i class="fas fa-chart-line w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Analytics</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Analytics</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- MANAGEMENT Section -->
+    <div>
+      <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
+      </div>
+      <div class="space-y-1">
+        <!-- Projects Dropdown -->
+        <div class="relative">
+          <button id="projectsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-folder-open w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+              <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Projects</span>
             </div>
-            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-                <a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-th-large w-5"></i><span>Dashboard</span></a>
-                <a href="clients.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-users w-5"></i><span>Clients</span></a>
-                <a href="projects.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-folder-open w-5"></i><span>Projects</span></a>
-                <a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-chart-line w-5"></i><span>Analytics</span></a>
-                <a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-file-alt w-5"></i><span>Reports</span></a>
-                <a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i class="fas fa-cog w-5"></i><span>Settings</span></a>
-            </nav>
-            <div class="p-4 border-t border-gray-100">
-                <button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button>
-                <p class="text-xs text-gray-400 text-center mt-3">© 2024 AgencyDash</p>
+            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="projectsDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+          </button>
+          <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+            <a href="projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All Projects</span></a>
+            <a href="active-projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-play-circle w-4 text-gray-400"></i><span class="text-sm">Active Projects</span></a>
+          </div>
+        </div>
+
+        <!-- Tasks Dropdown (New) -->
+        <div class="relative">
+          <button id="tasksMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-tasks w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+              <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Tasks</span>
             </div>
-        </aside>
+            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="tasksDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+          </button>
+          <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+            <a href="todo.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-check-square w-4 text-gray-400"></i><span class="text-sm">To-Do List</span></a>
+            <a href="kanban.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-columns w-4 text-gray-400"></i><span class="text-sm">Kanban Board</span></a>
+            <a href="calendar.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-calendar-alt w-4 text-gray-400"></i><span class="text-sm">Calendar</span></a>
+          </div>
+        </div>
+
+        <!-- Clients Dropdown (Expanded) -->
+        <div class="relative">
+          <button id="clientsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-users w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+              <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Clients</span>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="clientsDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+          </button>
+          <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+            <a href="clients.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All Clients</span></a>
+            <a href="add-client.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-user-plus w-4 text-gray-400"></i><span class="text-sm">Add Client</span></a>
+            <a href="client-messages.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-comments w-4 text-gray-400"></i><span class="text-sm">Messages</span></a>
+            <a href="client-assets.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-folder w-4 text-gray-400"></i><span class="text-sm">Assets</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINANCE Section -->
+    <div>
+      <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Finance</p>
+      </div>
+      <div class="space-y-1">
+        <a href="invoices.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Invoices">
+          <i class="fas fa-file-invoice-dollar w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Invoices</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Invoices</div>
+        </a>
+        
+        <a href="payments.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Payments">
+          <i class="fas fa-credit-card w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Payments</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Payments</div>
+        </a>
+        
+        <a href="subscriptions.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Subscriptions">
+          <i class="fas fa-sync-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Subscriptions</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Subscriptions</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- RESOURCES Section -->
+    <div>
+      <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resources</p>
+      </div>
+      <div class="space-y-1">
+        <a href="file-manager.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="File Manager">
+          <i class="fas fa-cloud-upload-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">File Manager</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">File Manager</div>
+        </a>
+        
+        <a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Reports">
+          <i class="fas fa-chart-bar w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Reports</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Reports</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SYSTEM Section -->
+    <div>
+      <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">System</p>
+      </div>
+      <div class="space-y-1">
+        <!-- Team Dropdown -->
+        <div class="relative">
+          <button id="teamMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-user-friends w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+              <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Team</span>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="teamDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+          </button>
+          <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+            <a href="team-members.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-users w-4 text-gray-400"></i><span class="text-sm">Team Members</span></a>
+            <a href="activities.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-history w-4 text-gray-400"></i><span class="text-sm">Activity Logs</span></a>
+          </div>
+        </div>
+        
+        <a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Settings">
+          <i class="fas fa-cog w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Settings</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Settings</div>
+        </a>
+        
+        <!-- Support Tickets (New) -->
+        <a href="support-tickets.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative" data-tooltip="Support Tickets">
+          <i class="fas fa-ticket-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+          <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Support Tickets</span>
+          <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Support Tickets</div>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bottom Section with User & Logout -->
+  <div class="p-4 border-t border-gray-100">
+    <!-- User Info (New) -->
+    <div class="flex items-center space-x-3 mb-4 px-2" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">AJ</div>
+      <div :class="sidebarCollapsed ? 'lg:hidden' : ''">
+        <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+        <p class="text-xs text-gray-400">Admin</p>
+      </div>
+    </div>
+    
+    <button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-200 group relative">
+      <i class="fas fa-sign-out-alt w-5"></i>
+      <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Logout</span>
+      <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block" :class="sidebarCollapsed ? '' : 'hidden'">Logout</div>
+    </button>
+    <p class="text-xs text-gray-400 text-center mt-3" :class="sidebarCollapsed ? 'lg:hidden' : ''">© 2024 AgencyDash Pro</p>
+  </div>
+</aside>
 
         <main class="flex-1 overflow-y-auto">
             <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
@@ -582,5 +767,6 @@
     if(cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', hideLogoutModal);
     if(modalBackdrop) modalBackdrop.addEventListener('click', hideLogoutModal);
     </script>
+    <script src="main.js"></script>
 </body>
 </html>

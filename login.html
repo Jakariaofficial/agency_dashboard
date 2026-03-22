@@ -289,7 +289,7 @@
             <p class="mb-2 text-sm font-medium">🔐 Demo Credentials:</p>
             <div class="flex gap-4 justify-center flex-wrap">
                 <span class="bg-white/20 px-3 py-1.5 rounded-full text-sm">Email: admin@agency.com</span>
-                <span class="bg-white/20 px-3 py-1.5 rounded-full text-sm">Password: admin123</span>
+                <span class="bg-white/20 px-3 py-1.5 rounded-full text-sm">Password: Admin@123</span>
             </div>
         </div>
     </div>
@@ -346,7 +346,7 @@
             const errorText = document.getElementById('errorText');
             
             const validEmail = 'admin@agency.com';
-            const validPassword = 'admin123';
+            const validPassword = 'Admin@123';
             
             if (email === validEmail && password === validPassword) {
                 if (rememberMe) {
@@ -419,7 +419,7 @@
         window.addEventListener('load', function() {
             if (document.getElementById('email').value === '') {
                 document.getElementById('email').value = 'admin@agency.com';
-                document.getElementById('password').value = 'admin123';
+                document.getElementById('password').value = 'Admin@123';
             }
         });
     </script>
