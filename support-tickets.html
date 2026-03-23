@@ -1,230 +1,565 @@
 <!doctype html>
 <html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agency Dashboard | Support Tickets</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-        .menu-item.active i { color: white; }
-        .dropdown-menu { animation: slideDown 0.2s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
-        .sidebar { transition: width 0.3s ease-in-out, transform 0.3s ease-in-out; }
-        .lg\:w-20 { width: 5rem; }
-        .lg\:w-72 { width: 18rem; }
-        .ticket-card { transition: all 0.2s ease; cursor: pointer; }
-        .ticket-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .status-open { background: #fef3c7; color: #92400e; }
-        .status-in-progress { background: #e0e7ff; color: #1e40af; }
-        .status-resolved { background: #dcfce7; color: #166534; }
-        .status-closed { background: #f3f4f6; color: #374151; }
-        .priority-high { background: #fee2e2; color: #991b1b; }
-        .priority-medium { background: #fef3c7; color: #92400e; }
-        .priority-low { background: #e0e7ff; color: #1e40af; }
-    </style>
-</head>
-<body class="bg-gray-50 font-sans antialiased">
-    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i class="fas fa-bars"></i></button>
-    <div class="flex h-screen overflow-hidden">
-        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                <a href="index.html" class="flex items-center space-x-3"><div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-white text-xl"></i></div><div class="logo-text"><h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1><p class="text-xs text-gray-400">Professional Agency Suite</p></div></a>
-                <button id="collapseSidebarBtn" class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300" id="collapseIcon"></i></button>
-            </div>
-            <nav class="flex-1 px-4 py-4 space-y-6">
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Main</p></div><div class="space-y-1"><a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Dashboard</div></a><a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Analytics</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Management</p></div><div class="space-y-1"><div class="relative"><button id="projectsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span class="font-medium">Projects</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="projectsDropdownIcon"></i></button><div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a href="active-projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-play-circle w-4"></i><span class="text-sm">Active Projects</span></a></div></div><div class="relative"><button id="tasksMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span class="font-medium">Tasks</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="tasksDropdownIcon"></i></button><div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-check-square w-4"></i><span class="text-sm">To-Do List</span></a><a href="kanban.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-columns w-4"></i><span class="text-sm">Kanban Board</span></a><a href="calendar.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-calendar-alt w-4"></i><span class="text-sm">Calendar</span></a></div></div><div class="relative"><button id="clientsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span class="font-medium">Clients</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="clientsDropdownIcon"></i></button><div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="clients.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a href="add-client.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-user-plus w-4"></i><span class="text-sm">Add Client</span></a><a href="client-messages.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a href="client-assets.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div></div></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Finance</p></div><div class="space-y-1"><a href="invoices.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Invoices</div></a><a href="payments.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Payments</div></a><a href="subscriptions.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Subscriptions</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Resources</p></div><div class="space-y-1"><a href="file-manager.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File Manager</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">File Manager</div></a><a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Reports</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">System</p></div><div class="space-y-1"><div class="relative"><button id="teamMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="teamDropdownIcon"></i></button><div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="team-members.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a href="activities.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-history w-4"></i><span class="text-sm">Activity Logs</span></a></div></div><a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cog w-5"></i><span class="font-medium">Settings</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Settings</div></a><a href="support-tickets.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Support Tickets</div></a></div></div>
-            </nav>
-            <div class="p-4 border-t border-gray-100"><div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</div><div class="user-info-text"><p class="text-sm font-semibold text-gray-700">Alex Johnson</p><p class="text-xs text-gray-400">Admin</p></div></div><button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Logout</div></button><p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p></div>
-        </aside>
 
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-semibold text-gray-800">Support Tickets</h2>
-                    <div class="relative">
-                        <button id="profileDropdownBtn" class="flex items-center space-x-3">
-                            <span class="text-right hidden sm:block"><span class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span class="block text-xs text-gray-400">Admin</span></span>
-                            <span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
-                            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i>
-                        </button>
-                        <div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
-                            <div class="p-3 border-b border-gray-100"><p class="font-semibold text-gray-800">Alex Johnson</p><p class="text-sm text-gray-500">alex@agency.com</p></div>
-                            <div class="py-2"><a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-cog w-5"></i><span>Settings</span></a></div>
-                            <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Agency Dashboard | Support Tickets</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .menu-item.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+            }
+
+            .menu-item.active i {
+                color: white;
+            }
+
+            .dropdown-menu {
+                animation: slideDown 0.2s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+            }
+
+            .sidebar {
+                transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            }
+
+            .lg\:w-20 {
+                width: 5rem;
+            }
+
+            .lg\:w-72 {
+                width: 18rem;
+            }
+
+            .ticket-card {
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
+
+            .ticket-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+
+            .status-open {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .status-in-progress {
+                background: #e0e7ff;
+                color: #1e40af;
+            }
+
+            .status-resolved {
+                background: #dcfce7;
+                color: #166534;
+            }
+
+            .status-closed {
+                background: #f3f4f6;
+                color: #374151;
+            }
+
+            .priority-high {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .priority-medium {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .priority-low {
+                background: #e0e7ff;
+                color: #1e40af;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 font-sans antialiased">
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i
+                class="fas fa-bars"></i></button>
+        <div class="flex h-screen overflow-hidden">
+            <aside id="sidebar"
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <a href="index.html" class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i></div>
+                        <div class="logo-text">
+                            <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
+                            </h1>
+                            <p class="text-xs text-gray-400">Professional Agency Suite</p>
+                        </div>
+                    </a>
+                    <button id="collapseSidebarBtn"
+                        class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i
+                            class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+                            id="collapseIcon"></i></button>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-6">
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
+                        </div>
+                        <div class="space-y-1"><a href="dashboard.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Dashboard</div>
+                            </a><a href="analytics.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Analytics</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Management</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="projectsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span
+                                            class="font-medium">Projects</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="projectsDropdownIcon"></i>
+                                </button>
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a
+                                        href="active-projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-play-circle w-4"></i><span class="text-sm">Active
+                                            Projects</span></a></div>
+                            </div>
+                            <div class="relative"><button id="tasksMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span
+                                            class="font-medium">Tasks</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="tasksDropdownIcon"></i>
+                                </button>
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-check-square w-4"></i><span class="text-sm">To-Do
+                                            List</span></a><a href="kanban.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-columns w-4"></i><span class="text-sm">Kanban
+                                            Board</span></a><a href="calendar.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-calendar-alt w-4"></i><span
+                                            class="text-sm">Calendar</span></a></div>
+                            </div>
+                            <div class="relative"><button id="clientsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span
+                                            class="font-medium">Clients</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="clientsDropdownIcon"></i>
+                                </button>
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="clients.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a
+                                        href="add-client.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-user-plus w-4"></i><span class="text-sm">Add
+                                            Client</span></a><a href="client-messages.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a
+                                        href="client-assets.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div>
+                            </div>
                         </div>
                     </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Finance</p>
+                        </div>
+                        <div class="space-y-1"><a href="invoices.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Invoices</div>
+                            </a><a href="payments.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Payments</div>
+                            </a><a href="subscriptions.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Subscriptions</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Resources</p>
+                        </div>
+                        <div class="space-y-1"><a href="file-manager.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File
+                                    Manager</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    File Manager</div>
+                            </a><a href="reports.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Reports</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">System</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="teamMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i
+                                            class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span>
+                                    </div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="teamDropdownIcon"></i>
+                                </button>
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="team-members.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a
+                                        href="activities.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-history w-4"></i><span class="text-sm">Activity
+                                            Logs</span></a></div>
+                            </div><a href="settings.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Settings</div>
+                            </a><a href="support-tickets.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Support Tickets</div>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="p-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                            AJ</div>
+                        <div class="user-info-text">
+                            <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+                            <p class="text-xs text-gray-400">Admin</p>
+                        </div>
+                    </div><button id="sidebarLogoutBtn"
+                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i
+                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span>
+                        <div
+                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                            Logout</div>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
                 </div>
-            </header>
+            </aside>
 
-            <div class="p-6">
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
-                        <p class="text-gray-500 text-sm">Total Tickets</p>
-                        <p class="text-3xl font-bold text-gray-800 mt-2" id="totalTickets">0</p>
+            <main class="flex-1 overflow-y-auto">
+                <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-semibold text-gray-800">Support Tickets</h2>
+                        <div class="relative">
+                            <button id="profileDropdownBtn" class="flex items-center space-x-3">
+                                <span class="text-right hidden sm:block"><span
+                                        class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span
+                                        class="block text-xs text-gray-400">Admin</span></span>
+                                <span
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    id="dropdownIcon"></i>
+                            </button>
+                            <div id="profileDropdown"
+                                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                                <div class="p-3 border-b border-gray-100">
+                                    <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                    <p class="text-sm text-gray-500">alex@agency.com</p>
+                                </div>
+                                <div class="py-2"><a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-cog w-5"></i><span>Settings</span></a></div>
+                                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
+                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
-                        <p class="text-gray-500 text-sm">Open</p>
-                        <p class="text-3xl font-bold text-yellow-600 mt-2" id="openTickets">0</p>
+                </header>
+
+                <div class="p-6">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
+                            <p class="text-gray-500 text-sm">Total Tickets</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-2" id="totalTickets">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
+                            <p class="text-gray-500 text-sm">Open</p>
+                            <p class="text-3xl font-bold text-yellow-600 mt-2" id="openTickets">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-purple-500">
+                            <p class="text-gray-500 text-sm">In Progress</p>
+                            <p class="text-3xl font-bold text-purple-600 mt-2" id="progressTickets">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+                            <p class="text-gray-500 text-sm">Resolved</p>
+                            <p class="text-3xl font-bold text-green-600 mt-2" id="resolvedTickets">0</p>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-purple-500">
-                        <p class="text-gray-500 text-sm">In Progress</p>
-                        <p class="text-3xl font-bold text-purple-600 mt-2" id="progressTickets">0</p>
+
+                    <!-- Actions -->
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="filterAllTickets"
+                                class="px-4 py-2 rounded-lg bg-blue-500 text-white">All</button>
+                            <button id="filterOpen"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🟡
+                                Open</button>
+                            <button id="filterInProgress"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🔵 In
+                                Progress</button>
+                            <button id="filterResolved"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🟢
+                                Resolved</button>
+                            <button id="filterClosed"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">⚫
+                                Closed</button>
+                        </div>
+                        <button id="createTicketBtn"
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i
+                                class="fas fa-plus mr-2"></i>New Ticket</button>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
-                        <p class="text-gray-500 text-sm">Resolved</p>
-                        <p class="text-3xl font-bold text-green-600 mt-2" id="resolvedTickets">0</p>
-                    </div>
+
+                    <!-- Tickets List -->
+                    <div id="ticketsList" class="space-y-4"></div>
                 </div>
+            </main>
+        </div>
 
-                <!-- Actions -->
-                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-                    <div class="flex gap-2 flex-wrap">
-                        <button id="filterAllTickets" class="px-4 py-2 rounded-lg bg-blue-500 text-white">All</button>
-                        <button id="filterOpen" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🟡 Open</button>
-                        <button id="filterInProgress" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🔵 In Progress</button>
-                        <button id="filterResolved" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🟢 Resolved</button>
-                        <button id="filterClosed" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">⚫ Closed</button>
-                    </div>
-                    <button id="createTicketBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus mr-2"></i>New Ticket</button>
+        <!-- Create/Edit Ticket Modal -->
+        <div id="ticketModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdropTicket"></div>
+            <div
+                class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto relative z-50">
+                <div class="p-6">
+                    <h3 id="ticketModalTitle" class="text-xl font-semibold text-gray-800 mb-4">Create New Ticket</h3>
+                    <form id="ticketForm">
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Subject
+                                *</label><input type="text" id="ticketSubject"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                placeholder="Brief description of the issue" required></div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Client
+                                *</label><select id="ticketClient"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></select></div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Priority</label><select
+                                    id="ticketPriority" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Status</label><select
+                                    id="ticketStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="open">Open</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                </select></div>
+                        </div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Description
+                                *</label><textarea id="ticketDescription" rows="4"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                placeholder="Detailed description of the issue..." required></textarea></div>
+                        <div class="flex gap-3 mt-4"><button type="submit"
+                                class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create
+                                Ticket</button><button type="button" id="cancelTicketBtn"
+                                class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                        </div>
+                    </form>
                 </div>
-
-                <!-- Tickets List -->
-                <div id="ticketsList" class="space-y-4"></div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Create/Edit Ticket Modal -->
-    <div id="ticketModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop" id="modalBackdropTicket"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto relative z-50">
-            <div class="p-6">
-                <h3 id="ticketModalTitle" class="text-xl font-semibold text-gray-800 mb-4">Create New Ticket</h3>
-                <form id="ticketForm">
-                    <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Subject *</label><input type="text" id="ticketSubject" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Brief description of the issue" required></div>
-                    <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Client *</label><select id="ticketClient" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></select></div>
-                    <div class="grid grid-cols-2 gap-4 mb-4"><div><label class="block text-sm font-medium text-gray-700 mb-2">Priority</label><select id="ticketPriority" class="w-full px-4 py-2 border border-gray-300 rounded-lg"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div><div><label class="block text-sm font-medium text-gray-700 mb-2">Status</label><select id="ticketStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg"><option value="open">Open</option><option value="in-progress">In Progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></div></div>
-                    <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Description *</label><textarea id="ticketDescription" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Detailed description of the issue..." required></textarea></div>
-                    <div class="flex gap-3 mt-4"><button type="submit" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create Ticket</button><button type="button" id="cancelTicketBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button></div>
-                </form>
             </div>
         </div>
-    </div>
 
-    <!-- Ticket Details Modal -->
-    <div id="ticketDetailsModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop" id="modalBackdropDetails"></div>
-       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto relative z-50" id="ticketDetailsContent"></div>
-    </div>
+        <!-- Ticket Details Modal -->
+        <div id="ticketDetailsModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdropDetails"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto relative z-50"
+                id="ticketDetailsContent"></div>
+        </div>
 
-    <!-- Add Reply Modal -->
-    <div id="replyModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop" id="modalBackdropReply"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
-            <div class="p-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Add Reply</h3>
-                <textarea id="replyMessage" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4" placeholder="Type your reply..."></textarea>
-                <div class="flex gap-3"><button id="sendReplyBtn" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Send Reply</button><button id="cancelReplyBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button></div>
+        <!-- Add Reply Modal -->
+        <div id="replyModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdropReply"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Add Reply</h3>
+                    <textarea id="replyMessage" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
+                        placeholder="Type your reply..."></textarea>
+                    <div class="flex gap-3"><button id="sendReplyBtn"
+                            class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Send
+                            Reply</button><button id="cancelReplyBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"><div class="p-6 text-center"><div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3><p class="text-gray-500 mb-6">Are you sure you want to logout?</p><div class="flex gap-3"><button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div></div></div>
-    </div>
+        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                            class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                    <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                    <div class="flex gap-3"><button id="confirmLogoutBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button
+                            id="cancelLogoutBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
+                </div>
+            </div>
+        </div>
 
-    <script>
-        // Support Tickets Data
-        let tickets = JSON.parse(localStorage.getItem('supportTickets')) || [
-            { id: 1, ticketNo: "TKT-001", subject: "Login Issue", clientId: 1, clientName: "Creative Studio", priority: "high", status: "open", description: "Unable to login to the dashboard", createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), replies: [] },
-            { id: 2, ticketNo: "TKT-002", subject: "Billing Question", clientId: 2, clientName: "Tech Solutions", priority: "medium", status: "in-progress", description: "Need clarification on recent invoice", createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), replies: [{ id: 1, message: "We're looking into this", sender: "Admin", timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() }] },
-            { id: 3, ticketNo: "TKT-003", subject: "Feature Request", clientId: 1, clientName: "Creative Studio", priority: "low", status: "resolved", description: "Add export functionality to reports", createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), replies: [{ id: 1, message: "Feature added in latest update", sender: "Admin", timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() }] },
-            { id: 4, ticketNo: "TKT-004", subject: "Payment Failed", clientId: 3, clientName: "AppMakers", priority: "high", status: "open", description: "Credit card payment not going through", createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), replies: [] }
-        ];
+        <script>
+            // Support Tickets Data
+            let tickets = JSON.parse(localStorage.getItem('supportTickets')) || [
+                { id: 1, ticketNo: "TKT-001", subject: "Login Issue", clientId: 1, clientName: "Creative Studio", priority: "high", status: "open", description: "Unable to login to the dashboard", createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), replies: [] },
+                { id: 2, ticketNo: "TKT-002", subject: "Billing Question", clientId: 2, clientName: "Tech Solutions", priority: "medium", status: "in-progress", description: "Need clarification on recent invoice", createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), replies: [{ id: 1, message: "We're looking into this", sender: "Admin", timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() }] },
+                { id: 3, ticketNo: "TKT-003", subject: "Feature Request", clientId: 1, clientName: "Creative Studio", priority: "low", status: "resolved", description: "Add export functionality to reports", createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), replies: [{ id: 1, message: "Feature added in latest update", sender: "Admin", timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() }] },
+                { id: 4, ticketNo: "TKT-004", subject: "Payment Failed", clientId: 3, clientName: "AppMakers", priority: "high", status: "open", description: "Credit card payment not going through", createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), replies: [] }
+            ];
 
-        let currentFilter = 'all';
-        let editingId = null;
-        let currentTicketId = null;
+            let currentFilter = 'all';
+            let editingId = null;
+            let currentTicketId = null;
 
-        function saveTickets() { localStorage.setItem('supportTickets', JSON.stringify(tickets)); }
+            function saveTickets() { localStorage.setItem('supportTickets', JSON.stringify(tickets)); }
 
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            toast.innerHTML = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function getStatusClass(status) {
-            const classes = { open: 'status-open', 'in-progress': 'status-in-progress', resolved: 'status-resolved', closed: 'status-closed' };
-            return classes[status] || 'status-open';
-        }
-
-        function getPriorityClass(priority) {
-            const classes = { high: 'priority-high', medium: 'priority-medium', low: 'priority-low' };
-            return classes[priority] || 'priority-medium';
-        }
-
-        function getStatusIcon(status) {
-            const icons = { open: 'fa-circle', 'in-progress': 'fa-spinner', resolved: 'fa-check-circle', closed: 'fa-ban' };
-            return icons[status] || 'fa-circle';
-        }
-
-        function generateTicketNumber() {
-            const lastTicket = tickets[tickets.length - 1];
-            const lastNum = lastTicket ? parseInt(lastTicket.ticketNo.split('-')[1]) : 0;
-            return `TKT-${String(lastNum + 1).padStart(3, '0')}`;
-        }
-
-        function updateTicketStats() {
-            const total = tickets.length;
-            const open = tickets.filter(t => t.status === 'open').length;
-            const inProgress = tickets.filter(t => t.status === 'in-progress').length;
-            const resolved = tickets.filter(t => t.status === 'resolved').length;
-            
-            document.getElementById('totalTickets').textContent = total;
-            document.getElementById('openTickets').textContent = open;
-            document.getElementById('progressTickets').textContent = inProgress;
-            document.getElementById('resolvedTickets').textContent = resolved;
-        }
-
-        function formatTimeAgo(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if(diffMins < 1) return 'Just now';
-            if(diffMins < 60) return `${diffMins} min ago`;
-            if(diffHours < 24) return `${diffHours} hours ago`;
-            return `${diffDays} days ago`;
-        }
-
-        function renderTickets() {
-            let filtered = tickets;
-            if(currentFilter !== 'all') filtered = tickets.filter(t => t.status === currentFilter);
-            
-            const container = document.getElementById('ticketsList');
-            if(filtered.length === 0) {
-                container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500"><i class="fas fa-ticket-alt text-4xl mb-3 text-gray-300"></i><p>No tickets found</p></div>';
-                return;
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+                toast.innerHTML = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
             }
-            container.innerHTML = filtered.map(ticket => `
+
+            function getStatusClass(status) {
+                const classes = { open: 'status-open', 'in-progress': 'status-in-progress', resolved: 'status-resolved', closed: 'status-closed' };
+                return classes[status] || 'status-open';
+            }
+
+            function getPriorityClass(priority) {
+                const classes = { high: 'priority-high', medium: 'priority-medium', low: 'priority-low' };
+                return classes[priority] || 'priority-medium';
+            }
+
+            function getStatusIcon(status) {
+                const icons = { open: 'fa-circle', 'in-progress': 'fa-spinner', resolved: 'fa-check-circle', closed: 'fa-ban' };
+                return icons[status] || 'fa-circle';
+            }
+
+            function generateTicketNumber() {
+                const lastTicket = tickets[tickets.length - 1];
+                const lastNum = lastTicket ? parseInt(lastTicket.ticketNo.split('-')[1]) : 0;
+                return `TKT-${String(lastNum + 1).padStart(3, '0')}`;
+            }
+
+            function updateTicketStats() {
+                const total = tickets.length;
+                const open = tickets.filter(t => t.status === 'open').length;
+                const inProgress = tickets.filter(t => t.status === 'in-progress').length;
+                const resolved = tickets.filter(t => t.status === 'resolved').length;
+
+                document.getElementById('totalTickets').textContent = total;
+                document.getElementById('openTickets').textContent = open;
+                document.getElementById('progressTickets').textContent = inProgress;
+                document.getElementById('resolvedTickets').textContent = resolved;
+            }
+
+            function formatTimeAgo(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+
+                if (diffMins < 1) return 'Just now';
+                if (diffMins < 60) return `${diffMins} min ago`;
+                if (diffHours < 24) return `${diffHours} hours ago`;
+                return `${diffDays} days ago`;
+            }
+
+            function renderTickets() {
+                let filtered = tickets;
+                if (currentFilter !== 'all') filtered = tickets.filter(t => t.status === currentFilter);
+
+                const container = document.getElementById('ticketsList');
+                if (filtered.length === 0) {
+                    container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500"><i class="fas fa-ticket-alt text-4xl mb-3 text-gray-300"></i><p>No tickets found</p></div>';
+                    return;
+                }
+                container.innerHTML = filtered.map(ticket => `
                 <div class="ticket-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100" data-id="${ticket.id}">
                     <div class="flex flex-wrap justify-between items-start gap-4">
                         <div class="flex-1"><div class="flex items-center gap-3 mb-2"><span class="font-mono text-sm text-gray-500">${ticket.ticketNo}</span><span class="px-3 py-1 rounded-full text-xs font-medium ${getPriorityClass(ticket.priority)}"><i class="fas fa-flag mr-1"></i>${ticket.priority.toUpperCase()}</span><span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(ticket.status)}"><i class="fas ${getStatusIcon(ticket.status)} mr-1"></i>${ticket.status.toUpperCase()}</span></div><h3 class="font-semibold text-lg text-gray-800">${ticket.subject}</h3><p class="text-sm text-gray-600 mt-1">${ticket.description.substring(0, 100)}${ticket.description.length > 100 ? '...' : ''}</p><div class="flex items-center gap-4 mt-3"><span class="text-xs text-gray-500"><i class="fas fa-user mr-1"></i>${ticket.clientName}</span><span class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i>${formatTimeAgo(ticket.createdAt)}</span><span class="text-xs text-gray-500"><i class="fas fa-reply mr-1"></i>${ticket.replies?.length || 0} replies</span></div></div>
@@ -232,186 +567,187 @@
                     </div>
                 </div>
             `).join('');
-            
-            document.querySelectorAll('.view-ticket').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); viewTicket(parseInt(btn.dataset.id)); }));
-            document.querySelectorAll('.edit-ticket').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); editTicket(parseInt(btn.dataset.id)); }));
-            document.querySelectorAll('.delete-ticket').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); if(confirm('Delete this ticket?')) { tickets = tickets.filter(t => t.id !== parseInt(btn.dataset.id)); saveTickets(); updateTicketStats(); renderTickets(); showToast('Ticket deleted!', 'info'); } }));
-        }
 
-        function viewTicket(id) {
-            const ticket = tickets.find(t => t.id === id);
-            if(ticket) {
-                const modal = document.getElementById('ticketDetailsModal');
-                const content = document.getElementById('ticketDetailsContent');
-                content.innerHTML = `
+                document.querySelectorAll('.view-ticket').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); viewTicket(parseInt(btn.dataset.id)); }));
+                document.querySelectorAll('.edit-ticket').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); editTicket(parseInt(btn.dataset.id)); }));
+                document.querySelectorAll('.delete-ticket').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); if (confirm('Delete this ticket?')) { tickets = tickets.filter(t => t.id !== parseInt(btn.dataset.id)); saveTickets(); updateTicketStats(); renderTickets(); showToast('Ticket deleted!', 'info'); } }));
+            }
+
+            function viewTicket(id) {
+                const ticket = tickets.find(t => t.id === id);
+                if (ticket) {
+                    const modal = document.getElementById('ticketDetailsModal');
+                    const content = document.getElementById('ticketDetailsContent');
+                    content.innerHTML = `
                     <div class="p-6"><div class="flex justify-between items-start mb-4"><div><h3 class="text-xl font-semibold text-gray-800">${ticket.subject}</h3><p class="text-sm text-gray-500">${ticket.ticketNo}</p></div><div class="flex gap-2"><button class="reply-ticket bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" data-id="${ticket.id}"><i class="fas fa-reply mr-2"></i>Reply</button><button class="close-modal text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button></div></div>
                     <div class="space-y-4 border-t border-gray-100 pt-4"><div class="flex gap-2"><span class="px-3 py-1 rounded-full text-xs font-medium ${getPriorityClass(ticket.priority)}">${ticket.priority.toUpperCase()}</span><span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(ticket.status)}">${ticket.status.toUpperCase()}</span></div><div><p class="text-sm text-gray-600 mb-1">Client:</p><p class="font-medium">${ticket.clientName}</p></div><div><p class="text-sm text-gray-600 mb-1">Description:</p><p class="text-gray-700">${ticket.description}</p></div><div><p class="text-sm text-gray-600 mb-1">Created:</p><p class="text-sm">${new Date(ticket.createdAt).toLocaleString()}</p></div>${ticket.replies && ticket.replies.length > 0 ? `<div><p class="text-sm text-gray-600 mb-2">Replies:</p><div class="space-y-3">${ticket.replies.map(r => `<div class="bg-gray-50 rounded-lg p-3"><div class="flex justify-between items-center mb-1"><span class="font-medium text-sm">${r.sender}</span><span class="text-xs text-gray-400">${new Date(r.timestamp).toLocaleString()}</span></div><p class="text-sm text-gray-700">${r.message}</p></div>`).join('')}</div></div>` : '<div class="text-center text-gray-500 py-4">No replies yet</div>'}</div>
                     <div class="mt-6 flex gap-2"><select id="statusUpdate" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg"><option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open</option><option value="in-progress" ${ticket.status === 'in-progress' ? 'selected' : ''}>In Progress</option><option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved</option><option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>Closed</option></select><button id="updateStatusBtn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600" data-id="${ticket.id}">Update Status</button></div></div>
                 `;
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+
+                    document.querySelector('#ticketDetailsContent .close-modal')?.addEventListener('click', () => { modal.classList.add('hidden'); modal.classList.remove('flex'); });
+                    document.querySelector('#ticketDetailsContent .reply-ticket')?.addEventListener('click', () => { modal.classList.add('hidden'); modal.classList.remove('flex'); showReplyModal(ticket.id); });
+                    document.getElementById('updateStatusBtn')?.addEventListener('click', () => {
+                        const newStatus = document.getElementById('statusUpdate').value;
+                        ticket.status = newStatus;
+                        ticket.updatedAt = new Date().toISOString();
+                        saveTickets();
+                        updateTicketStats();
+                        renderTickets();
+                        viewTicket(ticket.id);
+                        showToast(`Status updated to ${newStatus}`, 'success');
+                        if (window.addActivity) window.addActivity("Admin", "update", "ticket", ticket.ticketNo, `Updated ticket status to ${newStatus}`);
+                    });
+                }
+            }
+
+            function showReplyModal(ticketId) {
+                currentTicketId = ticketId;
+                const modal = document.getElementById('replyModal');
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
-                
-                document.querySelector('#ticketDetailsContent .close-modal')?.addEventListener('click', () => { modal.classList.add('hidden'); modal.classList.remove('flex'); });
-                document.querySelector('#ticketDetailsContent .reply-ticket')?.addEventListener('click', () => { modal.classList.add('hidden'); modal.classList.remove('flex'); showReplyModal(ticket.id); });
-                document.getElementById('updateStatusBtn')?.addEventListener('click', () => {
-                    const newStatus = document.getElementById('statusUpdate').value;
-                    ticket.status = newStatus;
-                    ticket.updatedAt = new Date().toISOString();
-                    saveTickets();
-                    updateTicketStats();
-                    renderTickets();
-                    viewTicket(ticket.id);
-                    showToast(`Status updated to ${newStatus}`, 'success');
-                    if(window.addActivity) window.addActivity("Admin", "update", "ticket", ticket.ticketNo, `Updated ticket status to ${newStatus}`);
+            }
+
+            function editTicket(id) {
+                const ticket = tickets.find(t => t.id === id);
+                if (ticket) {
+                    editingId = id;
+                    document.getElementById('ticketModalTitle').textContent = 'Edit Ticket';
+                    document.getElementById('ticketSubject').value = ticket.subject;
+                    document.getElementById('ticketClient').value = ticket.clientId;
+                    document.getElementById('ticketPriority').value = ticket.priority;
+                    document.getElementById('ticketStatus').value = ticket.status;
+                    document.getElementById('ticketDescription').value = ticket.description;
+                    loadClientsForSelect();
+                    document.getElementById('ticketModal').classList.remove('hidden');
+                    document.getElementById('ticketModal').classList.add('flex');
+                }
+            }
+
+            function loadClientsForSelect() {
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                const select = document.getElementById('ticketClient');
+                select.innerHTML = '<option value="">Select Client</option>' + clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+
+            // Event Listeners
+            function updateFilterButtons(activeId) {
+                ['filterAllTickets', 'filterOpen', 'filterInProgress', 'filterResolved', 'filterClosed'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) { btn.classList.remove('bg-blue-500', 'text-white'); btn.classList.add('bg-gray-200', 'text-gray-700'); }
                 });
+                const activeBtn = document.getElementById(activeId);
+                if (activeBtn) { activeBtn.classList.remove('bg-gray-200', 'text-gray-700'); activeBtn.classList.add('bg-blue-500', 'text-white'); }
             }
-        }
 
-        function showReplyModal(ticketId) {
-            currentTicketId = ticketId;
-            const modal = document.getElementById('replyModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
+            document.getElementById('filterAllTickets')?.addEventListener('click', () => { currentFilter = 'all'; updateFilterButtons('filterAllTickets'); renderTickets(); });
+            document.getElementById('filterOpen')?.addEventListener('click', () => { currentFilter = 'open'; updateFilterButtons('filterOpen'); renderTickets(); });
+            document.getElementById('filterInProgress')?.addEventListener('click', () => { currentFilter = 'in-progress'; updateFilterButtons('filterInProgress'); renderTickets(); });
+            document.getElementById('filterResolved')?.addEventListener('click', () => { currentFilter = 'resolved'; updateFilterButtons('filterResolved'); renderTickets(); });
+            document.getElementById('filterClosed')?.addEventListener('click', () => { currentFilter = 'closed'; updateFilterButtons('filterClosed'); renderTickets(); });
 
-        function editTicket(id) {
-            const ticket = tickets.find(t => t.id === id);
-            if(ticket) {
-                editingId = id;
-                document.getElementById('ticketModalTitle').textContent = 'Edit Ticket';
-                document.getElementById('ticketSubject').value = ticket.subject;
-                document.getElementById('ticketClient').value = ticket.clientId;
-                document.getElementById('ticketPriority').value = ticket.priority;
-                document.getElementById('ticketStatus').value = ticket.status;
-                document.getElementById('ticketDescription').value = ticket.description;
+            const createBtn = document.getElementById('createTicketBtn');
+            const ticketModal = document.getElementById('ticketModal');
+            const modalBackdropTicket = document.getElementById('modalBackdropTicket');
+            const cancelTicketBtn = document.getElementById('cancelTicketBtn');
+
+            createBtn?.addEventListener('click', () => {
+                editingId = null;
+                document.getElementById('ticketModalTitle').textContent = 'Create New Ticket';
+                document.getElementById('ticketForm').reset();
                 loadClientsForSelect();
-                document.getElementById('ticketModal').classList.remove('hidden');
-                document.getElementById('ticketModal').classList.add('flex');
-            }
-        }
-
-        function loadClientsForSelect() {
-            const clients = JSON.parse(localStorage.getItem('clients')) || [];
-            const select = document.getElementById('ticketClient');
-            select.innerHTML = '<option value="">Select Client</option>' + clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
-
-        // Event Listeners
-        function updateFilterButtons(activeId) {
-            ['filterAllTickets', 'filterOpen', 'filterInProgress', 'filterResolved', 'filterClosed'].forEach(id => {
-                const btn = document.getElementById(id);
-                if(btn) { btn.classList.remove('bg-blue-500', 'text-white'); btn.classList.add('bg-gray-200', 'text-gray-700'); }
+                ticketModal.classList.remove('hidden');
+                ticketModal.classList.add('flex');
             });
-            const activeBtn = document.getElementById(activeId);
-            if(activeBtn) { activeBtn.classList.remove('bg-gray-200', 'text-gray-700'); activeBtn.classList.add('bg-blue-500', 'text-white'); }
-        }
+            cancelTicketBtn?.addEventListener('click', () => { ticketModal.classList.add('hidden'); ticketModal.classList.remove('flex'); });
+            modalBackdropTicket?.addEventListener('click', () => { ticketModal.classList.add('hidden'); ticketModal.classList.remove('flex'); });
 
-        document.getElementById('filterAllTickets')?.addEventListener('click', () => { currentFilter = 'all'; updateFilterButtons('filterAllTickets'); renderTickets(); });
-        document.getElementById('filterOpen')?.addEventListener('click', () => { currentFilter = 'open'; updateFilterButtons('filterOpen'); renderTickets(); });
-        document.getElementById('filterInProgress')?.addEventListener('click', () => { currentFilter = 'in-progress'; updateFilterButtons('filterInProgress'); renderTickets(); });
-        document.getElementById('filterResolved')?.addEventListener('click', () => { currentFilter = 'resolved'; updateFilterButtons('filterResolved'); renderTickets(); });
-        document.getElementById('filterClosed')?.addEventListener('click', () => { currentFilter = 'closed'; updateFilterButtons('filterClosed'); renderTickets(); });
-        
-        const createBtn = document.getElementById('createTicketBtn');
-        const ticketModal = document.getElementById('ticketModal');
-        const modalBackdropTicket = document.getElementById('modalBackdropTicket');
-        const cancelTicketBtn = document.getElementById('cancelTicketBtn');
-        
-        createBtn?.addEventListener('click', () => {
-            editingId = null;
-            document.getElementById('ticketModalTitle').textContent = 'Create New Ticket';
-            document.getElementById('ticketForm').reset();
-            loadClientsForSelect();
-            ticketModal.classList.remove('hidden');
-            ticketModal.classList.add('flex');
-        });
-        cancelTicketBtn?.addEventListener('click', () => { ticketModal.classList.add('hidden'); ticketModal.classList.remove('flex'); });
-        modalBackdropTicket?.addEventListener('click', () => { ticketModal.classList.add('hidden'); ticketModal.classList.remove('flex'); });
-        
-        document.getElementById('ticketForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const clientId = parseInt(document.getElementById('ticketClient').value);
-            const clients = JSON.parse(localStorage.getItem('clients')) || [];
-            const client = clients.find(c => c.id === clientId);
-            if(!clientId || !client) { showToast('Please select a client!', 'error'); return; }
-            
-            const ticketData = {
-                id: editingId || Date.now(),
-                ticketNo: editingId ? tickets.find(t => t.id === editingId).ticketNo : generateTicketNumber(),
-                subject: document.getElementById('ticketSubject').value,
-                clientId: clientId,
-                clientName: client.name,
-                priority: document.getElementById('ticketPriority').value,
-                status: document.getElementById('ticketStatus').value,
-                description: document.getElementById('ticketDescription').value,
-                createdAt: editingId ? tickets.find(t => t.id === editingId).createdAt : new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                replies: editingId ? (tickets.find(t => t.id === editingId).replies || []) : []
-            };
-            
-            if(editingId) {
-                const index = tickets.findIndex(t => t.id === editingId);
-                if(index !== -1) tickets[index] = ticketData;
-                showToast('Ticket updated successfully!', 'success');
-                if(window.addActivity) window.addActivity("Admin", "update", "ticket", ticketData.ticketNo, `Updated ticket: ${ticketData.subject}`);
-            } else {
-                tickets.push(ticketData);
-                showToast('Ticket created successfully!', 'success');
-                if(window.addActivity) window.addActivity("Admin", "create", "ticket", ticketData.ticketNo, `Created new ticket: ${ticketData.subject}`);
-            }
-            saveTickets();
+            document.getElementById('ticketForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const clientId = parseInt(document.getElementById('ticketClient').value);
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                const client = clients.find(c => c.id === clientId);
+                if (!clientId || !client) { showToast('Please select a client!', 'error'); return; }
+
+                const ticketData = {
+                    id: editingId || Date.now(),
+                    ticketNo: editingId ? tickets.find(t => t.id === editingId).ticketNo : generateTicketNumber(),
+                    subject: document.getElementById('ticketSubject').value,
+                    clientId: clientId,
+                    clientName: client.name,
+                    priority: document.getElementById('ticketPriority').value,
+                    status: document.getElementById('ticketStatus').value,
+                    description: document.getElementById('ticketDescription').value,
+                    createdAt: editingId ? tickets.find(t => t.id === editingId).createdAt : new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    replies: editingId ? (tickets.find(t => t.id === editingId).replies || []) : []
+                };
+
+                if (editingId) {
+                    const index = tickets.findIndex(t => t.id === editingId);
+                    if (index !== -1) tickets[index] = ticketData;
+                    showToast('Ticket updated successfully!', 'success');
+                    if (window.addActivity) window.addActivity("Admin", "update", "ticket", ticketData.ticketNo, `Updated ticket: ${ticketData.subject}`);
+                } else {
+                    tickets.push(ticketData);
+                    showToast('Ticket created successfully!', 'success');
+                    if (window.addActivity) window.addActivity("Admin", "create", "ticket", ticketData.ticketNo, `Created new ticket: ${ticketData.subject}`);
+                }
+                saveTickets();
+                updateTicketStats();
+                renderTickets();
+                ticketModal.classList.add('hidden');
+                ticketModal.classList.remove('flex');
+                editingId = null;
+            });
+
+            // Reply Modal
+            const replyModal = document.getElementById('replyModal');
+            const modalBackdropReply = document.getElementById('modalBackdropReply');
+            const cancelReplyBtn = document.getElementById('cancelReplyBtn');
+
+            document.getElementById('sendReplyBtn')?.addEventListener('click', () => {
+                const message = document.getElementById('replyMessage').value.trim();
+                if (message && currentTicketId) {
+                    const ticket = tickets.find(t => t.id === currentTicketId);
+                    if (ticket) {
+                        if (!ticket.replies) ticket.replies = [];
+                        ticket.replies.push({
+                            id: Date.now(),
+                            message: message,
+                            sender: "Admin",
+                            timestamp: new Date().toISOString()
+                        });
+                        ticket.updatedAt = new Date().toISOString();
+                        saveTickets();
+                        updateTicketStats();
+                        renderTickets();
+                        replyModal.classList.add('hidden');
+                        replyModal.classList.remove('flex');
+                        document.getElementById('replyMessage').value = '';
+                        showToast('Reply sent!', 'success');
+                        if (window.addActivity) window.addActivity("Admin", "update", "ticket", ticket.ticketNo, `Added reply to ticket`);
+                    }
+                } else {
+                    showToast('Please enter a message!', 'error');
+                }
+            });
+            cancelReplyBtn?.addEventListener('click', () => { replyModal.classList.add('hidden'); replyModal.classList.remove('flex'); document.getElementById('replyMessage').value = ''; });
+            modalBackdropReply?.addEventListener('click', () => { replyModal.classList.add('hidden'); replyModal.classList.remove('flex'); document.getElementById('replyMessage').value = ''; });
+
+            document.getElementById('ticketDetailsModal')?.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('ticketDetailsModal')) {
+                    document.getElementById('ticketDetailsModal').classList.add('hidden');
+                    document.getElementById('ticketDetailsModal').classList.remove('flex');
+                }
+            });
+
             updateTicketStats();
             renderTickets();
-            ticketModal.classList.add('hidden');
-            ticketModal.classList.remove('flex');
-            editingId = null;
-        });
-        
-        // Reply Modal
-        const replyModal = document.getElementById('replyModal');
-        const modalBackdropReply = document.getElementById('modalBackdropReply');
-        const cancelReplyBtn = document.getElementById('cancelReplyBtn');
-        
-        document.getElementById('sendReplyBtn')?.addEventListener('click', () => {
-            const message = document.getElementById('replyMessage').value.trim();
-            if(message && currentTicketId) {
-                const ticket = tickets.find(t => t.id === currentTicketId);
-                if(ticket) {
-                    if(!ticket.replies) ticket.replies = [];
-                    ticket.replies.push({
-                        id: Date.now(),
-                        message: message,
-                        sender: "Admin",
-                        timestamp: new Date().toISOString()
-                    });
-                    ticket.updatedAt = new Date().toISOString();
-                    saveTickets();
-                    updateTicketStats();
-                    renderTickets();
-                    replyModal.classList.add('hidden');
-                    replyModal.classList.remove('flex');
-                    document.getElementById('replyMessage').value = '';
-                    showToast('Reply sent!', 'success');
-                    if(window.addActivity) window.addActivity("Admin", "update", "ticket", ticket.ticketNo, `Added reply to ticket`);
-                }
-            } else {
-                showToast('Please enter a message!', 'error');
-            }
-        });
-        cancelReplyBtn?.addEventListener('click', () => { replyModal.classList.add('hidden'); replyModal.classList.remove('flex'); document.getElementById('replyMessage').value = ''; });
-        modalBackdropReply?.addEventListener('click', () => { replyModal.classList.add('hidden'); replyModal.classList.remove('flex'); document.getElementById('replyMessage').value = ''; });
-        
-        document.getElementById('ticketDetailsModal')?.addEventListener('click', (e) => {
-            if(e.target === document.getElementById('ticketDetailsModal')) {
-                document.getElementById('ticketDetailsModal').classList.add('hidden');
-                document.getElementById('ticketDetailsModal').classList.remove('flex');
-            }
-        });
-        
-        updateTicketStats();
-        renderTickets();
-        document.getElementById('filterAllTickets').classList.add('bg-blue-500', 'text-white');
-    </script>
-    <script src="main.js"></script>
-</body>
+            document.getElementById('filterAllTickets').classList.add('bg-blue-500', 'text-white');
+        </script>
+        <script src="main.js"></script>
+    </body>
+
 </html>

@@ -1,172 +1,491 @@
 <!doctype html>
 <html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agency Dashboard | Invoices</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-        .menu-item.active i { color: white; }
-        .dropdown-menu { animation: slideDown 0.2s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
-        .sidebar { transition: width 0.3s ease-in-out, transform 0.3s ease-in-out; }
-        .lg\:w-20 { width: 5rem; }
-        .lg\:w-72 { width: 18rem; }
-        .status-paid { background: #dcfce7; color: #166534; }
-        .status-pending { background: #fef9c3; color: #854d0e; }
-        .status-overdue { background: #fee2e2; color: #991b1b; }
-        .invoice-card { transition: all 0.2s ease; }
-        .invoice-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-    </style>
-</head>
-<body class="bg-gray-50 font-sans antialiased">
-    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i class="fas fa-bars"></i></button>
-    <div class="flex h-screen overflow-hidden">
-        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                <a href="index.html" class="flex items-center space-x-3"><div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-white text-xl"></i></div><div class="logo-text"><h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1><p class="text-xs text-gray-400">Professional Agency Suite</p></div></a>
-                <button id="collapseSidebarBtn" class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300" id="collapseIcon"></i></button>
-            </div>
-            <nav class="flex-1 px-4 py-4 space-y-6">
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Main</p></div><div class="space-y-1"><a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Dashboard</div></a><a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Analytics</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Management</p></div><div class="space-y-1"><div class="relative"><button id="projectsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span class="font-medium">Projects</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="projectsDropdownIcon"></i></button><div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a href="active-projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-play-circle w-4"></i><span class="text-sm">Active Projects</span></a></div></div><div class="relative"><button id="tasksMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span class="font-medium">Tasks</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="tasksDropdownIcon"></i></button><div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-check-square w-4"></i><span class="text-sm">To-Do List</span></a><a href="kanban.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-columns w-4"></i><span class="text-sm">Kanban Board</span></a><a href="calendar.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-calendar-alt w-4"></i><span class="text-sm">Calendar</span></a></div></div><div class="relative"><button id="clientsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span class="font-medium">Clients</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="clientsDropdownIcon"></i></button><div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="clients.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a href="add-client.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-user-plus w-4"></i><span class="text-sm">Add Client</span></a><a href="client-messages.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a href="client-assets.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div></div></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Finance</p></div><div class="space-y-1"><a href="invoices.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Invoices</div></a><a href="payments.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Payments</div></a><a href="subscriptions.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Subscriptions</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Resources</p></div><div class="space-y-1"><a href="file-manager.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File Manager</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">File Manager</div></a><a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Reports</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">System</p></div><div class="space-y-1"><div class="relative"><button id="teamMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="teamDropdownIcon"></i></button><div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="team-members.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a href="activities.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-history w-4"></i><span class="text-sm">Activity Logs</span></a></div></div><a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cog w-5"></i><span class="font-medium">Settings</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Settings</div></a><a href="support-tickets.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Support Tickets</div></a></div></div>
-            </nav>
-            <div class="p-4 border-t border-gray-100"><div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</div><div class="user-info-text"><p class="text-sm font-semibold text-gray-700">Alex Johnson</p><p class="text-xs text-gray-400">Admin</p></div></div><button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Logout</div></button><p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p></div>
-        </aside>
 
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-semibold text-gray-800">Invoices</h2>
-                    <div class="relative">
-                        <button id="profileDropdownBtn" class="flex items-center space-x-3">
-                            <span class="text-right hidden sm:block"><span class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span class="block text-xs text-gray-400">Admin</span></span>
-                            <span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
-                            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i>
-                        </button>
-                        <div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
-                            <div class="p-3 border-b border-gray-100"><p class="font-semibold text-gray-800">Alex Johnson</p><p class="text-sm text-gray-500">alex@agency.com</p></div>
-                            <div class="py-2"><a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-cog w-5"></i><span>Settings</span></a></div>
-                            <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Agency Dashboard | Invoices</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .menu-item.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+            }
+
+            .menu-item.active i {
+                color: white;
+            }
+
+            .dropdown-menu {
+                animation: slideDown 0.2s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+            }
+
+            .sidebar {
+                transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            }
+
+            .lg\:w-20 {
+                width: 5rem;
+            }
+
+            .lg\:w-72 {
+                width: 18rem;
+            }
+
+            .status-paid {
+                background: #dcfce7;
+                color: #166534;
+            }
+
+            .status-pending {
+                background: #fef9c3;
+                color: #854d0e;
+            }
+
+            .status-overdue {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .invoice-card {
+                transition: all 0.2s ease;
+            }
+
+            .invoice-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 font-sans antialiased">
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i
+                class="fas fa-bars"></i></button>
+        <div class="flex h-screen overflow-hidden">
+            <aside id="sidebar"
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <a href="index.html" class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i></div>
+                        <div class="logo-text">
+                            <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
+                            </h1>
+                            <p class="text-xs text-gray-400">Professional Agency Suite</p>
+                        </div>
+                    </a>
+                    <button id="collapseSidebarBtn"
+                        class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i
+                            class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+                            id="collapseIcon"></i></button>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-6">
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
+                        </div>
+                        <div class="space-y-1"><a href="dashboard.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Dashboard</div>
+                            </a><a href="analytics.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Analytics</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Management</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="projectsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span
+                                            class="font-medium">Projects</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="projectsDropdownIcon"></i>
+                                </button>
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a
+                                        href="active-projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-play-circle w-4"></i><span class="text-sm">Active
+                                            Projects</span></a></div>
+                            </div>
+                            <div class="relative"><button id="tasksMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span
+                                            class="font-medium">Tasks</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="tasksDropdownIcon"></i>
+                                </button>
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-check-square w-4"></i><span class="text-sm">To-Do
+                                            List</span></a><a href="kanban.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-columns w-4"></i><span class="text-sm">Kanban
+                                            Board</span></a><a href="calendar.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-calendar-alt w-4"></i><span
+                                            class="text-sm">Calendar</span></a></div>
+                            </div>
+                            <div class="relative"><button id="clientsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span
+                                            class="font-medium">Clients</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="clientsDropdownIcon"></i>
+                                </button>
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="clients.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a
+                                        href="add-client.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-user-plus w-4"></i><span class="text-sm">Add
+                                            Client</span></a><a href="client-messages.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a
+                                        href="client-assets.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </header>
-
-            <div class="p-6">
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500"><div><p class="text-gray-500 text-sm">Total Invoices</p><p class="text-3xl font-bold text-gray-800 mt-2" id="totalInvoices">0</p></div></div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500"><div><p class="text-gray-500 text-sm">Paid</p><p class="text-3xl font-bold text-green-600 mt-2" id="paidAmount">$0</p></div></div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500"><div><p class="text-gray-500 text-sm">Pending</p><p class="text-3xl font-bold text-yellow-600 mt-2" id="pendingAmount">$0</p></div></div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-red-500"><div><p class="text-gray-500 text-sm">Overdue</p><p class="text-3xl font-bold text-red-600 mt-2" id="overdueAmount">$0</p></div></div>
-                </div>
-
-                <!-- Filters and Actions -->
-                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-                    <div class="flex gap-2">
-                        <button id="filterAll" class="px-4 py-2 rounded-lg bg-blue-500 text-white">All</button>
-                        <button id="filterPaid" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Paid</button>
-                        <button id="filterPending" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Pending</button>
-                        <button id="filterOverdue" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Overdue</button>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Finance</p>
+                        </div>
+                        <div class="space-y-1"><a href="invoices.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Invoices</div>
+                            </a><a href="payments.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Payments</div>
+                            </a><a href="subscriptions.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Subscriptions</div>
+                            </a></div>
                     </div>
-                    <button id="createInvoiceBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus mr-2"></i>Create Invoice</button>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Resources</p>
+                        </div>
+                        <div class="space-y-1"><a href="file-manager.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File
+                                    Manager</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    File Manager</div>
+                            </a><a href="reports.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Reports</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">System</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="teamMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i
+                                            class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span>
+                                    </div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="teamDropdownIcon"></i>
+                                </button>
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="team-members.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a
+                                        href="activities.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-history w-4"></i><span class="text-sm">Activity
+                                            Logs</span></a></div>
+                            </div><a href="settings.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Settings</div>
+                            </a><a href="support-tickets.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Support Tickets</div>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="p-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                            AJ</div>
+                        <div class="user-info-text">
+                            <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+                            <p class="text-xs text-gray-400">Admin</p>
+                        </div>
+                    </div><button id="sidebarLogoutBtn"
+                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i
+                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span>
+                        <div
+                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                            Logout</div>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
                 </div>
+            </aside>
 
-                <!-- Invoices List -->
-                <div id="invoicesList" class="space-y-4"></div>
-            </div>
-        </main>
-    </div>
+            <main class="flex-1 overflow-y-auto">
+                <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-semibold text-gray-800">Invoices</h2>
+                        <div class="relative">
+                            <button id="profileDropdownBtn" class="flex items-center space-x-3">
+                                <span class="text-right hidden sm:block"><span
+                                        class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span
+                                        class="block text-xs text-gray-400">Admin</span></span>
+                                <span
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    id="dropdownIcon"></i>
+                            </button>
+                            <div id="profileDropdown"
+                                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                                <div class="p-3 border-b border-gray-100">
+                                    <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                    <p class="text-sm text-gray-500">alex@agency.com</p>
+                                </div>
+                                <div class="py-2"><a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-cog w-5"></i><span>Settings</span></a></div>
+                                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
+                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
 
-    <!-- Create Invoice Modal -->
-    <div id="invoiceModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop z-40" id="modalBackdropInvoice"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto relative z-50">
-            <div class="p-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Create New Invoice</h3>
-                <form id="createInvoiceForm">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div><label class="block text-sm font-medium text-gray-700 mb-2">Client *</label><select id="invoiceClient" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></select></div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-2">Invoice Number</label><input type="text" id="invoiceNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly></div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-2">Issue Date *</label><input type="date" id="issueDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-2">Due Date *</label><input type="date" id="dueDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></div>
+                <div class="p-6">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
+                            <div>
+                                <p class="text-gray-500 text-sm">Total Invoices</p>
+                                <p class="text-3xl font-bold text-gray-800 mt-2" id="totalInvoices">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+                            <div>
+                                <p class="text-gray-500 text-sm">Paid</p>
+                                <p class="text-3xl font-bold text-green-600 mt-2" id="paidAmount">$0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
+                            <div>
+                                <p class="text-gray-500 text-sm">Pending</p>
+                                <p class="text-3xl font-bold text-yellow-600 mt-2" id="pendingAmount">$0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-red-500">
+                            <div>
+                                <p class="text-gray-500 text-sm">Overdue</p>
+                                <p class="text-3xl font-bold text-red-600 mt-2" id="overdueAmount">$0</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Description</label><textarea id="invoiceDesc" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Project details or service description"></textarea></div>
-                    <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Amount *</label><input type="number" id="invoiceAmount" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="0.00" required></div>
-                    <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-                        <button type="submit" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create Invoice</button>
-                        <button type="button" id="cancelInvoiceBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+
+                    <!-- Filters and Actions -->
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                        <div class="flex gap-2">
+                            <button id="filterAll" class="px-4 py-2 rounded-lg bg-blue-500 text-white">All</button>
+                            <button id="filterPaid"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Paid</button>
+                            <button id="filterPending"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Pending</button>
+                            <button id="filterOverdue"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Overdue</button>
+                        </div>
+                        <button id="createInvoiceBtn"
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i
+                                class="fas fa-plus mr-2"></i>Create Invoice</button>
                     </div>
-                </form>
+
+                    <!-- Invoices List -->
+                    <div id="invoicesList" class="space-y-4"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Create Invoice Modal -->
+        <div id="invoiceModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop z-40" id="modalBackdropInvoice"></div>
+            <div
+                class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto relative z-50">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Create New Invoice</h3>
+                    <form id="createInvoiceForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Client *</label><select
+                                    id="invoiceClient" class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                    required></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Invoice
+                                    Number</label><input type="text" id="invoiceNumber"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly>
+                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Issue Date *</label><input
+                                    type="date" id="issueDate"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Due Date *</label><input
+                                    type="date" id="dueDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                    required></div>
+                        </div>
+                        <div class="mb-4"><label
+                                class="block text-sm font-medium text-gray-700 mb-2">Description</label><textarea
+                                id="invoiceDesc" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                placeholder="Project details or service description"></textarea></div>
+                        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Amount
+                                *</label><input type="number" id="invoiceAmount"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="0.00" required>
+                        </div>
+                        <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+                            <button type="submit"
+                                class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create
+                                Invoice</button>
+                            <button type="button" id="cancelInvoiceBtn"
+                                class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- View Invoice Modal -->
-    <div id="viewInvoiceModal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop z-40" id="modalBackdropView"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto relative z-50" id="invoicePreview">
-    </div>
+        <!-- View Invoice Modal -->
+        <div id="viewInvoiceModal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop z-40" id="modalBackdropView"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto relative z-50"
+                id="invoicePreview">
+            </div>
 
-    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"><div class="p-6 text-center"><div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3><p class="text-gray-500 mb-6">Are you sure you want to logout?</p><div class="flex gap-3"><button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div></div></div>
-    </div>
+            <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+                <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                    <div class="p-6 text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                                class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                        <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                        <div class="flex gap-3"><button id="confirmLogoutBtn"
+                                class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button
+                                id="cancelLogoutBtn"
+                                class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
+                    </div>
+                </div>
+            </div>
 
-    <script>
-        // Invoices Data
-        let invoices = JSON.parse(localStorage.getItem('invoices')) || [
-            { id: 1, clientId: 1, clientName: "Creative Studio", invoiceNo: "INV-001", amount: 2500, status: "paid", issueDate: "2024-02-01", dueDate: "2024-02-15", description: "Brand Identity Design" },
-            { id: 2, clientId: 2, clientName: "Tech Solutions", invoiceNo: "INV-002", amount: 3800, status: "pending", issueDate: "2024-02-10", dueDate: "2024-02-25", description: "Website Development" },
-            { id: 3, clientId: 3, clientName: "AppMakers", invoiceNo: "INV-003", amount: 1500, status: "overdue", issueDate: "2024-01-15", dueDate: "2024-01-30", description: "Mobile App UI Design" },
-            { id: 4, clientId: 1, clientName: "Creative Studio", invoiceNo: "INV-004", amount: 1200, status: "paid", issueDate: "2024-02-20", dueDate: "2024-03-05", description: "Social Media Kit" }
-        ];
+            <script>
+                // Invoices Data
+                let invoices = JSON.parse(localStorage.getItem('invoices')) || [
+                    { id: 1, clientId: 1, clientName: "Creative Studio", invoiceNo: "INV-001", amount: 2500, status: "paid", issueDate: "2024-02-01", dueDate: "2024-02-15", description: "Brand Identity Design" },
+                    { id: 2, clientId: 2, clientName: "Tech Solutions", invoiceNo: "INV-002", amount: 3800, status: "pending", issueDate: "2024-02-10", dueDate: "2024-02-25", description: "Website Development" },
+                    { id: 3, clientId: 3, clientName: "AppMakers", invoiceNo: "INV-003", amount: 1500, status: "overdue", issueDate: "2024-01-15", dueDate: "2024-01-30", description: "Mobile App UI Design" },
+                    { id: 4, clientId: 1, clientName: "Creative Studio", invoiceNo: "INV-004", amount: 1200, status: "paid", issueDate: "2024-02-20", dueDate: "2024-03-05", description: "Social Media Kit" }
+                ];
 
-        let currentFilter = 'all';
+                let currentFilter = 'all';
 
-        function saveInvoices() { localStorage.setItem('invoices', JSON.stringify(invoices)); }
+                function saveInvoices() { localStorage.setItem('invoices', JSON.stringify(invoices)); }
 
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            toast.innerHTML = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
+                function showToast(message, type = 'success') {
+                    const toast = document.createElement('div');
+                    toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+                    toast.innerHTML = message;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                }
 
-        function updateStats() {
-            const total = invoices.length;
-            const paid = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0);
-            const pending = invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.amount, 0);
-            const overdue = invoices.filter(i => i.status === 'overdue').reduce((sum, i) => sum + i.amount, 0);
-            document.getElementById('totalInvoices').textContent = total;
-            document.getElementById('paidAmount').textContent = `$${paid.toLocaleString()}`;
-            document.getElementById('pendingAmount').textContent = `$${pending.toLocaleString()}`;
-            document.getElementById('overdueAmount').textContent = `$${overdue.toLocaleString()}`;
-        }
+                function updateStats() {
+                    const total = invoices.length;
+                    const paid = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0);
+                    const pending = invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.amount, 0);
+                    const overdue = invoices.filter(i => i.status === 'overdue').reduce((sum, i) => sum + i.amount, 0);
+                    document.getElementById('totalInvoices').textContent = total;
+                    document.getElementById('paidAmount').textContent = `$${paid.toLocaleString()}`;
+                    document.getElementById('pendingAmount').textContent = `$${pending.toLocaleString()}`;
+                    document.getElementById('overdueAmount').textContent = `$${overdue.toLocaleString()}`;
+                }
 
-        function renderInvoices() {
-            let filtered = invoices;
-            if(currentFilter === 'paid') filtered = invoices.filter(i => i.status === 'paid');
-            else if(currentFilter === 'pending') filtered = invoices.filter(i => i.status === 'pending');
-            else if(currentFilter === 'overdue') filtered = invoices.filter(i => i.status === 'overdue');
-            
-            const container = document.getElementById('invoicesList');
-            if(filtered.length === 0) {
-                container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500">No invoices found</div>';
-                return;
-            }
-            container.innerHTML = filtered.map(inv => `
+                function renderInvoices() {
+                    let filtered = invoices;
+                    if (currentFilter === 'paid') filtered = invoices.filter(i => i.status === 'paid');
+                    else if (currentFilter === 'pending') filtered = invoices.filter(i => i.status === 'pending');
+                    else if (currentFilter === 'overdue') filtered = invoices.filter(i => i.status === 'overdue');
+
+                    const container = document.getElementById('invoicesList');
+                    if (filtered.length === 0) {
+                        container.innerHTML = '<div class="bg-white rounded-2xl p-12 text-center text-gray-500">No invoices found</div>';
+                        return;
+                    }
+                    container.innerHTML = filtered.map(inv => `
                 <div class="invoice-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
                     <div class="flex flex-wrap justify-between items-start gap-4">
                         <div><div class="flex items-center space-x-3 mb-2"><span class="text-lg font-bold text-gray-800">${inv.invoiceNo}</span><span class="px-3 py-1 rounded-full text-xs font-medium status-${inv.status}">${inv.status.toUpperCase()}</span></div><p class="text-gray-600">${inv.clientName}</p><p class="text-sm text-gray-400 mt-1">${inv.description || 'No description'}</p></div>
@@ -175,88 +494,89 @@
                     </div>
                 </div>
             `).join('');
-            
-            document.querySelectorAll('.view-invoice').forEach(btn => btn.addEventListener('click', () => viewInvoice(parseInt(btn.dataset.id))));
-            document.querySelectorAll('.mark-paid').forEach(btn => btn.addEventListener('click', () => { const inv = invoices.find(i => i.id === parseInt(btn.dataset.id)); if(inv) { inv.status = 'paid'; saveInvoices(); updateStats(); renderInvoices(); showToast('Invoice marked as paid!', 'success'); } }));
-            document.querySelectorAll('.delete-invoice').forEach(btn => btn.addEventListener('click', () => { if(confirm('Delete this invoice?')) { invoices = invoices.filter(i => i.id !== parseInt(btn.dataset.id)); saveInvoices(); updateStats(); renderInvoices(); showToast('Invoice deleted!', 'info'); } }));
-        }
 
-        function viewInvoice(id) {
-            const inv = invoices.find(i => i.id === id);
-            if(inv) {
-                const modal = document.getElementById('viewInvoiceModal');
-                const preview = document.getElementById('invoicePreview');
-                preview.innerHTML = `
+                    document.querySelectorAll('.view-invoice').forEach(btn => btn.addEventListener('click', () => viewInvoice(parseInt(btn.dataset.id))));
+                    document.querySelectorAll('.mark-paid').forEach(btn => btn.addEventListener('click', () => { const inv = invoices.find(i => i.id === parseInt(btn.dataset.id)); if (inv) { inv.status = 'paid'; saveInvoices(); updateStats(); renderInvoices(); showToast('Invoice marked as paid!', 'success'); } }));
+                    document.querySelectorAll('.delete-invoice').forEach(btn => btn.addEventListener('click', () => { if (confirm('Delete this invoice?')) { invoices = invoices.filter(i => i.id !== parseInt(btn.dataset.id)); saveInvoices(); updateStats(); renderInvoices(); showToast('Invoice deleted!', 'info'); } }));
+                }
+
+                function viewInvoice(id) {
+                    const inv = invoices.find(i => i.id === id);
+                    if (inv) {
+                        const modal = document.getElementById('viewInvoiceModal');
+                        const preview = document.getElementById('invoicePreview');
+                        preview.innerHTML = `
                     <div class="p-8"><div class="text-center mb-6"><div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fas fa-file-invoice text-blue-600 text-2xl"></i></div><h2 class="text-2xl font-bold text-gray-800">INVOICE</h2><p class="text-gray-500">${inv.invoiceNo}</p></div>
                     <div class="grid grid-cols-2 gap-4 mb-6 pb-4 border-b"><div><p class="text-sm text-gray-500">Bill To:</p><p class="font-semibold">${inv.clientName}</p></div><div class="text-right"><p class="text-sm text-gray-500">Issue Date:</p><p class="font-semibold">${new Date(inv.issueDate).toLocaleDateString()}</p><p class="text-sm text-gray-500 mt-2">Due Date:</p><p class="font-semibold">${new Date(inv.dueDate).toLocaleDateString()}</p></div></div>
                     <div class="mb-6"><p class="text-sm text-gray-500 mb-2">Description:</p><p class="text-gray-700">${inv.description || 'No description provided'}</p></div>
                     <div class="bg-gray-50 rounded-lg p-4"><div class="flex justify-between items-center"><span class="font-semibold">Total Amount:</span><span class="text-2xl font-bold text-blue-600">$${inv.amount.toLocaleString()}</span></div></div>
                     <div class="mt-6 text-center"><button onclick="window.print()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"><i class="fas fa-print mr-2"></i>Print Invoice</button></div></div>
                 `;
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                    }
+                }
 
-        function loadClientsForSelect() {
-            const clients = JSON.parse(localStorage.getItem('clients')) || [];
-            const select = document.getElementById('invoiceClient');
-            select.innerHTML = '<option value="">Select Client</option>' + clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-        }
+                function loadClientsForSelect() {
+                    const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                    const select = document.getElementById('invoiceClient');
+                    select.innerHTML = '<option value="">Select Client</option>' + clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                }
 
-        function generateInvoiceNumber() {
-            const lastInv = invoices[invoices.length - 1];
-            const lastNum = lastInv ? parseInt(lastInv.invoiceNo.split('-')[1]) : 0;
-            return `INV-${String(lastNum + 1).padStart(3, '0')}`;
-        }
+                function generateInvoiceNumber() {
+                    const lastInv = invoices[invoices.length - 1];
+                    const lastNum = lastInv ? parseInt(lastInv.invoiceNo.split('-')[1]) : 0;
+                    return `INV-${String(lastNum + 1).padStart(3, '0')}`;
+                }
 
-        // Event Listeners
-        document.getElementById('filterAll')?.addEventListener('click', () => { currentFilter = 'all'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterAll').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
-        document.getElementById('filterPaid')?.addEventListener('click', () => { currentFilter = 'paid'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterPaid').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
-        document.getElementById('filterPending')?.addEventListener('click', () => { currentFilter = 'pending'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterPending').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
-        document.getElementById('filterOverdue')?.addEventListener('click', () => { currentFilter = 'overdue'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterOverdue').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
-        
-        const createBtn = document.getElementById('createInvoiceBtn');
-        const invoiceModal = document.getElementById('invoiceModal');
-        const modalBackdropInvoice = document.getElementById('modalBackdropInvoice');
-        const cancelInvoiceBtn = document.getElementById('cancelInvoiceBtn');
-        
-        createBtn?.addEventListener('click', () => { loadClientsForSelect(); document.getElementById('invoiceNumber').value = generateInvoiceNumber(); document.getElementById('issueDate').value = new Date().toISOString().split('T')[0]; invoiceModal.classList.remove('hidden'); invoiceModal.classList.add('flex'); });
-        cancelInvoiceBtn?.addEventListener('click', () => { invoiceModal.classList.add('hidden'); invoiceModal.classList.remove('flex'); });
-        modalBackdropInvoice?.addEventListener('click', () => { invoiceModal.classList.add('hidden'); invoiceModal.classList.remove('flex'); });
-        
-        document.getElementById('createInvoiceForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const clientId = parseInt(document.getElementById('invoiceClient').value);
-            const clients = JSON.parse(localStorage.getItem('clients')) || [];
-            const client = clients.find(c => c.id === clientId);
-            if(!clientId || !client) { showToast('Please select a client!', 'error'); return; }
-            const newInvoice = {
-                id: Date.now(),
-                clientId: clientId,
-                clientName: client.name,
-                invoiceNo: document.getElementById('invoiceNumber').value,
-                amount: parseFloat(document.getElementById('invoiceAmount').value),
-                status: 'pending',
-                issueDate: document.getElementById('issueDate').value,
-                dueDate: document.getElementById('dueDate').value,
-                description: document.getElementById('invoiceDesc').value
-            };
-            invoices.push(newInvoice);
-            saveInvoices();
-            updateStats();
-            renderInvoices();
-            invoiceModal.classList.add('hidden');
-            invoiceModal.classList.remove('flex');
-            showToast('Invoice created successfully!', 'success');
-        });
-        
-        document.getElementById('viewInvoiceModal')?.addEventListener('click', (e) => { if(e.target === document.getElementById('viewInvoiceModal')) { document.getElementById('viewInvoiceModal').classList.add('hidden'); document.getElementById('viewInvoiceModal').classList.remove('flex'); } });
-        
-        updateStats();
-        renderInvoices();
-        document.getElementById('filterAll').classList.add('bg-blue-500', 'text-white');
-    </script>
-    <script src="main.js"></script>
-</body>
+                // Event Listeners
+                document.getElementById('filterAll')?.addEventListener('click', () => { currentFilter = 'all'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterAll').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
+                document.getElementById('filterPaid')?.addEventListener('click', () => { currentFilter = 'paid'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterPaid').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
+                document.getElementById('filterPending')?.addEventListener('click', () => { currentFilter = 'pending'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterPending').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
+                document.getElementById('filterOverdue')?.addEventListener('click', () => { currentFilter = 'overdue'; document.querySelectorAll('[id^="filter"]').forEach(btn => btn.classList.remove('bg-blue-500', 'text-white')); document.getElementById('filterOverdue').classList.add('bg-blue-500', 'text-white'); renderInvoices(); });
+
+                const createBtn = document.getElementById('createInvoiceBtn');
+                const invoiceModal = document.getElementById('invoiceModal');
+                const modalBackdropInvoice = document.getElementById('modalBackdropInvoice');
+                const cancelInvoiceBtn = document.getElementById('cancelInvoiceBtn');
+
+                createBtn?.addEventListener('click', () => { loadClientsForSelect(); document.getElementById('invoiceNumber').value = generateInvoiceNumber(); document.getElementById('issueDate').value = new Date().toISOString().split('T')[0]; invoiceModal.classList.remove('hidden'); invoiceModal.classList.add('flex'); });
+                cancelInvoiceBtn?.addEventListener('click', () => { invoiceModal.classList.add('hidden'); invoiceModal.classList.remove('flex'); });
+                modalBackdropInvoice?.addEventListener('click', () => { invoiceModal.classList.add('hidden'); invoiceModal.classList.remove('flex'); });
+
+                document.getElementById('createInvoiceForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const clientId = parseInt(document.getElementById('invoiceClient').value);
+                    const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                    const client = clients.find(c => c.id === clientId);
+                    if (!clientId || !client) { showToast('Please select a client!', 'error'); return; }
+                    const newInvoice = {
+                        id: Date.now(),
+                        clientId: clientId,
+                        clientName: client.name,
+                        invoiceNo: document.getElementById('invoiceNumber').value,
+                        amount: parseFloat(document.getElementById('invoiceAmount').value),
+                        status: 'pending',
+                        issueDate: document.getElementById('issueDate').value,
+                        dueDate: document.getElementById('dueDate').value,
+                        description: document.getElementById('invoiceDesc').value
+                    };
+                    invoices.push(newInvoice);
+                    saveInvoices();
+                    updateStats();
+                    renderInvoices();
+                    invoiceModal.classList.add('hidden');
+                    invoiceModal.classList.remove('flex');
+                    showToast('Invoice created successfully!', 'success');
+                });
+
+                document.getElementById('viewInvoiceModal')?.addEventListener('click', (e) => { if (e.target === document.getElementById('viewInvoiceModal')) { document.getElementById('viewInvoiceModal').classList.add('hidden'); document.getElementById('viewInvoiceModal').classList.remove('flex'); } });
+
+                updateStats();
+                renderInvoices();
+                document.getElementById('filterAll').classList.add('bg-blue-500', 'text-white');
+            </script>
+            <script src="main.js"></script>
+    </body>
+
 </html>

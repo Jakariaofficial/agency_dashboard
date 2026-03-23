@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Agency Dashboard | Client Assets</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .menu-item.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+            }
+
+            .menu-item.active i {
+                color: white;
+            }
+
+            .dropdown-menu {
+                animation: slideDown 0.2s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+            }
+
+            .toast-message {
+                animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+            }
+
+            .asset-card {
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
+
+            .asset-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
+            }
+
+            .folder-item {
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
+
+            .folder-item:hover {
+                background: #eff6ff;
+                transform: translateX(4px);
+            }
+
+            .upload-area {
+                border: 2px dashed #cbd5e1;
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
+
+            .upload-area.drag-over {
+                border-color: #3b82f6;
+                background: #eff6ff;
+            }
+
+            /* Modal Styles */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 9998;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-overlay.flex-modal {
+                display: flex !important;
+            }
+
+            .modal-overlay.hidden-modal {
+                display: none !important;
+            }
+
+            .modal-container {
+                position: relative;
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                z-index: 9999;
+                width: 90%;
+                max-width: 500px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 font-sans antialiased">
+
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg">
+            <i class="fas fa-bars text-gray-700 text-xl"></i>
+        </button>
+
+        <div class="flex h-screen overflow-hidden">
+            <!-- Sidebar -->
+            <aside id="sidebar"
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <a href="index.html" class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <div class="logo-text">
+                            <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
+                            </h1>
+                            <p class="text-xs text-gray-400">Professional Agency Suite</p>
+                        </div>
+                    </a>
+                    <button id="collapseSidebarBtn"
+                        class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200">
+                        <i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+                            id="collapseIcon"></i>
+                    </button>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-6">
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
+                        </div>
+                        <div class="space-y-1"><a href="dashboard.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span></a>
+                            <a href="analytics.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span></a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Management</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="projectsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span
+                                            class="font-medium">Projects</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs" id="projectsDropdownIcon"></i>
+                                </button>
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a
+                                        href="active-projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-play-circle w-4"></i><span class="text-sm">Active
+                                            Projects</span></a></div>
+                            </div>
+                            <div class="relative"><button id="tasksMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span
+                                            class="font-medium">Tasks</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs" id="tasksDropdownIcon"></i>
+                                </button>
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-check-square w-4"></i><span class="text-sm">To-Do
+                                            List</span></a><a href="kanban.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-columns w-4"></i><span class="text-sm">Kanban
+                                            Board</span></a><a href="calendar.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-calendar-alt w-4"></i><span
+                                            class="text-sm">Calendar</span></a></div>
+                            </div>
+                            <div class="relative"><button id="clientsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span
+                                            class="font-medium">Clients</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs" id="clientsDropdownIcon"></i>
+                                </button>
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="clients.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a
+                                        href="add-client.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-user-plus w-4"></i><span class="text-sm">Add
+                                            Client</span></a><a href="client-messages.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a
+                                        href="client-assets.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Finance</p>
+                        </div>
+                        <div class="space-y-1"><a href="invoices.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-file-invoice-dollar w-5"></i><span
+                                    class="font-medium">Invoices</span></a>
+                            <a href="payments.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span></a>
+                            <a href="subscriptions.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span></a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Resources</p>
+                        </div>
+                        <div class="space-y-1"><a href="file-manager.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File
+                                    Manager</span></a>
+                            <a href="reports.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span></a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">System</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="teamMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i
+                                            class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span>
+                                    </div><i class="fas fa-chevron-down text-gray-400 text-xs"
+                                        id="teamDropdownIcon"></i>
+                                </button>
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="team-members.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a
+                                        href="activities.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-history w-4"></i><span class="text-sm">Activity
+                                            Logs</span></a></div>
+                            </div>
+                            <a href="settings.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span></a>
+                            <a href="support-tickets.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
+                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support
+                                    Tickets</span></a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="p-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-3 mb-4 px-2">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                            AJ</div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+                            <p class="text-xs text-gray-400">Admin</p>
+                        </div>
+                    </div>
+                    <button id="sidebarLogoutBtn"
+                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition"><i
+                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span></button>
+                    <p class="text-xs text-gray-400 text-center mt-3">© 2024 AgencyDash Pro</p>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-y-auto">
+                <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-semibold text-gray-800">Client Assets</h2>
+                        <div class="relative">
+                            <button id="profileDropdownBtn" class="flex items-center space-x-3">
+                                <span class="text-right hidden sm:block"><span
+                                        class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span
+                                        class="block text-xs text-gray-400">Admin</span></span>
+                                <span
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    id="dropdownIcon"></i>
+                            </button>
+                            <div id="profileDropdown"
+                                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                                <div class="p-3 border-b border-gray-100">
+                                    <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                    <p class="text-sm text-gray-500">alex@agency.com</p>
+                                </div>
+                                <div class="py-2"><a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-cog w-5"></i><span>Settings</span></a></div>
+                                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
+                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="p-6">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
+                            <p class="text-gray-500 text-sm">Total Assets</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-2" id="totalAssets">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+                            <p class="text-gray-500 text-sm">Total Size</p>
+                            <p class="text-3xl font-bold text-green-600 mt-2" id="totalSize">0 MB</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-purple-500">
+                            <p class="text-gray-500 text-sm">Images</p>
+                            <p class="text-3xl font-bold text-purple-600 mt-2" id="imageCount">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
+                            <p class="text-gray-500 text-sm">Documents</p>
+                            <p class="text-3xl font-bold text-yellow-600 mt-2" id="docCount">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Client Selector & Actions -->
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                        <div class="flex gap-2 items-center">
+                            <label class="text-sm font-medium text-gray-700">Select Client:</label>
+                            <select id="clientSelect" class="px-4 py-2 border border-gray-300 rounded-lg w-64">
+                                <option value="">All Clients</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="uploadAssetBtn"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i
+                                    class="fas fa-upload mr-2"></i>Upload Asset</button>
+                            <button id="newFolderBtn"
+                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"><i
+                                    class="fas fa-folder-plus mr-2"></i>New Folder</button>
+                        </div>
+                    </div>
+
+                    <!-- Breadcrumb -->
+                    <div class="bg-white rounded-xl p-3 mb-4 flex items-center gap-2 text-sm" id="breadcrumb">
+                        <span class="font-semibold text-gray-700 cursor-pointer" data-path="">Root</span>
+                    </div>
+
+                    <!-- Assets Grid -->
+                    <div id="assetsGrid"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Upload Modal -->
+        <div id="uploadModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Upload Asset</h3><button id="closeUploadBtn"
+                            class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <div id="dropZone" class="upload-area rounded-xl p-8 text-center">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-500">Drag & drop files here or click to browse</p>
+                        <input type="file" id="fileInput" class="hidden" multiple>
+                    </div>
+                    <div id="uploadPreview" class="mt-4 space-y-2 max-h-40 overflow-y-auto"></div>
+                    <div class="mt-4"><label class="block text-sm font-medium text-gray-700 mb-2">Select
+                            Client</label><select id="uploadClient"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg"></select></div>
+                    <div class="mt-4"><label class="block text-sm font-medium text-gray-700 mb-2">Folder
+                            (optional)</label><select id="uploadFolder"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Root</option>
+                        </select></div>
+                    <div class="flex gap-3 mt-4"><button id="confirmUploadBtn"
+                            class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Upload</button><button
+                            id="cancelUploadBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Folder Modal -->
+        <div id="folderModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Create New Folder</h3><button
+                            id="closeFolderBtn" class="text-gray-400 hover:text-gray-600"><i
+                                class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <input type="text" id="folderName" placeholder="Folder name"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"><label
+                        class="block text-sm font-medium text-gray-700 mb-2">Client</label><select id="folderClient"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"></select>
+                    <div class="flex gap-3"><button id="createFolderBtn"
+                            class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create</button><button
+                            id="cancelFolderBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteAssetModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Delete Asset</h3>
+                    <p class="text-gray-500 mb-4">Are you sure you want to delete this asset?</p>
+                    <p class="text-sm font-medium text-gray-700 mb-6" id="deleteAssetName"></p>
+                    <div class="flex gap-3">
+                        <button id="confirmDeleteAssetBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+                        <button id="cancelDeleteAssetBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Folder Confirmation Modal -->
+        <div id="deleteFolderModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Delete Folder</h3>
+                    <p class="text-gray-500 mb-4">Are you sure you want to delete this folder?</p>
+                    <p class="text-sm font-medium text-gray-700 mb-6" id="deleteFolderName"></p>
+                    <p class="text-xs text-red-500 mb-4">All assets inside this folder will also be deleted!</p>
+                    <div class="flex gap-3">
+                        <button id="confirmDeleteFolderBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+                        <button id="cancelDeleteFolderBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset Details Modal -->
+        <div id="assetModal" class="modal-overlay hidden-modal">
+            <div class="modal-container" id="assetDetailsContent"></div>
+        </div>
+
+        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                            class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                    <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                    <div class="flex gap-3"><button id="confirmLogoutBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button
+                            id="cancelLogoutBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
+        <script>
+            // ==================== ASSETS DATA ====================
+            let assets = JSON.parse(localStorage.getItem('clientAssets')) || [
+                { id: 1, name: "logo-design.psd", clientId: 1, clientName: "Creative Studio", type: "psd", size: 2.5, folder: "", uploadedAt: "2024-02-15", url: "#" },
+                { id: 2, name: "brand-guidelines.pdf", clientId: 1, clientName: "Creative Studio", type: "pdf", size: 1.2, folder: "Brand Assets", uploadedAt: "2024-02-10", url: "#" },
+                { id: 3, name: "website-mockup.fig", clientId: 2, clientName: "Tech Solutions", type: "fig", size: 3.1, folder: "", uploadedAt: "2024-02-20", url: "#" },
+                { id: 4, name: "contract.docx", clientId: 2, clientName: "Tech Solutions", type: "docx", size: 0.5, folder: "Contracts", uploadedAt: "2024-02-05", url: "#" },
+                { id: 5, name: "app-icons.png", clientId: 3, clientName: "AppMakers", type: "png", size: 0.8, folder: "Icons", uploadedAt: "2024-02-18", url: "#" }
+            ];
+
+            let folders = JSON.parse(localStorage.getItem('clientFolders')) || [
+                { id: 1, name: "Brand Assets", clientId: 1, clientName: "Creative Studio", path: "" },
+                { id: 2, name: "Contracts", clientId: 2, clientName: "Tech Solutions", path: "" },
+                { id: 3, name: "Icons", clientId: 3, clientName: "AppMakers", path: "" }
+            ];
+
+            let currentClientFilter = "";
+            let currentPath = "";
+            let selectedFiles = [];
+            let deleteAssetId = null;
+            let deleteFolderId = null;
+
+            function saveAssets() { localStorage.setItem('clientAssets', JSON.stringify(assets)); }
+            function saveFolders() { localStorage.setItem('clientFolders', JSON.stringify(folders)); }
+
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                const toast = document.createElement('div');
+                let bgColor = 'bg-green-500', icon = 'fa-check-circle';
+                if (type === 'error') { bgColor = 'bg-red-500'; icon = 'fa-exclamation-circle'; }
+                else if (type === 'info') { bgColor = 'bg-blue-500'; icon = 'fa-info-circle'; }
+                toast.className = `toast-message ${bgColor} text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 min-w-[280px]`;
+                toast.innerHTML = `<i class="fas ${icon} text-lg"></i><span class="text-sm font-medium">${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 2000);
+            }
+
+            function getFileIcon(type) {
+                const icons = { pdf: 'fa-file-pdf text-red-500', doc: 'fa-file-word text-blue-500', docx: 'fa-file-word text-blue-500', xls: 'fa-file-excel text-green-500', xlsx: 'fa-file-excel text-green-500', jpg: 'fa-file-image text-purple-500', png: 'fa-file-image text-purple-500', psd: 'fa-file-image text-purple-500', fig: 'fa-file-code text-yellow-500', zip: 'fa-file-archive text-gray-500' };
+                return icons[type] || 'fa-file text-gray-400';
+            }
+
+            function formatFileSize(size) { return size < 1 ? (size * 1024).toFixed(0) + ' KB' : size.toFixed(1) + ' MB'; }
+
+            function updateStats() {
+                let filteredAssets = assets;
+                if (currentClientFilter) filteredAssets = assets.filter(a => a.clientId == currentClientFilter);
+                const total = filteredAssets.length;
+                const totalSize = filteredAssets.reduce((sum, a) => sum + a.size, 0);
+                const images = filteredAssets.filter(a => ['jpg', 'png', 'psd', 'fig'].includes(a.type)).length;
+                const docs = filteredAssets.filter(a => ['pdf', 'doc', 'docx', 'xls', 'xlsx'].includes(a.type)).length;
+                document.getElementById('totalAssets').textContent = total;
+                document.getElementById('totalSize').textContent = totalSize.toFixed(1) + ' MB';
+                document.getElementById('imageCount').textContent = images;
+                document.getElementById('docCount').textContent = docs;
+            }
+
+            function loadClients() {
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                const select = document.getElementById('clientSelect');
+                const uploadClient = document.getElementById('uploadClient');
+                const folderClient = document.getElementById('folderClient');
+                if (select) select.innerHTML = '<option value="">All Clients</option>' + clients.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+                if (uploadClient) uploadClient.innerHTML = '<option value="">Select Client</option>' + clients.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+                if (folderClient) folderClient.innerHTML = '<option value="">Select Client</option>' + clients.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+            }
+
+            function loadFoldersForClient(clientId) {
+                const clientFolders = folders.filter(f => f.clientId == clientId);
+                const select = document.getElementById('uploadFolder');
+                if (select) select.innerHTML = '<option value="">Root</option>' + clientFolders.map(f => `<option value="${f.name}">${escapeHtml(f.name)}</option>`).join('');
+            }
+
+            // ==================== DELETE MODAL FUNCTIONS ====================
+            function showDeleteAssetModal(id, name) {
+                deleteAssetId = id;
+                document.getElementById('deleteAssetName').textContent = name;
+                const modal = document.getElementById('deleteAssetModal');
+                if (modal) {
+                    modal.classList.remove('hidden-modal');
+                    modal.classList.add('flex-modal');
+                }
+            }
+
+            function closeDeleteAssetModal() {
+                deleteAssetId = null;
+                const modal = document.getElementById('deleteAssetModal');
+                if (modal) {
+                    modal.classList.add('hidden-modal');
+                    modal.classList.remove('flex-modal');
+                }
+            }
+
+            function performDeleteAsset() {
+                if (deleteAssetId) {
+                    const asset = assets.find(a => a.id === deleteAssetId);
+                    assets = assets.filter(a => a.id !== deleteAssetId);
+                    saveAssets();
+                    updateStats();
+                    renderAssets();
+                    showToast(`Asset "${asset?.name}" deleted successfully!`, 'info');
+                    closeDeleteAssetModal();
+                }
+            }
+
+            function showDeleteFolderModal(id, name) {
+                deleteFolderId = id;
+                document.getElementById('deleteFolderName').textContent = name;
+                const modal = document.getElementById('deleteFolderModal');
+                if (modal) {
+                    modal.classList.remove('hidden-modal');
+                    modal.classList.add('flex-modal');
+                }
+            }
+
+            function closeDeleteFolderModal() {
+                deleteFolderId = null;
+                const modal = document.getElementById('deleteFolderModal');
+                if (modal) {
+                    modal.classList.add('hidden-modal');
+                    modal.classList.remove('flex-modal');
+                }
+            }
+
+            function performDeleteFolder() {
+                if (deleteFolderId) {
+                    const folder = folders.find(f => f.id === deleteFolderId);
+                    folders = folders.filter(f => f.id !== deleteFolderId);
+                    assets = assets.filter(a => !(a.clientId === folder.clientId && a.folder === folder.name));
+                    saveFolders();
+                    saveAssets();
+                    updateStats();
+                    renderAssets();
+                    showToast(`Folder "${folder?.name}" deleted successfully!`, 'info');
+                    closeDeleteFolderModal();
+                }
+            }
+
+            function renderAssets() {
+                let filtered = assets;
+                if (currentClientFilter) filtered = assets.filter(a => a.clientId == currentClientFilter);
+                if (currentPath) filtered = filtered.filter(a => a.folder === currentPath);
+
+                // Show folders first
+                let clientFolders = folders.filter(f => f.clientId == currentClientFilter);
+                if (currentPath === "") {
+                    // Show folders in root
+                    clientFolders = clientFolders.filter(f => f.path === "");
+                } else {
+                    clientFolders = [];
+                }
+
+                const container = document.getElementById('assetsGrid');
+                if (clientFolders.length === 0 && filtered.length === 0) {
+                    container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500"><i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i><p>No assets or folders found</p></div>';
+                    return;
+                }
+
+                let html = '';
+
+                // Render folders
+                clientFolders.forEach(folder => {
+                    html += `
+                    <div class="folder-item bg-yellow-50 rounded-xl p-4 shadow-sm border border-yellow-200 hover:shadow-md">
+                        <div class="flex items-center justify-between mb-3"><i class="fas fa-folder text-yellow-500 text-3xl"></i><div class="flex gap-2"><button class="delete-folder text-red-500 hover:text-red-700" data-id="${folder.id}" data-name="${escapeHtml(folder.name)}"><i class="fas fa-trash"></i></button></div></div>
+                        <div class="folder-name cursor-pointer" data-folder="${folder.name}"><p class="font-semibold text-gray-800">${escapeHtml(folder.name)}</p><p class="text-xs text-gray-400 mt-1">Folder</p></div>
+                    </div>
+                `;
+                });
+
+                // Render assets
+                filtered.forEach(asset => {
+                    html += `
+                    <div class="asset-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md">
+                        <div class="flex items-center justify-between mb-3"><i class="fas ${getFileIcon(asset.type)} text-3xl"></i><div class="flex gap-2"><button class="view-asset text-blue-500 hover:text-blue-700" data-id="${asset.id}"><i class="fas fa-eye"></i></button><button class="delete-asset text-red-500 hover:text-red-700" data-id="${asset.id}" data-name="${escapeHtml(asset.name)}"><i class="fas fa-trash"></i></button></div></div>
+                        <p class="font-medium text-gray-800 truncate">${escapeHtml(asset.name)}</p>
+                        <p class="text-xs text-gray-500 mt-1">${formatFileSize(asset.size)} • ${new Date(asset.uploadedAt).toLocaleDateString()}</p>
+                        <p class="text-xs text-gray-400 mt-1">${escapeHtml(asset.clientName)}</p>
+                    </div>
+                `;
+                });
+
+                container.innerHTML = html;
+
+                // Folder click events
+                document.querySelectorAll('.folder-name').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        const folderName = el.dataset.folder;
+                        currentPath = folderName;
+                        updateBreadcrumb();
+                        renderAssets();
+                    });
+                });
+
+                // Delete folder events
+                document.querySelectorAll('.delete-folder').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        const name = btn.dataset.name;
+                        showDeleteFolderModal(id, name);
+                    });
+                });
+
+                // Asset view events
+                document.querySelectorAll('.view-asset').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        viewAsset(parseInt(btn.dataset.id));
+                    });
+                });
+
+                // Delete asset events
+                document.querySelectorAll('.delete-asset').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        const name = btn.dataset.name;
+                        showDeleteAssetModal(id, name);
+                    });
+                });
+            }
+
+            function viewAsset(id) {
+                const asset = assets.find(a => a.id === id);
+                if (asset) {
+                    const modal = document.getElementById('assetModal');
+                    const content = document.getElementById('assetDetailsContent');
+                    content.innerHTML = `<div class="p-6 relative"><button id="closeAssetBtn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                    <div class="text-center mb-4"><i class="fas ${getFileIcon(asset.type)} text-5xl mb-3"></i><h3 class="text-xl font-semibold text-gray-800">${escapeHtml(asset.name)}</h3><p class="text-sm text-gray-500">ID: AST-${String(asset.id).padStart(3, '0')}</p></div>
+                    <div class="space-y-3 border-t border-gray-100 pt-4"><div class="flex justify-between"><span class="text-gray-500">Client:</span><span>${escapeHtml(asset.clientName)}</span></div><div class="flex justify-between"><span class="text-gray-500">Type:</span><span class="uppercase">${asset.type}</span></div><div class="flex justify-between"><span class="text-gray-500">Size:</span><span>${formatFileSize(asset.size)}</span></div><div class="flex justify-between"><span class="text-gray-500">Folder:</span><span>${asset.folder || 'Root'}</span></div><div class="flex justify-between"><span class="text-gray-500">Uploaded:</span><span>${new Date(asset.uploadedAt).toLocaleString()}</span></div></div>
+                    <div class="mt-6"><button onclick="window.print()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg"><i class="fas fa-download mr-2"></i>Download</button></div></div>`;
+                    modal.classList.remove('hidden-modal');
+                    modal.classList.add('flex-modal');
+                    setTimeout(() => {
+                        const btn = document.getElementById('closeAssetBtn');
+                        if (btn) btn.addEventListener('click', () => {
+                            modal.classList.add('hidden-modal');
+                            modal.classList.remove('flex-modal');
+                        });
+                    }, 100);
+                }
+            }
+
+            function updateBreadcrumb() {
+                const breadcrumb = document.getElementById('breadcrumb');
+                const parts = currentPath.split('/').filter(p => p);
+                let html = `<span class="font-semibold text-gray-700 cursor-pointer" data-path="">Root</span>`;
+                let cumulativePath = '';
+                parts.forEach((part, index) => {
+                    cumulativePath += (index === 0 ? part : '/' + part);
+                    html += `<i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i><span class="cursor-pointer hover:text-blue-600" data-path="${cumulativePath}">${escapeHtml(part)}</span>`;
+                });
+                breadcrumb.innerHTML = html;
+                breadcrumb.querySelectorAll('span[data-path]').forEach(el => {
+                    el.addEventListener('click', () => {
+                        currentPath = el.dataset.path;
+                        updateBreadcrumb();
+                        renderAssets();
+                    });
+                });
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : m);
+            }
+
+            // Upload handling
+            const dropZone = document.getElementById('dropZone'), fileInput = document.getElementById('fileInput');
+            if (dropZone) {
+                dropZone.addEventListener('click', () => fileInput.click());
+                dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+                dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+                dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+            }
+            if (fileInput) fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+            function handleFiles(files) {
+                selectedFiles = Array.from(files);
+                const preview = document.getElementById('uploadPreview');
+                if (preview) preview.innerHTML = selectedFiles.map(f => `<div class="flex justify-between items-center p-2 bg-gray-50 rounded"><span><i class="fas fa-file mr-2"></i>${escapeHtml(f.name)}</span><span class="text-xs text-gray-500">${(f.size / 1024 / 1024).toFixed(2)} MB</span></div>`).join('');
+            }
+
+            // Event Listeners
+            document.getElementById('clientSelect')?.addEventListener('change', e => { currentClientFilter = e.target.value; currentPath = ""; updateBreadcrumb(); updateStats(); renderAssets(); });
+            document.getElementById('uploadAssetBtn')?.addEventListener('click', () => { loadClients(); document.getElementById('uploadModal').classList.remove('hidden-modal'); document.getElementById('uploadModal').classList.add('flex-modal'); });
+            document.getElementById('newFolderBtn')?.addEventListener('click', () => { loadClients(); document.getElementById('folderModal').classList.remove('hidden-modal'); document.getElementById('folderModal').classList.add('flex-modal'); });
+            document.getElementById('uploadClient')?.addEventListener('change', e => loadFoldersForClient(e.target.value));
+
+            // Close modals
+            const closeUploadBtn = document.getElementById('closeUploadBtn'), cancelUploadBtn = document.getElementById('cancelUploadBtn');
+            const closeFolderBtn = document.getElementById('closeFolderBtn'), cancelFolderBtn = document.getElementById('cancelFolderBtn');
+            const confirmDeleteAsset = document.getElementById('confirmDeleteAssetBtn'), cancelDeleteAsset = document.getElementById('cancelDeleteAssetBtn');
+            const confirmDeleteFolder = document.getElementById('confirmDeleteFolderBtn'), cancelDeleteFolder = document.getElementById('cancelDeleteFolderBtn');
+            const modalBackdropDeleteAsset = document.getElementById('deleteAssetModal');
+            const modalBackdropDeleteFolder = document.getElementById('deleteFolderModal');
+
+            if (closeUploadBtn) closeUploadBtn.addEventListener('click', () => { document.getElementById('uploadModal').classList.add('hidden-modal'); document.getElementById('uploadModal').classList.remove('flex-modal'); selectedFiles = []; if (document.getElementById('uploadPreview')) document.getElementById('uploadPreview').innerHTML = ''; });
+            if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', () => { document.getElementById('uploadModal').classList.add('hidden-modal'); document.getElementById('uploadModal').classList.remove('flex-modal'); selectedFiles = []; if (document.getElementById('uploadPreview')) document.getElementById('uploadPreview').innerHTML = ''; });
+            if (closeFolderBtn) closeFolderBtn.addEventListener('click', () => { document.getElementById('folderModal').classList.add('hidden-modal'); document.getElementById('folderModal').classList.remove('flex-modal'); });
+            if (cancelFolderBtn) cancelFolderBtn.addEventListener('click', () => { document.getElementById('folderModal').classList.add('hidden-modal'); document.getElementById('folderModal').classList.remove('flex-modal'); });
+
+            // Delete modal close handlers
+            if (confirmDeleteAsset) confirmDeleteAsset.addEventListener('click', performDeleteAsset);
+            if (cancelDeleteAsset) cancelDeleteAsset.addEventListener('click', closeDeleteAssetModal);
+            if (modalBackdropDeleteAsset) modalBackdropDeleteAsset.addEventListener('click', function (e) { if (e.target === this) closeDeleteAssetModal(); });
+
+            if (confirmDeleteFolder) confirmDeleteFolder.addEventListener('click', performDeleteFolder);
+            if (cancelDeleteFolder) cancelDeleteFolder.addEventListener('click', closeDeleteFolderModal);
+            if (modalBackdropDeleteFolder) modalBackdropDeleteFolder.addEventListener('click', function (e) { if (e.target === this) closeDeleteFolderModal(); });
+
+            document.getElementById('confirmUploadBtn')?.addEventListener('click', () => {
+                const clientId = document.getElementById('uploadClient').value;
+                const clientName = document.getElementById('uploadClient').options[document.getElementById('uploadClient').selectedIndex]?.text;
+                const folder = document.getElementById('uploadFolder').value;
+                if (!clientId) { showToast('Please select a client!', 'error'); return; }
+                if (selectedFiles.length === 0) { showToast('No files selected!', 'error'); return; }
+                selectedFiles.forEach(file => {
+                    const newAsset = { id: Date.now() + Math.random(), name: file.name, clientId: parseInt(clientId), clientName: clientName, type: file.name.split('.').pop().toLowerCase(), size: parseFloat((file.size / 1024 / 1024).toFixed(2)), folder: folder || '', uploadedAt: new Date().toISOString().split('T')[0], url: '#' };
+                    assets.push(newAsset);
+                });
+                saveAssets(); updateStats(); renderAssets();
+                document.getElementById('uploadModal').classList.add('hidden-modal'); document.getElementById('uploadModal').classList.remove('flex-modal');
+                selectedFiles = []; if (document.getElementById('uploadPreview')) document.getElementById('uploadPreview').innerHTML = '';
+                showToast(`${selectedFiles.length} assets uploaded!`, 'success');
+            });
+
+            document.getElementById('createFolderBtn')?.addEventListener('click', () => {
+                const folderName = document.getElementById('folderName').value.trim();
+                const clientId = document.getElementById('folderClient').value;
+                const clientName = document.getElementById('folderClient').options[document.getElementById('folderClient').selectedIndex]?.text;
+                if (!folderName) { showToast('Please enter folder name!', 'error'); return; }
+                if (!clientId) { showToast('Please select a client!', 'error'); return; }
+                const newFolder = { id: Date.now(), name: folderName, clientId: parseInt(clientId), clientName: clientName, path: '' };
+                folders.push(newFolder); saveFolders();
+                document.getElementById('folderModal').classList.add('hidden-modal'); document.getElementById('folderModal').classList.remove('flex-modal');
+                document.getElementById('folderName').value = '';
+                showToast('Folder created!', 'success');
+            });
+
+            // ==================== AUTH & SIDEBAR ====================
+            function checkAuth() { const a = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn"); if (!a || a !== "true") window.location.href = "login.html"; } checkAuth();
+            const cp = window.location.pathname.split("/").pop() || "client-assets.html"; document.querySelectorAll(".menu-item").forEach(i => { if (i.getAttribute("href") === cp) i.classList.add("active") });
+
+            const s = document.getElementById("sidebar"), mt = document.getElementById("mobileMenuToggle");
+            if (mt) { mt.addEventListener("click", () => s.classList.toggle("-translate-x-full")); document.addEventListener("click", e => { if (window.innerWidth < 1024 && s && !s.contains(e.target) && !mt.contains(e.target)) s.classList.add("-translate-x-full"); }); }
+
+            const pb = document.getElementById("profileDropdownBtn"), pd = document.getElementById("profileDropdown"), di = document.getElementById("dropdownIcon");
+            if (pb) pb.addEventListener("click", e => { e.stopPropagation(); pd.classList.toggle("hidden"); if (di) di.style.transform = pd.classList.contains("hidden") ? "rotate(0deg)" : "rotate(180deg)"; });
+            document.addEventListener("click", e => { if (pb && !pb.contains(e.target) && pd && !pd.contains(e.target)) { pd.classList.add("hidden"); if (di) di.style.transform = "rotate(0deg)"; } });
+
+            const lm = document.getElementById("logoutModal"), sl = document.getElementById("sidebarLogoutBtn"), dl = document.getElementById("dropdownLogoutBtn"), cf = document.getElementById("confirmLogoutBtn"), cl = document.getElementById("cancelLogoutBtn"), bd = document.getElementById("modalBackdrop");
+            function sm() { if (lm) { lm.classList.remove("hidden"); lm.classList.add("flex"); } }
+            function hm() { if (lm) { lm.classList.add("hidden"); lm.classList.remove("flex"); } }
+            function lg() { localStorage.removeItem("isLoggedIn"); sessionStorage.removeItem("isLoggedIn"); showToast("Logged out successfully!", "success"); hm(); setTimeout(() => window.location.href = "login.html", 1500); }
+            if (sl) sl.addEventListener("click", sm); if (dl) dl.addEventListener("click", sm); if (cf) cf.addEventListener("click", lg); if (cl) cl.addEventListener("click", hm); if (bd) bd.addEventListener("click", hm);
+
+            document.addEventListener("DOMContentLoaded", () => {
+                if (window.innerWidth < 1024) s.classList.add("-translate-x-full");
+                loadClients();
+                updateStats();
+                renderAssets();
+                updateBreadcrumb();
+            });
+        </script>
+        <script src="main.js"></script>
+    </body>
+
+</html>

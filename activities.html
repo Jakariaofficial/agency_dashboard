@@ -1,256 +1,564 @@
 <!doctype html>
 <html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agency Dashboard | Activity Logs</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-        .menu-item.active i { color: white; }
-        .dropdown-menu { animation: slideDown 0.2s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
-        .sidebar { transition: width 0.3s ease-in-out, transform 0.3s ease-in-out; }
-        .lg\:w-20 { width: 5rem; }
-        .lg\:w-72 { width: 18rem; }
-        .activity-item { transition: all 0.2s ease; }
-        .activity-item:hover { background: #f9fafb; transform: translateX(4px); }
-        .activity-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .type-create { background: #dcfce7; color: #166534; }
-        .type-update { background: #e0e7ff; color: #1e40af; }
-        .type-delete { background: #fee2e2; color: #991b1b; }
-        .type-login { background: #fef3c7; color: #92400e; }
-        .type-upload { background: #f3e8ff; color: #6b21a5; }
-    </style>
-</head>
-<body class="bg-gray-50 font-sans antialiased">
-    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i class="fas fa-bars"></i></button>
-    <div class="flex h-screen overflow-hidden">
-        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                <a href="index.html" class="flex items-center space-x-3"><div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-white text-xl"></i></div><div class="logo-text"><h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1><p class="text-xs text-gray-400">Professional Agency Suite</p></div></a>
-                <button id="collapseSidebarBtn" class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300" id="collapseIcon"></i></button>
-            </div>
-            <nav class="flex-1 px-4 py-4 space-y-6">
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Main</p></div><div class="space-y-1"><a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Dashboard</div></a><a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Analytics</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Management</p></div><div class="space-y-1"><div class="relative"><button id="projectsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span class="font-medium">Projects</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="projectsDropdownIcon"></i></button><div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a href="active-projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-play-circle w-4"></i><span class="text-sm">Active Projects</span></a></div></div><div class="relative"><button id="tasksMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span class="font-medium">Tasks</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="tasksDropdownIcon"></i></button><div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-check-square w-4"></i><span class="text-sm">To-Do List</span></a><a href="kanban.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-columns w-4"></i><span class="text-sm">Kanban Board</span></a><a href="calendar.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-calendar-alt w-4"></i><span class="text-sm">Calendar</span></a></div></div><div class="relative"><button id="clientsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span class="font-medium">Clients</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="clientsDropdownIcon"></i></button><div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="clients.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a href="add-client.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-user-plus w-4"></i><span class="text-sm">Add Client</span></a><a href="client-messages.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a href="client-assets.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div></div></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Finance</p></div><div class="space-y-1"><a href="invoices.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Invoices</div></a><a href="payments.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Payments</div></a><a href="subscriptions.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Subscriptions</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Resources</p></div><div class="space-y-1"><a href="file-manager.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File Manager</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">File Manager</div></a><a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Reports</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">System</p></div><div class="space-y-1"><div class="relative"><button id="teamMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="teamDropdownIcon"></i></button><div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="team-members.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a href="activities.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-history w-4"></i><span class="text-sm">Activity Logs</span></a></div></div><a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cog w-5"></i><span class="font-medium">Settings</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Settings</div></a><a href="support-tickets.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Support Tickets</div></a></div></div>
-            </nav>
-            <div class="p-4 border-t border-gray-100"><div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</div><div class="user-info-text"><p class="text-sm font-semibold text-gray-700">Alex Johnson</p><p class="text-xs text-gray-400">Admin</p></div></div><button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Logout</div></button><p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p></div>
-        </aside>
 
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-semibold text-gray-800">Activity Logs</h2>
-                    <div class="relative">
-                        <button id="profileDropdownBtn" class="flex items-center space-x-3">
-                            <span class="text-right hidden sm:block"><span class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span class="block text-xs text-gray-400">Admin</span></span>
-                            <span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
-                            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i>
-                        </button>
-                        <div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
-                            <div class="p-3 border-b border-gray-100"><p class="font-semibold text-gray-800">Alex Johnson</p><p class="text-sm text-gray-500">alex@agency.com</p></div>
-                            <div class="py-2"><a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-cog w-5"></i><span>Settings</span></a></div>
-                            <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Agency Dashboard | Activity Logs</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .menu-item.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+            }
+
+            .menu-item.active i {
+                color: white;
+            }
+
+            .dropdown-menu {
+                animation: slideDown 0.2s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+            }
+
+            .sidebar {
+                transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            }
+
+            .lg\:w-20 {
+                width: 5rem;
+            }
+
+            .lg\:w-72 {
+                width: 18rem;
+            }
+
+            .activity-item {
+                transition: all 0.2s ease;
+            }
+
+            .activity-item:hover {
+                background: #f9fafb;
+                transform: translateX(4px);
+            }
+
+            .activity-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .type-create {
+                background: #dcfce7;
+                color: #166534;
+            }
+
+            .type-update {
+                background: #e0e7ff;
+                color: #1e40af;
+            }
+
+            .type-delete {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .type-login {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .type-upload {
+                background: #f3e8ff;
+                color: #6b21a5;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 font-sans antialiased">
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i
+                class="fas fa-bars"></i></button>
+        <div class="flex h-screen overflow-hidden">
+            <aside id="sidebar"
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <a href="index.html" class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <div class="logo-text">
+                            <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
+                            </h1>
+                            <p class="text-xs text-gray-400">Professional Agency Suite</p>
+                        </div>
+                    </a>
+                    <button id="collapseSidebarBtn"
+                        class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i
+                            class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+                            id="collapseIcon"></i></button>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-6">
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
+                        </div>
+                        <div class="space-y-1"><a href="dashboard.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Dashboard</div>
+                            </a><a href="analytics.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Analytics</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Management</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="projectsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span
+                                            class="font-medium">Projects</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="projectsDropdownIcon"></i>
+                                </button>
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a
+                                        href="active-projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-play-circle w-4"></i><span class="text-sm">Active
+                                            Projects</span></a></div>
+                            </div>
+                            <div class="relative"><button id="tasksMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span
+                                            class="font-medium">Tasks</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="tasksDropdownIcon"></i>
+                                </button>
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-check-square w-4"></i><span class="text-sm">To-Do
+                                            List</span></a><a href="kanban.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-columns w-4"></i><span class="text-sm">Kanban
+                                            Board</span></a><a href="calendar.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-calendar-alt w-4"></i><span
+                                            class="text-sm">Calendar</span></a></div>
+                            </div>
+                            <div class="relative"><button id="clientsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span
+                                            class="font-medium">Clients</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="clientsDropdownIcon"></i>
+                                </button>
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="clients.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a
+                                        href="add-client.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-user-plus w-4"></i><span class="text-sm">Add
+                                            Client</span></a><a href="client-messages.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a
+                                        href="client-assets.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div>
+                            </div>
                         </div>
                     </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Finance</p>
+                        </div>
+                        <div class="space-y-1"><a href="invoices.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Invoices</div>
+                            </a><a href="payments.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Payments</div>
+                            </a><a href="subscriptions.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Subscriptions</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Resources</p>
+                        </div>
+                        <div class="space-y-1"><a href="file-manager.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File
+                                    Manager</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    File Manager</div>
+                            </a><a href="reports.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Reports</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">System</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="teamMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i
+                                            class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span>
+                                    </div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="teamDropdownIcon"></i>
+                                </button>
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="team-members.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a
+                                        href="activities.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-history w-4"></i><span class="text-sm">Activity
+                                            Logs</span></a></div>
+                            </div><a href="settings.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Settings</div>
+                            </a><a href="support-tickets.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Support Tickets</div>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="p-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                            AJ</div>
+                        <div class="user-info-text">
+                            <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+                            <p class="text-xs text-gray-400">Admin</p>
+                        </div>
+                    </div><button id="sidebarLogoutBtn"
+                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i
+                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span>
+                        <div
+                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                            Logout</div>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
                 </div>
-            </header>
+            </aside>
 
-            <div class="p-6">
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
-                        <p class="text-gray-500 text-sm">Total Activities</p>
-                        <p class="text-3xl font-bold text-gray-800 mt-2" id="totalActivities">0</p>
+            <main class="flex-1 overflow-y-auto">
+                <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-semibold text-gray-800">Activity Logs</h2>
+                        <div class="relative">
+                            <button id="profileDropdownBtn" class="flex items-center space-x-3">
+                                <span class="text-right hidden sm:block"><span
+                                        class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span
+                                        class="block text-xs text-gray-400">Admin</span></span>
+                                <span
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    id="dropdownIcon"></i>
+                            </button>
+                            <div id="profileDropdown"
+                                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                                <div class="p-3 border-b border-gray-100">
+                                    <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                    <p class="text-sm text-gray-500">alex@agency.com</p>
+                                </div>
+                                <div class="py-2"><a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-cog w-5"></i><span>Settings</span></a></div>
+                                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
+                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
-                        <p class="text-gray-500 text-sm">Today</p>
-                        <p class="text-3xl font-bold text-green-600 mt-2" id="todayActivities">0</p>
+                </header>
+
+                <div class="p-6">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
+                            <p class="text-gray-500 text-sm">Total Activities</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-2" id="totalActivities">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+                            <p class="text-gray-500 text-sm">Today</p>
+                            <p class="text-3xl font-bold text-green-600 mt-2" id="todayActivities">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-purple-500">
+                            <p class="text-gray-500 text-sm">This Week</p>
+                            <p class="text-3xl font-bold text-purple-600 mt-2" id="weekActivities">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
+                            <p class="text-gray-500 text-sm">Active Users</p>
+                            <p class="text-3xl font-bold text-yellow-600 mt-2" id="activeUsers">0</p>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-purple-500">
-                        <p class="text-gray-500 text-sm">This Week</p>
-                        <p class="text-3xl font-bold text-purple-600 mt-2" id="weekActivities">0</p>
+
+                    <!-- Filters -->
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="filterAll" class="px-4 py-2 rounded-lg bg-blue-500 text-white">All</button>
+                            <button id="filterCreate"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">📝
+                                Create</button>
+                            <button id="filterUpdate"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">✏️
+                                Update</button>
+                            <button id="filterDelete"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🗑️
+                                Delete</button>
+                            <button id="filterLogin"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🔐
+                                Login</button>
+                            <button id="filterUpload"
+                                class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">📤
+                                Upload</button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="clearLogsBtn"
+                                class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"><i
+                                    class="fas fa-trash-alt mr-2"></i>Clear All Logs</button>
+                            <button id="exportLogsBtn"
+                                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"><i
+                                    class="fas fa-download mr-2"></i>Export</button>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
-                        <p class="text-gray-500 text-sm">Active Users</p>
-                        <p class="text-3xl font-bold text-yellow-600 mt-2" id="activeUsers">0</p>
+
+                    <!-- Date Filter -->
+                    <div class="bg-white rounded-xl p-4 mb-6 flex flex-wrap gap-4 items-center">
+                        <span class="text-sm font-medium text-gray-700">Date Range:</span>
+                        <input type="date" id="startDate" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <span class="text-gray-500">to</span>
+                        <input type="date" id="endDate" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <button id="applyDateFilter"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600">Apply</button>
+                        <button id="resetDateFilter"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">Reset</button>
+                    </div>
+
+                    <!-- Activity List -->
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-semibold text-gray-800">Recent Activities</h3>
+                        </div>
+                        <div id="activityList" class="divide-y divide-gray-100"></div>
                     </div>
                 </div>
+            </main>
+        </div>
 
-                <!-- Filters -->
-                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-                    <div class="flex gap-2 flex-wrap">
-                        <button id="filterAll" class="px-4 py-2 rounded-lg bg-blue-500 text-white">All</button>
-                        <button id="filterCreate" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">📝 Create</button>
-                        <button id="filterUpdate" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">✏️ Update</button>
-                        <button id="filterDelete" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🗑️ Delete</button>
-                        <button id="filterLogin" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">🔐 Login</button>
-                        <button id="filterUpload" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">📤 Upload</button>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="clearLogsBtn" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"><i class="fas fa-trash-alt mr-2"></i>Clear All Logs</button>
-                        <button id="exportLogsBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"><i class="fas fa-download mr-2"></i>Export</button>
-                    </div>
-                </div>
+        <!-- Activity Details Modal -->
+        <div id="activityModal" class="fixed inset-0 z-50 hidden items-center justify-center flex">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdropActivity"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto relative z-50"
+                id="activityDetailsContent"></div>
+        </div>
 
-                <!-- Date Filter -->
-                <div class="bg-white rounded-xl p-4 mb-6 flex flex-wrap gap-4 items-center">
-                    <span class="text-sm font-medium text-gray-700">Date Range:</span>
-                    <input type="date" id="startDate" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                    <span class="text-gray-500">to</span>
-                    <input type="date" id="endDate" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                    <button id="applyDateFilter" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600">Apply</button>
-                    <button id="resetDateFilter" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">Reset</button>
-                </div>
-
-                <!-- Activity List -->
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                        <h3 class="font-semibold text-gray-800">Recent Activities</h3>
-                    </div>
-                    <div id="activityList" class="divide-y divide-gray-100"></div>
+        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                            class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                    <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                    <div class="flex gap-3"><button id="confirmLogoutBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button
+                            id="cancelLogoutBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
 
-    <!-- Activity Details Modal -->
-    <div id="activityModal" class="fixed inset-0 z-50 hidden items-center justify-center flex">
-        <div class="absolute inset-0 modal-backdrop" id="modalBackdropActivity"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto relative z-50" id="activityDetailsContent"></div>
-    </div>
+        <script>
+            // Activity Logs Data
+            let activities = JSON.parse(localStorage.getItem('activities')) || [
+                { id: 1, user: "Alex Johnson", userAvatar: "AJ", action: "create", type: "client", item: "Creative Studio", details: "Added new client to system", timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.1" },
+                { id: 2, user: "Sarah Williams", userAvatar: "SW", action: "update", type: "project", item: "Website Development", details: "Updated project progress to 45%", timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.2" },
+                { id: 3, user: "Michael Chen", userAvatar: "MC", action: "create", type: "invoice", item: "INV-002", details: "Created new invoice for Tech Solutions", timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.3" },
+                { id: 4, user: "Alex Johnson", userAvatar: "AJ", action: "login", type: "auth", item: "System Login", details: "User logged in successfully", timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.1" },
+                { id: 5, user: "Emily Davis", userAvatar: "ED", action: "upload", type: "file", item: "logo-design.psd", details: "Uploaded file to Projects/Brand Identity", timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.4" },
+                { id: 6, user: "David Wilson", userAvatar: "DW", action: "delete", type: "task", item: "Old task reminder", details: "Deleted completed task", timestamp: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.5" },
+                { id: 7, user: "Sarah Williams", userAvatar: "SW", action: "update", type: "client", item: "AppMakers", details: "Updated client contact information", timestamp: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.2" },
+                { id: 8, user: "Alex Johnson", userAvatar: "AJ", action: "create", type: "report", item: "Financial Report", details: "Generated monthly financial report", timestamp: new Date(Date.now() - 168 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.1" }
+            ];
 
-    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"><div class="p-6 text-center"><div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3><p class="text-gray-500 mb-6">Are you sure you want to logout?</p><div class="flex gap-3"><button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div></div></div>
-    </div>
+            let currentFilter = 'all';
+            let startDate = null;
+            let endDate = null;
 
-    <script>
-        // Activity Logs Data
-        let activities = JSON.parse(localStorage.getItem('activities')) || [
-            { id: 1, user: "Alex Johnson", userAvatar: "AJ", action: "create", type: "client", item: "Creative Studio", details: "Added new client to system", timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.1" },
-            { id: 2, user: "Sarah Williams", userAvatar: "SW", action: "update", type: "project", item: "Website Development", details: "Updated project progress to 45%", timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.2" },
-            { id: 3, user: "Michael Chen", userAvatar: "MC", action: "create", type: "invoice", item: "INV-002", details: "Created new invoice for Tech Solutions", timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.3" },
-            { id: 4, user: "Alex Johnson", userAvatar: "AJ", action: "login", type: "auth", item: "System Login", details: "User logged in successfully", timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.1" },
-            { id: 5, user: "Emily Davis", userAvatar: "ED", action: "upload", type: "file", item: "logo-design.psd", details: "Uploaded file to Projects/Brand Identity", timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.4" },
-            { id: 6, user: "David Wilson", userAvatar: "DW", action: "delete", type: "task", item: "Old task reminder", details: "Deleted completed task", timestamp: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.5" },
-            { id: 7, user: "Sarah Williams", userAvatar: "SW", action: "update", type: "client", item: "AppMakers", details: "Updated client contact information", timestamp: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.2" },
-            { id: 8, user: "Alex Johnson", userAvatar: "AJ", action: "create", type: "report", item: "Financial Report", details: "Generated monthly financial report", timestamp: new Date(Date.now() - 168 * 60 * 60 * 1000).toISOString(), ip: "192.168.1.1" }
-        ];
+            function saveActivities() { localStorage.setItem('activities', JSON.stringify(activities)); }
 
-        let currentFilter = 'all';
-        let startDate = null;
-        let endDate = null;
-
-        function saveActivities() { localStorage.setItem('activities', JSON.stringify(activities)); }
-
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            toast.innerHTML = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function getActionIcon(action) {
-            const icons = {
-                create: 'fa-plus-circle',
-                update: 'fa-edit',
-                delete: 'fa-trash-alt',
-                login: 'fa-sign-in-alt',
-                upload: 'fa-upload'
-            };
-            return icons[action] || 'fa-circle';
-        }
-
-        function getActionClass(action) {
-            const classes = {
-                create: 'type-create',
-                update: 'type-update',
-                delete: 'type-delete',
-                login: 'type-login',
-                upload: 'type-upload'
-            };
-            return classes[action] || 'type-create';
-        }
-
-        function getActionText(action) {
-            const texts = {
-                create: 'Created',
-                update: 'Updated',
-                delete: 'Deleted',
-                login: 'Logged in',
-                upload: 'Uploaded'
-            };
-            return texts[action] || 'Action';
-        }
-
-        function formatTimeAgo(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if(diffMins < 1) return 'Just now';
-            if(diffMins < 60) return `${diffMins} minutes ago`;
-            if(diffHours < 24) return `${diffHours} hours ago`;
-            return `${diffDays} days ago`;
-        }
-
-        function updateStats() {
-            const total = activities.length;
-            const today = new Date().toISOString().split('T')[0];
-            const todayActivities = activities.filter(a => a.timestamp.split('T')[0] === today).length;
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            const weekActivities = activities.filter(a => new Date(a.timestamp) >= weekAgo).length;
-            const uniqueUsers = [...new Set(activities.map(a => a.user))].length;
-            
-            document.getElementById('totalActivities').textContent = total;
-            document.getElementById('todayActivities').textContent = todayActivities;
-            document.getElementById('weekActivities').textContent = weekActivities;
-            document.getElementById('activeUsers').textContent = uniqueUsers;
-        }
-
-        function filterActivities() {
-            let filtered = [...activities];
-            
-            if(currentFilter !== 'all') {
-                filtered = filtered.filter(a => a.action === currentFilter);
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+                toast.innerHTML = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
             }
-            
-            if(startDate && endDate) {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                end.setHours(23, 59, 59);
-                filtered = filtered.filter(a => {
-                    const date = new Date(a.timestamp);
-                    return date >= start && date <= end;
-                });
-            }
-            
-            return filtered;
-        }
 
-        function renderActivities() {
-            const filtered = filterActivities();
-            const container = document.getElementById('activityList');
-            if(filtered.length === 0) {
-                container.innerHTML = '<div class="p-12 text-center text-gray-500"><i class="fas fa-history text-4xl mb-3 text-gray-300"></i><p>No activities found</p></div>';
-                return;
+            function getActionIcon(action) {
+                const icons = {
+                    create: 'fa-plus-circle',
+                    update: 'fa-edit',
+                    delete: 'fa-trash-alt',
+                    login: 'fa-sign-in-alt',
+                    upload: 'fa-upload'
+                };
+                return icons[action] || 'fa-circle';
             }
-            container.innerHTML = filtered.map(activity => `
+
+            function getActionClass(action) {
+                const classes = {
+                    create: 'type-create',
+                    update: 'type-update',
+                    delete: 'type-delete',
+                    login: 'type-login',
+                    upload: 'type-upload'
+                };
+                return classes[action] || 'type-create';
+            }
+
+            function getActionText(action) {
+                const texts = {
+                    create: 'Created',
+                    update: 'Updated',
+                    delete: 'Deleted',
+                    login: 'Logged in',
+                    upload: 'Uploaded'
+                };
+                return texts[action] || 'Action';
+            }
+
+            function formatTimeAgo(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+
+                if (diffMins < 1) return 'Just now';
+                if (diffMins < 60) return `${diffMins} minutes ago`;
+                if (diffHours < 24) return `${diffHours} hours ago`;
+                return `${diffDays} days ago`;
+            }
+
+            function updateStats() {
+                const total = activities.length;
+                const today = new Date().toISOString().split('T')[0];
+                const todayActivities = activities.filter(a => a.timestamp.split('T')[0] === today).length;
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const weekActivities = activities.filter(a => new Date(a.timestamp) >= weekAgo).length;
+                const uniqueUsers = [...new Set(activities.map(a => a.user))].length;
+
+                document.getElementById('totalActivities').textContent = total;
+                document.getElementById('todayActivities').textContent = todayActivities;
+                document.getElementById('weekActivities').textContent = weekActivities;
+                document.getElementById('activeUsers').textContent = uniqueUsers;
+            }
+
+            function filterActivities() {
+                let filtered = [...activities];
+
+                if (currentFilter !== 'all') {
+                    filtered = filtered.filter(a => a.action === currentFilter);
+                }
+
+                if (startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59);
+                    filtered = filtered.filter(a => {
+                        const date = new Date(a.timestamp);
+                        return date >= start && date <= end;
+                    });
+                }
+
+                return filtered;
+            }
+
+            function renderActivities() {
+                const filtered = filterActivities();
+                const container = document.getElementById('activityList');
+                if (filtered.length === 0) {
+                    container.innerHTML = '<div class="p-12 text-center text-gray-500"><i class="fas fa-history text-4xl mb-3 text-gray-300"></i><p>No activities found</p></div>';
+                    return;
+                }
+                container.innerHTML = filtered.map(activity => `
                 <div class="activity-item p-4 hover:bg-gray-50 cursor-pointer" data-id="${activity.id}">
                     <div class="flex items-start gap-4">
                         <div class="activity-icon ${getActionClass(activity.action)}"><i class="fas ${getActionIcon(activity.action)}"></i></div>
@@ -259,123 +567,124 @@
                     </div>
                 </div>
             `).join('');
-            
-            document.querySelectorAll('.activity-item, .view-activity').forEach(el => {
-                el.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const id = parseInt(el.dataset.id || el.closest('[data-id]')?.dataset.id);
-                    if(id) viewActivity(id);
-                });
-            });
-        }
 
-        function viewActivity(id) {
-            const activity = activities.find(a => a.id === id);
-            if(activity) {
-                const modal = document.getElementById('activityModal');
-                const content = document.getElementById('activityDetailsContent');
-                content.innerHTML = `
+                document.querySelectorAll('.activity-item, .view-activity').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(el.dataset.id || el.closest('[data-id]')?.dataset.id);
+                        if (id) viewActivity(id);
+                    });
+                });
+            }
+
+            function viewActivity(id) {
+                const activity = activities.find(a => a.id === id);
+                if (activity) {
+                    const modal = document.getElementById('activityModal');
+                    const content = document.getElementById('activityDetailsContent');
+                    content.innerHTML = `
                     <div class="p-6"><div class="text-center mb-4"><div class="activity-icon ${getActionClass(activity.action)} w-16 h-16 mx-auto"><i class="fas ${getActionIcon(activity.action)} text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mt-3">Activity Details</h3></div>
                     <div class="space-y-3 border-t border-gray-100 pt-4"><div class="flex justify-between"><span class="text-gray-500">User:</span><span class="font-medium">${activity.user}</span></div><div class="flex justify-between"><span class="text-gray-500">Action:</span><span class="px-3 py-1 rounded-full text-xs ${getActionClass(activity.action)}">${getActionText(activity.action)}</span></div><div class="flex justify-between"><span class="text-gray-500">Type:</span><span>${activity.type}</span></div><div class="flex justify-between"><span class="text-gray-500">Item:</span><span class="font-medium">${activity.item}</span></div><div class="flex justify-between"><span class="text-gray-500">Details:</span><span>${activity.details}</span></div><div class="flex justify-between"><span class="text-gray-500">Time:</span><span>${new Date(activity.timestamp).toLocaleString()}</span></div><div class="flex justify-between"><span class="text-gray-500">IP Address:</span><span>${activity.ip}</span></div></div>
                     <div class="mt-6"><button onclick="window.print()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"><i class="fas fa-print mr-2"></i>Print Details</button></div></div>
                 `;
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
             }
-        }
 
-        function addActivity(user, action, type, item, details) {
-            const newActivity = {
-                id: Date.now(),
-                user: user,
-                userAvatar: user.split(' ').map(n => n[0]).join('').toUpperCase(),
-                action: action,
-                type: type,
-                item: item,
-                details: details,
-                timestamp: new Date().toISOString(),
-                ip: "192.168.1.1"
-            };
-            activities.unshift(newActivity);
-            if(activities.length > 500) activities = activities.slice(0, 500);
-            saveActivities();
-            updateStats();
-            renderActivities();
-        }
-
-        // Export Logs
-        function exportLogs() {
-            const filtered = filterActivities();
-            const csv = [['ID', 'User', 'Action', 'Type', 'Item', 'Details', 'Timestamp', 'IP'].join(',')];
-            filtered.forEach(a => {
-                csv.push([a.id, a.user, a.action, a.type, a.item, `"${a.details}"`, a.timestamp, a.ip].join(','));
-            });
-            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `activity-logs-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('Logs exported successfully!', 'success');
-        }
-
-        // Event Listeners
-        function updateFilterButtons(activeId) {
-            ['filterAll', 'filterCreate', 'filterUpdate', 'filterDelete', 'filterLogin', 'filterUpload'].forEach(id => {
-                const btn = document.getElementById(id);
-                if(btn) { btn.classList.remove('bg-blue-500', 'text-white'); btn.classList.add('bg-gray-200', 'text-gray-700'); }
-            });
-            const activeBtn = document.getElementById(activeId);
-            if(activeBtn) { activeBtn.classList.remove('bg-gray-200', 'text-gray-700'); activeBtn.classList.add('bg-blue-500', 'text-white'); }
-        }
-
-        document.getElementById('filterAll')?.addEventListener('click', () => { currentFilter = 'all'; updateFilterButtons('filterAll'); renderActivities(); });
-        document.getElementById('filterCreate')?.addEventListener('click', () => { currentFilter = 'create'; updateFilterButtons('filterCreate'); renderActivities(); });
-        document.getElementById('filterUpdate')?.addEventListener('click', () => { currentFilter = 'update'; updateFilterButtons('filterUpdate'); renderActivities(); });
-        document.getElementById('filterDelete')?.addEventListener('click', () => { currentFilter = 'delete'; updateFilterButtons('filterDelete'); renderActivities(); });
-        document.getElementById('filterLogin')?.addEventListener('click', () => { currentFilter = 'login'; updateFilterButtons('filterLogin'); renderActivities(); });
-        document.getElementById('filterUpload')?.addEventListener('click', () => { currentFilter = 'upload'; updateFilterButtons('filterUpload'); renderActivities(); });
-        
-        document.getElementById('applyDateFilter')?.addEventListener('click', () => {
-            startDate = document.getElementById('startDate').value;
-            endDate = document.getElementById('endDate').value;
-            renderActivities();
-        });
-        document.getElementById('resetDateFilter')?.addEventListener('click', () => {
-            startDate = null;
-            endDate = null;
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-            renderActivities();
-        });
-        
-        document.getElementById('clearLogsBtn')?.addEventListener('click', () => {
-            if(confirm('Are you sure you want to clear all activity logs? This action cannot be undone.')) {
-                activities = [];
+            function addActivity(user, action, type, item, details) {
+                const newActivity = {
+                    id: Date.now(),
+                    user: user,
+                    userAvatar: user.split(' ').map(n => n[0]).join('').toUpperCase(),
+                    action: action,
+                    type: type,
+                    item: item,
+                    details: details,
+                    timestamp: new Date().toISOString(),
+                    ip: "192.168.1.1"
+                };
+                activities.unshift(newActivity);
+                if (activities.length > 500) activities = activities.slice(0, 500);
                 saveActivities();
                 updateStats();
                 renderActivities();
-                showToast('All logs cleared!', 'info');
             }
-        });
-        
-        document.getElementById('exportLogsBtn')?.addEventListener('click', exportLogs);
-        
-        document.getElementById('activityModal')?.addEventListener('click', (e) => {
-            if(e.target === document.getElementById('activityModal')) {
-                document.getElementById('activityModal').classList.add('hidden');
-                document.getElementById('activityModal').classList.remove('flex');
+
+            // Export Logs
+            function exportLogs() {
+                const filtered = filterActivities();
+                const csv = [['ID', 'User', 'Action', 'Type', 'Item', 'Details', 'Timestamp', 'IP'].join(',')];
+                filtered.forEach(a => {
+                    csv.push([a.id, a.user, a.action, a.type, a.item, `"${a.details}"`, a.timestamp, a.ip].join(','));
+                });
+                const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `activity-logs-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Logs exported successfully!', 'success');
             }
-        });
-        
-        updateStats();
-        renderActivities();
-        document.getElementById('filterAll').classList.add('bg-blue-500', 'text-white');
-        
-        // Expose addActivity to global for other pages to use
-        window.addActivity = addActivity;
-    </script>
-    <script src="main.js"></script>
-</body>
+
+            // Event Listeners
+            function updateFilterButtons(activeId) {
+                ['filterAll', 'filterCreate', 'filterUpdate', 'filterDelete', 'filterLogin', 'filterUpload'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) { btn.classList.remove('bg-blue-500', 'text-white'); btn.classList.add('bg-gray-200', 'text-gray-700'); }
+                });
+                const activeBtn = document.getElementById(activeId);
+                if (activeBtn) { activeBtn.classList.remove('bg-gray-200', 'text-gray-700'); activeBtn.classList.add('bg-blue-500', 'text-white'); }
+            }
+
+            document.getElementById('filterAll')?.addEventListener('click', () => { currentFilter = 'all'; updateFilterButtons('filterAll'); renderActivities(); });
+            document.getElementById('filterCreate')?.addEventListener('click', () => { currentFilter = 'create'; updateFilterButtons('filterCreate'); renderActivities(); });
+            document.getElementById('filterUpdate')?.addEventListener('click', () => { currentFilter = 'update'; updateFilterButtons('filterUpdate'); renderActivities(); });
+            document.getElementById('filterDelete')?.addEventListener('click', () => { currentFilter = 'delete'; updateFilterButtons('filterDelete'); renderActivities(); });
+            document.getElementById('filterLogin')?.addEventListener('click', () => { currentFilter = 'login'; updateFilterButtons('filterLogin'); renderActivities(); });
+            document.getElementById('filterUpload')?.addEventListener('click', () => { currentFilter = 'upload'; updateFilterButtons('filterUpload'); renderActivities(); });
+
+            document.getElementById('applyDateFilter')?.addEventListener('click', () => {
+                startDate = document.getElementById('startDate').value;
+                endDate = document.getElementById('endDate').value;
+                renderActivities();
+            });
+            document.getElementById('resetDateFilter')?.addEventListener('click', () => {
+                startDate = null;
+                endDate = null;
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
+                renderActivities();
+            });
+
+            document.getElementById('clearLogsBtn')?.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all activity logs? This action cannot be undone.')) {
+                    activities = [];
+                    saveActivities();
+                    updateStats();
+                    renderActivities();
+                    showToast('All logs cleared!', 'info');
+                }
+            });
+
+            document.getElementById('exportLogsBtn')?.addEventListener('click', exportLogs);
+
+            document.getElementById('activityModal')?.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('activityModal')) {
+                    document.getElementById('activityModal').classList.add('hidden');
+                    document.getElementById('activityModal').classList.remove('flex');
+                }
+            });
+
+            updateStats();
+            renderActivities();
+            document.getElementById('filterAll').classList.add('bg-blue-500', 'text-white');
+
+            // Expose addActivity to global for other pages to use
+            window.addActivity = addActivity;
+        </script>
+        <script src="main.js"></script>
+    </body>
+
 </html>

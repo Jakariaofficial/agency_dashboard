@@ -1,100 +1,446 @@
 <!doctype html>
 <html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agency Dashboard | Kanban Board</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        ::-webkit-scrollbar{width:6px}
-        ::-webkit-scrollbar-track{background:#f1f1f1}
-        ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
-        .menu-item.active{background:linear-gradient(135deg,#3b82f6,#2563eb);color:white}
-        .menu-item.active i{color:white}
-        .dropdown-menu{animation:slideDown .2s ease}
-        @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-        .modal-backdrop{background-color:rgba(0,0,0,0.5);backdrop-filter:blur(4px)}
-        .sidebar{transition:width .3s ease-in-out,transform .3s ease-in-out}
-        .sidebar .submenu{transition:all .2s ease}
-        .menu-item{transition:all .2s ease}
-        .lg\:w-20{width:5rem}
-        .lg\:w-72{width:18rem}
-        .lg\:justify-center{justify-content:center}
-        .lg\:hidden{display:none}
-        .tooltip-text{transition:opacity .2s ease}
-        .group:hover .tooltip-text{opacity:1}
-        .kanban-column{min-height:500px;transition:all .2s ease}
-        .kanban-card{cursor:move;transition:all .2s ease}
-        .kanban-card:hover{transform:translateY(-2px);box-shadow:0 10px 25px -5px rgba(0,0,0,0.1)}
-        .drag-over{background-color:#f3f4f6;border:2px dashed #3b82f6}
-    </style>
-</head>
-<body class="bg-gray-50 font-sans antialiased">
-    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i class="fas fa-bars"></i></button>
-    <div class="flex h-screen overflow-hidden">
-        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                <a href="index.html" class="flex items-center space-x-3"><div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-white text-xl"></i></div><div class="logo-text"><h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1><p class="text-xs text-gray-400">Professional Agency Suite</p></div></a>
-                <button id="collapseSidebarBtn" class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300" id="collapseIcon"></i></button>
-            </div>
-            <nav class="flex-1 px-4 py-4 space-y-6">
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Main</p></div><div class="space-y-1"><a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Dashboard</div></a><a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Analytics</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Management</p></div><div class="space-y-1"><div class="relative"><button id="projectsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span class="font-medium">Projects</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="projectsDropdownIcon"></i></button><div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a href="active-projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-play-circle w-4"></i><span class="text-sm">Active Projects</span></a></div></div><div class="relative"><button id="tasksMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span class="font-medium">Tasks</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="tasksDropdownIcon"></i></button><div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-check-square w-4"></i><span class="text-sm">To-Do List</span></a><a href="kanban.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-columns w-4"></i><span class="text-sm">Kanban Board</span></a><a href="calendar.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-calendar-alt w-4"></i><span class="text-sm">Calendar</span></a></div></div><div class="relative"><button id="clientsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span class="font-medium">Clients</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="clientsDropdownIcon"></i></button><div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="clients.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a href="add-client.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-user-plus w-4"></i><span class="text-sm">Add Client</span></a><a href="client-messages.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a href="client-assets.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div></div></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Finance</p></div><div class="space-y-1"><a href="invoices.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Invoices</div></a><a href="payments.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Payments</div></a><a href="subscriptions.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Subscriptions</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Resources</p></div><div class="space-y-1"><a href="file-manager.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File Manager</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">File Manager</div></a><a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Reports</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">System</p></div><div class="space-y-1"><div class="relative"><button id="teamMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="teamDropdownIcon"></i></button><div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="team-members.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a href="activities.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-history w-4"></i><span class="text-sm">Activity Logs</span></a></div></div><a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cog w-5"></i><span class="font-medium">Settings</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Settings</div></a><a href="support-tickets.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Support Tickets</div></a></div></div>
-            </nav>
-            <div class="p-4 border-t border-gray-100"><div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</div><div class="user-info-text"><p class="text-sm font-semibold text-gray-700">Alex Johnson</p><p class="text-xs text-gray-400">Admin</p></div></div><button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Logout</div></button><p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p></div>
-        </aside>
 
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
-                <div class="flex justify-between items-center"><h2 class="text-2xl font-semibold text-gray-800">Kanban Board</h2>
-                    <div class="relative"><button id="profileDropdownBtn" class="flex items-center space-x-3"><span class="text-right hidden sm:block"><span class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span class="block text-xs text-gray-400">Admin</span></span><span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i></button><div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50"><div class="p-3 border-b border-gray-100"><p class="font-semibold text-gray-800">Alex Johnson</p><p class="text-sm text-gray-500">alex@agency.com</p></div><div class="py-2"><a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-cog w-5"></i><span>Settings</span></a></div><div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div></div></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Agency Dashboard | Kanban Board</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px
+            }
+
+            .menu-item.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white
+            }
+
+            .menu-item.active i {
+                color: white
+            }
+
+            .dropdown-menu {
+                animation: slideDown .2s ease
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px)
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0)
+                }
+            }
+
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px)
+            }
+
+            .sidebar {
+                transition: width .3s ease-in-out, transform .3s ease-in-out
+            }
+
+            .sidebar .submenu {
+                transition: all .2s ease
+            }
+
+            .menu-item {
+                transition: all .2s ease
+            }
+
+            .lg\:w-20 {
+                width: 5rem
+            }
+
+            .lg\:w-72 {
+                width: 18rem
+            }
+
+            .lg\:justify-center {
+                justify-content: center
+            }
+
+            .lg\:hidden {
+                display: none
+            }
+
+            .tooltip-text {
+                transition: opacity .2s ease
+            }
+
+            .group:hover .tooltip-text {
+                opacity: 1
+            }
+
+            .kanban-column {
+                min-height: 500px;
+                transition: all .2s ease
+            }
+
+            .kanban-card {
+                cursor: move;
+                transition: all .2s ease
+            }
+
+            .kanban-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1)
+            }
+
+            .drag-over {
+                background-color: #f3f4f6;
+                border: 2px dashed #3b82f6
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 font-sans antialiased">
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i
+                class="fas fa-bars"></i></button>
+        <div class="flex h-screen overflow-hidden">
+            <aside id="sidebar"
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <a href="index.html" class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <div class="logo-text">
+                            <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
+                            </h1>
+                            <p class="text-xs text-gray-400">Professional Agency Suite</p>
+                        </div>
+                    </a>
+                    <button id="collapseSidebarBtn"
+                        class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i
+                            class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+                            id="collapseIcon"></i></button>
                 </div>
-            </header>
+                <nav class="flex-1 px-4 py-4 space-y-6">
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
+                        </div>
+                        <div class="space-y-1"><a href="dashboard.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Dashboard</div>
+                            </a><a href="analytics.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Analytics</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Management</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="projectsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span
+                                            class="font-medium">Projects</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="projectsDropdownIcon"></i>
+                                </button>
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a
+                                        href="active-projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-play-circle w-4"></i><span class="text-sm">Active
+                                            Projects</span></a></div>
+                            </div>
+                            <div class="relative"><button id="tasksMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span
+                                            class="font-medium">Tasks</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="tasksDropdownIcon"></i>
+                                </button>
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-check-square w-4"></i><span class="text-sm">To-Do
+                                            List</span></a><a href="kanban.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-columns w-4"></i><span class="text-sm">Kanban
+                                            Board</span></a><a href="calendar.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-calendar-alt w-4"></i><span
+                                            class="text-sm">Calendar</span></a></div>
+                            </div>
+                            <div class="relative"><button id="clientsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span
+                                            class="font-medium">Clients</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="clientsDropdownIcon"></i>
+                                </button>
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="clients.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a
+                                        href="add-client.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-user-plus w-4"></i><span class="text-sm">Add
+                                            Client</span></a><a href="client-messages.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a
+                                        href="client-assets.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Finance</p>
+                        </div>
+                        <div class="space-y-1"><a href="invoices.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Invoices</div>
+                            </a><a href="payments.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Payments</div>
+                            </a><a href="subscriptions.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Subscriptions</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Resources</p>
+                        </div>
+                        <div class="space-y-1"><a href="file-manager.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File
+                                    Manager</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    File Manager</div>
+                            </a><a href="reports.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Reports</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">System</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="teamMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i
+                                            class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span>
+                                    </div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="teamDropdownIcon"></i>
+                                </button>
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="team-members.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a
+                                        href="activities.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-history w-4"></i><span class="text-sm">Activity
+                                            Logs</span></a></div>
+                            </div><a href="settings.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Settings</div>
+                            </a><a href="support-tickets.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Support Tickets</div>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="p-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                            AJ</div>
+                        <div class="user-info-text">
+                            <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+                            <p class="text-xs text-gray-400">Admin</p>
+                        </div>
+                    </div><button id="sidebarLogoutBtn"
+                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i
+                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span>
+                        <div
+                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                            Logout</div>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
+                </div>
+            </aside>
 
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6"><h3 class="text-lg font-semibold text-gray-800">Drag & Drop Tasks</h3><button id="addCardBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-plus mr-2"></i>Add Task</button></div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-gray-50 rounded-xl p-4"><div class="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-lg font-semibold text-center mb-4">📋 To Do</div><div id="todo-column" class="kanban-column space-y-3" data-status="todo"></div></div>
-                    <div class="bg-gray-50 rounded-xl p-4"><div class="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg font-semibold text-center mb-4">⚡ In Progress</div><div id="progress-column" class="kanban-column space-y-3" data-status="progress"></div></div>
-                    <div class="bg-gray-50 rounded-xl p-4"><div class="bg-green-100 text-green-800 px-3 py-2 rounded-lg font-semibold text-center mb-4">✅ Done</div><div id="done-column" class="kanban-column space-y-3" data-status="done"></div></div>
+            <main class="flex-1 overflow-y-auto">
+                <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-semibold text-gray-800">Kanban Board</h2>
+                        <div class="relative"><button id="profileDropdownBtn" class="flex items-center space-x-3"><span
+                                    class="text-right hidden sm:block"><span
+                                        class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span
+                                        class="block text-xs text-gray-400">Admin</span></span><span
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span><i
+                                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    id="dropdownIcon"></i></button>
+                            <div id="profileDropdown"
+                                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                                <div class="p-3 border-b border-gray-100">
+                                    <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                    <p class="text-sm text-gray-500">alex@agency.com</p>
+                                </div>
+                                <div class="py-2"><a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-cog w-5"></i><span>Settings</span></a></div>
+                                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
+                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Drag & Drop Tasks</h3><button id="addCardBtn"
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i
+                                class="fas fa-plus mr-2"></i>Add Task</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <div
+                                class="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-lg font-semibold text-center mb-4">
+                                📋 To Do</div>
+                            <div id="todo-column" class="kanban-column space-y-3" data-status="todo"></div>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <div class="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg font-semibold text-center mb-4">⚡
+                                In Progress</div>
+                            <div id="progress-column" class="kanban-column space-y-3" data-status="progress"></div>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <div
+                                class="bg-green-100 text-green-800 px-3 py-2 rounded-lg font-semibold text-center mb-4">
+                                ✅ Done</div>
+                            <div id="done-column" class="kanban-column space-y-3" data-status="done"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="addTaskModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdropTask"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Add New Task</h3><input type="text"
+                        id="taskTitle" placeholder="Task title"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"><textarea id="taskDesc" rows="3"
+                        placeholder="Description"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"></textarea><select
+                        id="taskStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4">
+                        <option value="todo">To Do</option>
+                        <option value="progress">In Progress</option>
+                        <option value="done">Done</option>
+                    </select>
+                    <div class="flex gap-3"><button id="saveCardBtn"
+                            class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg">Add Task</button><button
+                            id="cancelCardBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                            class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                    <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                    <div class="flex gap-3"><button id="confirmLogoutBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button
+                            id="cancelLogoutBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
+                </div>
+            </div>
+        </div>
 
-    <div id="addTaskModal" class="fixed inset-0 z-50 hidden items-center justify-center"><div class="absolute inset-0 modal-backdrop" id="modalBackdropTask"></div><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"><div class="p-6"><h3 class="text-xl font-semibold text-gray-800 mb-4">Add New Task</h3><input type="text" id="taskTitle" placeholder="Task title" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"><textarea id="taskDesc" rows="3" placeholder="Description" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"></textarea><select id="taskStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"><option value="todo">To Do</option><option value="progress">In Progress</option><option value="done">Done</option></select><div class="flex gap-3"><button id="saveCardBtn" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg">Add Task</button><button id="cancelCardBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div></div></div></div>
-    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center"><div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"><div class="p-6 text-center"><div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3><p class="text-gray-500 mb-6">Are you sure you want to logout?</p><div class="flex gap-3"><button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div></div></div></div>
+        <script>
+            function checkAuth() { const a = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn"); if (!a || a !== "true") window.location.href = "login.html" } checkAuth();
+            const cp = window.location.pathname.split("/").pop() || "kanban.html"; document.querySelectorAll(".menu-item").forEach(i => { if (i.getAttribute("href") === cp) i.classList.add("active") });
+            const s = document.getElementById("sidebar"), cb = document.getElementById("collapseSidebarBtn"), ci = document.getElementById("collapseIcon"); let ic = localStorage.getItem('sidebarCollapsed') === 'true';
+            function us() { if (!s) return; if (ic) { s.classList.remove('lg:w-72'); s.classList.add('lg:w-20'); if (ci) ci.style.transform = 'rotate(180deg)'; document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.add('lg:hidden')); document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.add('lg:hidden')); document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.add('lg:justify-center')); document.querySelectorAll('.submenu').forEach(e => e.classList.add('hidden')) } else { s.classList.remove('lg:w-20'); s.classList.add('lg:w-72'); if (ci) ci.style.transform = 'rotate(0deg)'; document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.remove('lg:hidden')); document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.remove('lg:hidden')); document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.remove('lg:justify-center')) } }
+            function ts() { ic = !ic; localStorage.setItem('sidebarCollapsed', ic); us() } if (cb) { cb.addEventListener('click', ts); us() }
+            function ss(b, m, i) { const btn = document.getElementById(b), menu = document.getElementById(m), icon = document.getElementById(i); if (btn && menu) btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (!ic) { const h = menu.classList.contains('hidden'); document.querySelectorAll('.submenu').forEach(m2 => { if (m2 !== menu) m2.classList.add('hidden') }); document.querySelectorAll('[id$="DropdownIcon"]').forEach(ic2 => { if (ic2 !== icon && ic2.style.transform === 'rotate(180deg)') ic2.style.transform = 'rotate(0deg)' }); menu.classList.toggle('hidden'); if (icon) icon.style.transform = h ? 'rotate(180deg)' : 'rotate(0deg)' } }) }
+            ss('projectsMenuBtn', 'projectsSubmenu', 'projectsDropdownIcon'); ss('tasksMenuBtn', 'tasksSubmenu', 'tasksDropdownIcon'); ss('clientsMenuBtn', 'clientsSubmenu', 'clientsDropdownIcon'); ss('teamMenuBtn', 'teamSubmenu', 'teamDropdownIcon');
+            document.addEventListener('click', e => { if (ic) return; if (!e.target.closest('[id$="MenuBtn"]') && !e.target.closest('.submenu')) { document.querySelectorAll('.submenu').forEach(m => m.classList.add('hidden')); document.querySelectorAll('[id$="DropdownIcon"]').forEach(i => i.style.transform = 'rotate(0deg)') } });
+            const mt = document.getElementById("mobileMenuToggle"); if (mt) { mt.addEventListener("click", () => s.classList.toggle("-translate-x-full")); document.addEventListener("click", e => { if (window.innerWidth < 1024 && s && !s.contains(e.target) && !mt.contains(e.target)) s.classList.add("-translate-x-full") }) }
+            const pb = document.getElementById("profileDropdownBtn"), pd = document.getElementById("profileDropdown"), di = document.getElementById("dropdownIcon"); if (pb) pb.addEventListener("click", e => { e.stopPropagation(); pd.classList.toggle("hidden"); if (di) di.style.transform = pd.classList.contains("hidden") ? "rotate(0deg)" : "rotate(180deg)" }); document.addEventListener("click", e => { if (pb && !pb.contains(e.target) && pd && !pd.contains(e.target)) { pd.classList.add("hidden"); if (di) di.style.transform = "rotate(0deg)" } });
+            function st(m, t = "success") { const e = document.getElementById("centerToast"); if (e) e.remove(); const to = document.createElement("div"); to.id = "centerToast"; let bg = "bg-green-500", ic = "fa-check-circle"; if (t === "error") { bg = "bg-red-500"; ic = "fa-exclamation-circle" } else if (t === "info") { bg = "bg-blue-500"; ic = "fa-info-circle" } to.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bg} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`; to.innerHTML = `<i class="fas ${ic} text-2xl"></i><span class="text-lg font-medium">${m}</span>`; document.body.appendChild(to); setTimeout(() => to.remove(), 2000) }
+            const lm = document.getElementById("logoutModal"), sl = document.getElementById("sidebarLogoutBtn"), dl = document.getElementById("dropdownLogoutBtn"), cf = document.getElementById("confirmLogoutBtn"), cl = document.getElementById("cancelLogoutBtn"), bd = document.getElementById("modalBackdrop"); function sm() { if (lm) { lm.classList.remove("hidden"); lm.classList.add("flex") } } function hm() { if (lm) { lm.classList.add("hidden"); lm.classList.remove("flex") } } function lg() { localStorage.removeItem("isLoggedIn"); sessionStorage.removeItem("isLoggedIn"); st("Logged out successfully!", "success"); hm(); setTimeout(() => window.location.href = "login.html", 1500) } if (sl) sl.addEventListener("click", sm); if (dl) dl.addEventListener("click", sm); if (cf) cf.addEventListener("click", lg); if (cl) cl.addEventListener("click", hm); if (bd) bd.addEventListener("click", hm);
+            document.addEventListener("DOMContentLoaded", () => { if (window.innerWidth < 1024) s.classList.add("-translate-x-full"); loadKanban() });
 
-    <script>
-        function checkAuth(){const a=localStorage.getItem("isLoggedIn")||sessionStorage.getItem("isLoggedIn");if(!a||a!=="true")window.location.href="login.html"}checkAuth();
-        const cp=window.location.pathname.split("/").pop()||"kanban.html";document.querySelectorAll(".menu-item").forEach(i=>{if(i.getAttribute("href")===cp)i.classList.add("active")});
-        const s=document.getElementById("sidebar"),cb=document.getElementById("collapseSidebarBtn"),ci=document.getElementById("collapseIcon");let ic=localStorage.getItem('sidebarCollapsed')==='true';
-        function us(){if(!s)return;if(ic){s.classList.remove('lg:w-72');s.classList.add('lg:w-20');if(ci)ci.style.transform='rotate(180deg)';document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e=>e.classList.add('lg:hidden'));document.querySelectorAll('.menu-item span.font-medium').forEach(e=>e.classList.add('lg:hidden'));document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e=>e.classList.add('lg:justify-center'));document.querySelectorAll('.submenu').forEach(e=>e.classList.add('hidden'))}else{s.classList.remove('lg:w-20');s.classList.add('lg:w-72');if(ci)ci.style.transform='rotate(0deg)';document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e=>e.classList.remove('lg:hidden'));document.querySelectorAll('.menu-item span.font-medium').forEach(e=>e.classList.remove('lg:hidden'));document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e=>e.classList.remove('lg:justify-center'))}}
-        function ts(){ic=!ic;localStorage.setItem('sidebarCollapsed',ic);us()}if(cb){cb.addEventListener('click',ts);us()}
-        function ss(b,m,i){const btn=document.getElementById(b),menu=document.getElementById(m),icon=document.getElementById(i);if(btn&&menu)btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(!ic){const h=menu.classList.contains('hidden');document.querySelectorAll('.submenu').forEach(m2=>{if(m2!==menu)m2.classList.add('hidden')});document.querySelectorAll('[id$="DropdownIcon"]').forEach(ic2=>{if(ic2!==icon&&ic2.style.transform==='rotate(180deg)')ic2.style.transform='rotate(0deg)'});menu.classList.toggle('hidden');if(icon)icon.style.transform=h?'rotate(180deg)':'rotate(0deg)'}})}}
-        ss('projectsMenuBtn','projectsSubmenu','projectsDropdownIcon');ss('tasksMenuBtn','tasksSubmenu','tasksDropdownIcon');ss('clientsMenuBtn','clientsSubmenu','clientsDropdownIcon');ss('teamMenuBtn','teamSubmenu','teamDropdownIcon');
-        document.addEventListener('click',e=>{if(ic)return;if(!e.target.closest('[id$="MenuBtn"]')&&!e.target.closest('.submenu')){document.querySelectorAll('.submenu').forEach(m=>m.classList.add('hidden'));document.querySelectorAll('[id$="DropdownIcon"]').forEach(i=>i.style.transform='rotate(0deg)')}});
-        const mt=document.getElementById("mobileMenuToggle");if(mt){mt.addEventListener("click",()=>s.classList.toggle("-translate-x-full"));document.addEventListener("click",e=>{if(window.innerWidth<1024&&s&&!s.contains(e.target)&&!mt.contains(e.target))s.classList.add("-translate-x-full")})}
-        const pb=document.getElementById("profileDropdownBtn"),pd=document.getElementById("profileDropdown"),di=document.getElementById("dropdownIcon");if(pb)pb.addEventListener("click",e=>{e.stopPropagation();pd.classList.toggle("hidden");if(di)di.style.transform=pd.classList.contains("hidden")?"rotate(0deg)":"rotate(180deg)"});document.addEventListener("click",e=>{if(pb&&!pb.contains(e.target)&&pd&&!pd.contains(e.target)){pd.classList.add("hidden");if(di)di.style.transform="rotate(0deg)"}});
-        function st(m,t="success"){const e=document.getElementById("centerToast");if(e)e.remove();const to=document.createElement("div");to.id="centerToast";let bg="bg-green-500",ic="fa-check-circle";if(t==="error"){bg="bg-red-500";ic="fa-exclamation-circle"}else if(t==="info"){bg="bg-blue-500";ic="fa-info-circle"}to.className=`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bg} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`;to.innerHTML=`<i class="fas ${ic} text-2xl"></i><span class="text-lg font-medium">${m}</span>`;document.body.appendChild(to);setTimeout(()=>to.remove(),2000)}
-        const lm=document.getElementById("logoutModal"),sl=document.getElementById("sidebarLogoutBtn"),dl=document.getElementById("dropdownLogoutBtn"),cf=document.getElementById("confirmLogoutBtn"),cl=document.getElementById("cancelLogoutBtn"),bd=document.getElementById("modalBackdrop");function sm(){if(lm){lm.classList.remove("hidden");lm.classList.add("flex")}}function hm(){if(lm){lm.classList.add("hidden");lm.classList.remove("flex")}}function lg(){localStorage.removeItem("isLoggedIn");sessionStorage.removeItem("isLoggedIn");st("Logged out successfully!","success");hm();setTimeout(()=>window.location.href="login.html",1500)}if(sl)sl.addEventListener("click",sm);if(dl)dl.addEventListener("click",sm);if(cf)cf.addEventListener("click",lg);if(cl)cl.addEventListener("click",hm);if(bd)bd.addEventListener("click",hm);
-        document.addEventListener("DOMContentLoaded",()=>{if(window.innerWidth<1024)s.classList.add("-translate-x-full");loadKanban()});
-        
-        let kanbanTasks = JSON.parse(localStorage.getItem('kanbanTasks')) || [{id:1,title:"Design Dashboard",desc:"Create new dashboard UI",status:"todo"},{id:2,title:"API Integration",desc:"Connect with backend APIs",status:"progress"},{id:3,title:"Testing",desc:"Test all features",status:"done"}];
-        function saveKanban(){localStorage.setItem('kanbanTasks',JSON.stringify(kanbanTasks))}
-        function loadKanban(){['todo','progress','done'].forEach(status=>{const col=document.getElementById(`${status==='todo'?'todo':status==='progress'?'progress':'done'}-column`);if(col){col.innerHTML='';kanbanTasks.filter(t=>t.status===status).forEach(task=>{const card=document.createElement('div');card.className='kanban-card bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-move';card.draggable=true;card.dataset.id=task.id;card.innerHTML=`<div class="flex justify-between items-start mb-2"><h4 class="font-semibold text-gray-800">${task.title}</h4><button class="delete-card text-red-500 hover:text-red-700" data-id="${task.id}"><i class="fas fa-trash text-xs"></i></button></div><p class="text-sm text-gray-600">${task.desc}</p>`;card.addEventListener('dragstart',handleDragStart);col.appendChild(card)})}});document.querySelectorAll('.delete-card').forEach(btn=>btn.addEventListener('click',(e)=>{const id=parseInt(e.currentTarget.dataset.id);kanbanTasks=kanbanTasks.filter(t=>t.id!==id);saveKanban();loadKanban();st('Task deleted!','info')}))}
-        let draggedItem=null;function handleDragStart(e){draggedItem=parseInt(e.target.closest('.kanban-card').dataset.id)}document.querySelectorAll('.kanban-column').forEach(col=>{col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('drag-over')});col.addEventListener('dragleave',()=>{col.classList.remove('drag-over')});col.addEventListener('drop',e=>{e.preventDefault();col.classList.remove('drag-over');const newStatus=col.dataset.status;const task=kanbanTasks.find(t=>t.id===draggedItem);if(task){task.status=newStatus;saveKanban();loadKanban();st(`Task moved to ${newStatus=== 'todo'?'To Do':newStatus==='progress'?'In Progress':'Done'}!`,'success')}})});
-        const addCardBtn=document.getElementById('addCardBtn'),addModal=document.getElementById('addTaskModal'),saveCardBtn=document.getElementById('saveCardBtn'),cancelCardBtn=document.getElementById('cancelCardBtn'),modalBackdropTask=document.getElementById('modalBackdropTask');
-        addCardBtn.addEventListener('click',()=>{addModal.classList.remove('hidden');addModal.classList.add('flex')});
-        function closeModal(){addModal.classList.add('hidden');addModal.classList.remove('flex');document.getElementById('taskTitle').value='';document.getElementById('taskDesc').value=''}
-        cancelCardBtn.addEventListener('click',closeModal);modalBackdropTask.addEventListener('click',closeModal);
-        saveCardBtn.addEventListener('click',()=>{const title=document.getElementById('taskTitle').value.trim();const desc=document.getElementById('taskDesc').value.trim();const status=document.getElementById('taskStatus').value;if(title){const newTask={id:Date.now(),title,desc,status};kanbanTasks.push(newTask);saveKanban();loadKanban();closeModal();st('Task added!','success')}else{st('Please enter task title!','error')}});
-    </script>
-    <script src="main.js"></script>
-</body>
+            let kanbanTasks = JSON.parse(localStorage.getItem('kanbanTasks')) || [{ id: 1, title: "Design Dashboard", desc: "Create new dashboard UI", status: "todo" }, { id: 2, title: "API Integration", desc: "Connect with backend APIs", status: "progress" }, { id: 3, title: "Testing", desc: "Test all features", status: "done" }];
+            function saveKanban() { localStorage.setItem('kanbanTasks', JSON.stringify(kanbanTasks)) }
+            function loadKanban() { ['todo', 'progress', 'done'].forEach(status => { const col = document.getElementById(`${status === 'todo' ? 'todo' : status === 'progress' ? 'progress' : 'done'}-column`); if (col) { col.innerHTML = ''; kanbanTasks.filter(t => t.status === status).forEach(task => { const card = document.createElement('div'); card.className = 'kanban-card bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-move'; card.draggable = true; card.dataset.id = task.id; card.innerHTML = `<div class="flex justify-between items-start mb-2"><h4 class="font-semibold text-gray-800">${task.title}</h4><button class="delete-card text-red-500 hover:text-red-700" data-id="${task.id}"><i class="fas fa-trash text-xs"></i></button></div><p class="text-sm text-gray-600">${task.desc}</p>`; card.addEventListener('dragstart', handleDragStart); col.appendChild(card) }) } }); document.querySelectorAll('.delete-card').forEach(btn => btn.addEventListener('click', (e) => { const id = parseInt(e.currentTarget.dataset.id); kanbanTasks = kanbanTasks.filter(t => t.id !== id); saveKanban(); loadKanban(); st('Task deleted!', 'info') })) }
+            let draggedItem = null; function handleDragStart(e) { draggedItem = parseInt(e.target.closest('.kanban-card').dataset.id) } document.querySelectorAll('.kanban-column').forEach(col => { col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drag-over') }); col.addEventListener('dragleave', () => { col.classList.remove('drag-over') }); col.addEventListener('drop', e => { e.preventDefault(); col.classList.remove('drag-over'); const newStatus = col.dataset.status; const task = kanbanTasks.find(t => t.id === draggedItem); if (task) { task.status = newStatus; saveKanban(); loadKanban(); st(`Task moved to ${newStatus === 'todo' ? 'To Do' : newStatus === 'progress' ? 'In Progress' : 'Done'}!`, 'success') } }) });
+            const addCardBtn = document.getElementById('addCardBtn'), addModal = document.getElementById('addTaskModal'), saveCardBtn = document.getElementById('saveCardBtn'), cancelCardBtn = document.getElementById('cancelCardBtn'), modalBackdropTask = document.getElementById('modalBackdropTask');
+            addCardBtn.addEventListener('click', () => { addModal.classList.remove('hidden'); addModal.classList.add('flex') });
+            function closeModal() { addModal.classList.add('hidden'); addModal.classList.remove('flex'); document.getElementById('taskTitle').value = ''; document.getElementById('taskDesc').value = '' }
+            cancelCardBtn.addEventListener('click', closeModal); modalBackdropTask.addEventListener('click', closeModal);
+            saveCardBtn.addEventListener('click', () => { const title = document.getElementById('taskTitle').value.trim(); const desc = document.getElementById('taskDesc').value.trim(); const status = document.getElementById('taskStatus').value; if (title) { const newTask = { id: Date.now(), title, desc, status }; kanbanTasks.push(newTask); saveKanban(); loadKanban(); closeModal(); st('Task added!', 'success') } else { st('Please enter task title!', 'error') } });
+        </script>
+        <script src="main.js"></script>
+    </body>
+
 </html>

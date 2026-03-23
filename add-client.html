@@ -1,123 +1,422 @@
 <!doctype html>
 <html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agency Dashboard | Add Client</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-        .menu-item.active i { color: white; }
-        .dropdown-menu { animation: slideDown 0.2s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
-        .sidebar { transition: width 0.3s ease-in-out, transform 0.3s ease-in-out; }
-        .lg\:w-20 { width: 5rem; }
-        .lg\:w-72 { width: 18rem; }
-    </style>
-</head>
-<body class="bg-gray-50 font-sans antialiased">
-    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i class="fas fa-bars"></i></button>
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar HTML (without JS) -->
-        <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                <a href="index.html" class="flex items-center space-x-3"><div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-white text-xl"></i></div><div class="logo-text"><h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1><p class="text-xs text-gray-400">Professional Agency Suite</p></div></a>
-                <button id="collapseSidebarBtn" class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300" id="collapseIcon"></i></button>
-            </div>
-            <nav class="flex-1 px-4 py-4 space-y-6">
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Main</p></div><div class="space-y-1"><a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Dashboard</div></a><a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Analytics</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Management</p></div><div class="space-y-1"><div class="relative"><button id="projectsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span class="font-medium">Projects</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="projectsDropdownIcon"></i></button><div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a href="active-projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-play-circle w-4"></i><span class="text-sm">Active Projects</span></a></div></div><div class="relative"><button id="tasksMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span class="font-medium">Tasks</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="tasksDropdownIcon"></i></button><div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-check-square w-4"></i><span class="text-sm">To-Do List</span></a><a href="kanban.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-columns w-4"></i><span class="text-sm">Kanban Board</span></a><a href="calendar.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-calendar-alt w-4"></i><span class="text-sm">Calendar</span></a></div></div><div class="relative"><button id="clientsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span class="font-medium">Clients</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="clientsDropdownIcon"></i></button><div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="clients.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a href="add-client.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-user-plus w-4"></i><span class="text-sm">Add Client</span></a><a href="client-messages.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a href="client-assets.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div></div></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Finance</p></div><div class="space-y-1"><a href="invoices.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Invoices</div></a><a href="payments.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Payments</div></a><a href="subscriptions.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Subscriptions</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">Resources</p></div><div class="space-y-1"><a href="file-manager.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File Manager</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">File Manager</div></a><a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Reports</div></a></div></div>
-                <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase">System</p></div><div class="space-y-1"><div class="relative"><button id="teamMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><div class="flex items-center space-x-3"><i class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="teamDropdownIcon"></i></button><div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="team-members.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a href="activities.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i class="fas fa-history w-4"></i><span class="text-sm">Activity Logs</span></a></div></div><a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-cog w-5"></i><span class="font-medium">Settings</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Settings</div></a><a href="support-tickets.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Support Tickets</div></a></div></div>
-            </nav>
-            <div class="p-4 border-t border-gray-100"><div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</div><div class="user-info-text"><p class="text-sm font-semibold text-gray-700">Alex Johnson</p><p class="text-xs text-gray-400">Admin</p></div></div><button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">Logout</div></button><p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p></div>
-        </aside>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
-                <div class="flex justify-between items-center"><h2 class="text-2xl font-semibold text-gray-800">Add New Client</h2>
-                    <div class="relative"><button id="profileDropdownBtn" class="flex items-center space-x-3"><span class="text-right hidden sm:block"><span class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span class="block text-xs text-gray-400">Admin</span></span><span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i></button><div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50"><div class="p-3 border-b border-gray-100"><p class="font-semibold text-gray-800">Alex Johnson</p><p class="text-sm text-gray-500">alex@agency.com</p></div><div class="py-2"><a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i class="fas fa-cog w-5"></i><span>Settings</span></a></div><div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div></div></div>
-                </div>
-            </header>
-
-            <!-- Page Content -->
-            <div class="p-6">
-                <div class="mb-6">
-                    <p class="text-gray-500">Fill in the details to add a new client to your agency</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm p-6 max-w-3xl">
-                    <form id="addClientForm">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Company Name *</label><input type="text" id="companyName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter company name"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Contact Person *</label><input type="text" id="contactPerson" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Full name"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label><input type="email" id="clientEmail" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="client@company.com"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label><input type="tel" id="clientPhone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="+880123456789"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Industry</label><select id="clientIndustry" class="w-full px-4 py-2 border border-gray-300 rounded-lg"><option value="">Select Industry</option><option>Technology</option><option>Healthcare</option><option>Education</option><option>Finance</option><option>Retail</option></select></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Status</label><select id="clientStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
-                            <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-2">Address</label><textarea id="clientAddress" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Full address"></textarea></div>
-                        </div>
-                        <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition">Add Client</button>
-                            <button type="button" id="cancelBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center"><div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4"><div class="p-6 text-center"><div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3><p class="text-gray-500 mb-6">Are you sure you want to logout?</p><div class="flex gap-3"><button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div></div></div></div>
-
-    <!-- Page Specific JavaScript (No sidebar JS) -->
-    <script>
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            toast.innerHTML = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        document.getElementById('addClientForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('companyName').value.trim();
-            const contact = document.getElementById('contactPerson').value.trim();
-            const email = document.getElementById('clientEmail').value.trim();
-            
-            if(name && contact && email) {
-                let clients = JSON.parse(localStorage.getItem('clients')) || [];
-                const newClient = {
-                    id: Date.now(),
-                    name: name,
-                    contact: contact,
-                    email: email,
-                    phone: document.getElementById('clientPhone').value,
-                    industry: document.getElementById('clientIndustry').value,
-                    status: document.getElementById('clientStatus').value,
-                    address: document.getElementById('clientAddress').value,
-                    projects: 0,
-                    dateAdded: new Date().toISOString()
-                };
-                clients.push(newClient);
-                localStorage.setItem('clients', JSON.stringify(clients));
-                showToast('Client added successfully!', 'success');
-                setTimeout(() => window.location.href = 'clients.html', 1500);
-            } else {
-                showToast('Please fill all required fields!', 'error');
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Agency Dashboard | Add Client</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            ::-webkit-scrollbar {
+                width: 6px;
             }
-        });
 
-        document.getElementById('cancelBtn')?.addEventListener('click', () => {
-            window.location.href = 'clients.html';
-        });
-    </script>
-    <script src="main.js"></script>
-</body>
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .menu-item.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+            }
+
+            .menu-item.active i {
+                color: white;
+            }
+
+            .dropdown-menu {
+                animation: slideDown 0.2s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+            }
+
+            .sidebar {
+                transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            }
+
+            .lg\:w-20 {
+                width: 5rem;
+            }
+
+            .lg\:w-72 {
+                width: 18rem;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 font-sans antialiased">
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i
+                class="fas fa-bars"></i></button>
+        <div class="flex h-screen overflow-hidden">
+            <!-- Sidebar HTML (without JS) -->
+            <aside id="sidebar"
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <a href="index.html" class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i></div>
+                        <div class="logo-text">
+                            <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
+                            </h1>
+                            <p class="text-xs text-gray-400">Professional Agency Suite</p>
+                        </div>
+                    </a>
+                    <button id="collapseSidebarBtn"
+                        class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i
+                            class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+                            id="collapseIcon"></i></button>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-6">
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
+                        </div>
+                        <div class="space-y-1"><a href="dashboard.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Dashboard</div>
+                            </a><a href="analytics.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Analytics</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Management</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="projectsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span
+                                            class="font-medium">Projects</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="projectsDropdownIcon"></i>
+                                </button>
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a
+                                        href="active-projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-play-circle w-4"></i><span class="text-sm">Active
+                                            Projects</span></a></div>
+                            </div>
+                            <div class="relative"><button id="tasksMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span
+                                            class="font-medium">Tasks</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="tasksDropdownIcon"></i>
+                                </button>
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-check-square w-4"></i><span class="text-sm">To-Do
+                                            List</span></a><a href="kanban.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-columns w-4"></i><span class="text-sm">Kanban
+                                            Board</span></a><a href="calendar.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-calendar-alt w-4"></i><span
+                                            class="text-sm">Calendar</span></a></div>
+                            </div>
+                            <div class="relative"><button id="clientsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span
+                                            class="font-medium">Clients</span></div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="clientsDropdownIcon"></i>
+                                </button>
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="clients.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a
+                                        href="add-client.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-user-plus w-4"></i><span class="text-sm">Add
+                                            Client</span></a><a href="client-messages.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a
+                                        href="client-assets.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Finance</p>
+                        </div>
+                        <div class="space-y-1"><a href="invoices.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Invoices</div>
+                            </a><a href="payments.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Payments</div>
+                            </a><a href="subscriptions.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Subscriptions</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Resources</p>
+                        </div>
+                        <div class="space-y-1"><a href="file-manager.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File
+                                    Manager</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    File Manager</div>
+                            </a><a href="reports.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Reports</div>
+                            </a></div>
+                    </div>
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">System</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative"><button id="teamMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                                    <div class="flex items-center space-x-3"><i
+                                            class="fas fa-user-friends w-5"></i><span class="font-medium">Team</span>
+                                    </div><i
+                                        class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="teamDropdownIcon"></i>
+                                </button>
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a
+                                        href="team-members.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a
+                                        href="activities.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                                            class="fas fa-history w-4"></i><span class="text-sm">Activity
+                                            Logs</span></a></div>
+                            </div><a href="settings.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Settings</div>
+                            </a><a href="support-tickets.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                                    Support Tickets</div>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="p-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+                            AJ</div>
+                        <div class="user-info-text">
+                            <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+                            <p class="text-xs text-gray-400">Admin</p>
+                        </div>
+                    </div><button id="sidebarLogoutBtn"
+                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i
+                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span>
+                        <div
+                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                            Logout</div>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto">
+                <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-semibold text-gray-800">Add New Client</h2>
+                        <div class="relative"><button id="profileDropdownBtn" class="flex items-center space-x-3"><span
+                                    class="text-right hidden sm:block"><span
+                                        class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span
+                                        class="block text-xs text-gray-400">Admin</span></span><span
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span><i
+                                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    id="dropdownIcon"></i></button>
+                            <div id="profileDropdown"
+                                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                                <div class="p-3 border-b border-gray-100">
+                                    <p class="font-semibold text-gray-800">Alex Johnson</p>
+                                    <p class="text-sm text-gray-500">alex@agency.com</p>
+                                </div>
+                                <div class="py-2"><a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                                            class="fas fa-cog w-5"></i><span>Settings</span></a></div>
+                                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
+                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Page Content -->
+                <div class="p-6">
+                    <div class="mb-6">
+                        <p class="text-gray-500">Fill in the details to add a new client to your agency</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm p-6 max-w-3xl">
+                        <form id="addClientForm">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div><label class="block text-sm font-medium text-gray-700 mb-2">Company Name
+                                        *</label><input type="text" id="companyName"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Enter company name"></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-2">Contact Person
+                                        *</label><input type="text" id="contactPerson"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Full name"></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-2">Email Address
+                                        *</label><input type="email" id="clientEmail"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="client@company.com"></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-2">Phone
+                                        Number</label><input type="tel" id="clientPhone"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="+880123456789"></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-2">Industry</label><select
+                                        id="clientIndustry" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                        <option value="">Select Industry</option>
+                                        <option>Technology</option>
+                                        <option>Healthcare</option>
+                                        <option>Education</option>
+                                        <option>Finance</option>
+                                        <option>Retail</option>
+                                    </select></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-2">Status</label><select
+                                        id="clientStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select></div>
+                                <div class="md:col-span-2"><label
+                                        class="block text-sm font-medium text-gray-700 mb-2">Address</label><textarea
+                                        id="clientAddress" rows="2"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                        placeholder="Full address"></textarea></div>
+                            </div>
+                            <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+                                <button type="submit"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition">Add
+                                    Client</button>
+                                <button type="button" id="cancelBtn"
+                                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+                            class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+                    <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+                    <div class="flex gap-3"><button id="confirmLogoutBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button
+                            id="cancelLogoutBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Specific JavaScript (No sidebar JS) -->
+        <script>
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+                toast.innerHTML = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            document.getElementById('addClientForm')?.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const name = document.getElementById('companyName').value.trim();
+                const contact = document.getElementById('contactPerson').value.trim();
+                const email = document.getElementById('clientEmail').value.trim();
+
+                if (name && contact && email) {
+                    let clients = JSON.parse(localStorage.getItem('clients')) || [];
+                    const newClient = {
+                        id: Date.now(),
+                        name: name,
+                        contact: contact,
+                        email: email,
+                        phone: document.getElementById('clientPhone').value,
+                        industry: document.getElementById('clientIndustry').value,
+                        status: document.getElementById('clientStatus').value,
+                        address: document.getElementById('clientAddress').value,
+                        projects: 0,
+                        dateAdded: new Date().toISOString()
+                    };
+                    clients.push(newClient);
+                    localStorage.setItem('clients', JSON.stringify(clients));
+                    showToast('Client added successfully!', 'success');
+                    setTimeout(() => window.location.href = 'clients.html', 1500);
+                } else {
+                    showToast('Please fill all required fields!', 'error');
+                }
+            });
+
+            document.getElementById('cancelBtn')?.addEventListener('click', () => {
+                window.location.href = 'clients.html';
+            });
+        </script>
+        <script src="main.js"></script>
+    </body>
+
 </html>

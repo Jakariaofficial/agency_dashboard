@@ -1,94 +1,415 @@
 <!doctype html>
 <html lang="bn">
+
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Manage all projects - Agency Dashboard">
     <title>Agency Dashboard | All Projects</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: #f1f1f1; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-      .menu-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2); }
-      .menu-item.active i { color: white; }
-      .dropdown-menu { animation: slideDown 0.2s ease; }
-      @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-      .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
-      .sidebar { transition: width 0.3s ease-in-out, transform 0.3s ease-in-out; }
-      .sidebar .submenu { transition: all 0.2s ease; }
-      .menu-item { transition: all 0.2s ease; }
-      .lg\:w-20 { width: 5rem; }
-      .lg\:w-72 { width: 18rem; }
-      .lg\:justify-center { justify-content: center; }
-      .lg\:hidden { display: none; }
-      .tooltip-text { transition: opacity 0.2s ease; }
-      .group:hover .tooltip-text { opacity: 1; }
-      .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-      .status-active { background: #dcfce7; color: #166534; }
-      .status-pending { background: #fef9c3; color: #854d0e; }
-      .status-completed { background: #e0e7ff; color: #1e40af; }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+
+      .menu-item.active {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+      }
+
+      .menu-item.active i {
+        color: white;
+      }
+
+      .dropdown-menu {
+        animation: slideDown 0.2s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+      }
+
+      .sidebar {
+        transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+      }
+
+      .lg\:w-20 {
+        width: 5rem;
+      }
+
+      .lg\:w-72 {
+        width: 18rem;
+      }
+
+      .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-active {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-pending {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+
+      .status-completed {
+        background: #e0e7ff;
+        color: #1e40af;
+      }
+
+      .priority-high {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .priority-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .priority-low {
+        background: #e0e7ff;
+        color: #1e40af;
+      }
+
+      .toast-message {
+        animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+
+      /* Modal styles */
+      .fixed {
+        position: fixed;
+      }
+
+      .inset-0 {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      .z-50 {
+        z-index: 50;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .items-center {
+        align-items: center;
+      }
+
+      .justify-center {
+        justify-content: center;
+      }
     </style>
   </head>
+
   <body class="bg-gray-50 font-sans antialiased">
-    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i class="fas fa-bars text-gray-700 text-xl"></i></button>
+    <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i
+        class="fas fa-bars"></i></button>
     <div class="flex h-screen overflow-hidden">
-      <!-- Sidebar -->
-      <aside id="sidebar" class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+      <aside id="sidebar"
+        class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
         <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-          <a href="index.html" class="flex items-center space-x-3 group">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"><i class="fas fa-chart-line text-white text-xl"></i></div>
-            <div class="logo-text"><h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1><p class="text-xs text-gray-400">Professional Agency Suite</p></div>
+          <a href="index.html" class="flex items-center space-x-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+              <i class="fas fa-chart-line text-white text-xl"></i>
+            </div>
+            <div class="logo-text">
+              <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span></h1>
+              <p class="text-xs text-gray-400">Professional Agency Suite</p>
+            </div>
           </a>
-          <button id="collapseSidebarBtn" class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200 transition flex-shrink-0"><i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300" id="collapseIcon"></i></button>
+          <button id="collapseSidebarBtn"
+            class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i
+              class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+              id="collapseIcon"></i></button>
         </div>
         <nav class="flex-1 px-4 py-4 space-y-6">
-          <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</p></div><div class="space-y-1"><a href="index.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-th-large w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Dashboard</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Dashboard</div></a><a href="analytics.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-chart-line w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Analytics</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Analytics</div></a></div></div>
-          <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p></div><div class="space-y-1"><div class="relative"><button id="projectsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group"><div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Projects</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="projectsDropdownIcon"></i></button><div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All Projects</span></a><a href="active-projects.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-play-circle w-4 text-gray-400"></i><span class="text-sm">Active Projects</span></a></div></div><div class="relative"><button id="tasksMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group"><div class="flex items-center space-x-3"><i class="fas fa-tasks w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Tasks</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="tasksDropdownIcon"></i></button><div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-check-square w-4 text-gray-400"></i><span class="text-sm">To-Do List</span></a><a href="kanban.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-columns w-4 text-gray-400"></i><span class="text-sm">Kanban Board</span></a><a href="calendar.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-calendar-alt w-4 text-gray-400"></i><span class="text-sm">Calendar</span></a></div></div><div class="relative"><button id="clientsMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group"><div class="flex items-center space-x-3"><i class="fas fa-users w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Clients</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="clientsDropdownIcon"></i></button><div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="clients.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All Clients</span></a><a href="add-client.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-user-plus w-4 text-gray-400"></i><span class="text-sm">Add Client</span></a><a href="client-messages.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-comments w-4 text-gray-400"></i><span class="text-sm">Messages</span></a><a href="client-assets.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-folder w-4 text-gray-400"></i><span class="text-sm">Assets</span></a></div></div></div></div>
-          <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Finance</p></div><div class="space-y-1"><a href="invoices.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-file-invoice-dollar w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Invoices</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Invoices</div></a><a href="payments.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-credit-card w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Payments</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Payments</div></a><a href="subscriptions.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-sync-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Subscriptions</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Subscriptions</div></a></div></div>
-          <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resources</p></div><div class="space-y-1"><a href="file-manager.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-cloud-upload-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">File Manager</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">File Manager</div></a><a href="reports.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-chart-bar w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Reports</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Reports</div></a></div></div>
-          <div><div class="px-4 mb-2 category-header"><p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">System</p></div><div class="space-y-1"><div class="relative"><button id="teamMenuBtn" class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group"><div class="flex items-center space-x-3"><i class="fas fa-user-friends w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Team</span></div><i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="teamDropdownIcon"></i></button><div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="team-members.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-users w-4 text-gray-400"></i><span class="text-sm">Team Members</span></a><a href="activities.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i class="fas fa-history w-4 text-gray-400"></i><span class="text-sm">Activity Logs</span></a></div></div><a href="settings.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-cog w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Settings</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Settings</div></a><a href="support-tickets.html" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"><i class="fas fa-ticket-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i><span class="font-medium">Support Tickets</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Support Tickets</div></a></div></div>
+          <div>
+            <div class="px-4 mb-2 category-header">
+              <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
+            </div>
+            <div class="space-y-1"><a href="dashboard.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Dashboard</div>
+              </a><a href="analytics.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Analytics</div>
+              </a></div>
+          </div>
+          <div>
+            <div class="px-4 mb-2 category-header">
+              <p class="text-xs font-semibold text-gray-400 uppercase">Management</p>
+            </div>
+            <div class="space-y-1">
+              <div class="relative"><button id="projectsMenuBtn"
+                  class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                  <div class="flex items-center space-x-3"><i class="fas fa-folder-open w-5"></i><span
+                      class="font-medium">Projects</span></div><i
+                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                    id="projectsDropdownIcon"></i>
+                </button>
+                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="projects.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-list w-4"></i><span class="text-sm">All Projects</span></a><a
+                    href="active-projects.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-play-circle w-4"></i><span class="text-sm">Active Projects</span></a></div>
+              </div>
+              <div class="relative"><button id="tasksMenuBtn"
+                  class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                  <div class="flex items-center space-x-3"><i class="fas fa-tasks w-5"></i><span
+                      class="font-medium">Tasks</span></div><i
+                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                    id="tasksDropdownIcon"></i>
+                </button>
+                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="todo.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-check-square w-4"></i><span class="text-sm">To-Do List</span></a><a
+                    href="kanban.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-columns w-4"></i><span class="text-sm">Kanban Board</span></a><a
+                    href="calendar.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-calendar-alt w-4"></i><span class="text-sm">Calendar</span></a></div>
+              </div>
+              <div class="relative"><button id="clientsMenuBtn"
+                  class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                  <div class="flex items-center space-x-3"><i class="fas fa-users w-5"></i><span
+                      class="font-medium">Clients</span></div><i
+                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                    id="clientsDropdownIcon"></i>
+                </button>
+                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="clients.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-list w-4"></i><span class="text-sm">All Clients</span></a><a href="add-client.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-user-plus w-4"></i><span class="text-sm">Add Client</span></a><a
+                    href="client-messages.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-comments w-4"></i><span class="text-sm">Messages</span></a><a
+                    href="client-assets.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-folder w-4"></i><span class="text-sm">Assets</span></a></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="px-4 mb-2 category-header">
+              <p class="text-xs font-semibold text-gray-400 uppercase">Finance</p>
+            </div>
+            <div class="space-y-1"><a href="invoices.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Invoices</div>
+              </a><a href="payments.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Payments</div>
+              </a><a href="subscriptions.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Subscriptions</div>
+              </a></div>
+          </div>
+          <div>
+            <div class="px-4 mb-2 category-header">
+              <p class="text-xs font-semibold text-gray-400 uppercase">Resources</p>
+            </div>
+            <div class="space-y-1"><a href="file-manager.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File Manager</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  File Manager</div>
+              </a><a href="reports.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Reports</div>
+              </a></div>
+          </div>
+          <div>
+            <div class="px-4 mb-2 category-header">
+              <p class="text-xs font-semibold text-gray-400 uppercase">System</p>
+            </div>
+            <div class="space-y-1">
+              <div class="relative"><button id="teamMenuBtn"
+                  class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
+                  <div class="flex items-center space-x-3"><i class="fas fa-user-friends w-5"></i><span
+                      class="font-medium">Team</span></div><i
+                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                    id="teamDropdownIcon"></i>
+                </button>
+                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"><a href="team-members.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-users w-4"></i><span class="text-sm">Team Members</span></a><a
+                    href="activities.html"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
+                      class="fas fa-history w-4"></i><span class="text-sm">Activity Logs</span></a></div>
+              </div><a href="settings.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Settings</div>
+              </a><a href="support-tickets.html"
+                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
+                  class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span>
+                <div
+                  class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+                  Support Tickets</div>
+              </a>
+            </div>
+          </div>
         </nav>
         <div class="p-4 border-t border-gray-100">
-          <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">AJ</div><div class="user-info-text"><p class="text-sm font-semibold text-gray-700">Alex Johnson</p><p class="text-xs text-gray-400">Admin</p></div></div>
-          <button id="sidebarLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-200 group relative"><i class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span><div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">Logout</div></button>
+          <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
+            <div
+              class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">
+              AJ</div>
+            <div class="user-info-text">
+              <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+              <p class="text-xs text-gray-400">Admin</p>
+            </div>
+          </div><button id="sidebarLogoutBtn"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i
+              class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span>
+            <div
+              class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
+              Logout</div>
+          </button>
           <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
         </div>
       </aside>
 
-      <!-- Main Content -->
       <main class="flex-1 overflow-y-auto">
         <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
           <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-semibold text-gray-800" id="page-title">All Projects</h2>
-            <div class="relative">
-              <button id="profileDropdownBtn" class="flex items-center space-x-3 focus:outline-none group">
-                <span class="text-right hidden sm:block"><span class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span class="block text-xs text-gray-400">Admin</span></span>
-                <span class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
-                <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200" id="dropdownIcon"></i>
-              </button>
-              <div id="profileDropdown" class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
-                <div class="p-3 border-b border-gray-100"><p class="font-semibold text-gray-800">Alex Johnson</p><p class="text-sm text-gray-500">alex@agency.com</p></div>
-                <div class="py-2"><a href="profile.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"><i class="fas fa-user w-5 text-gray-400"></i><span>Profile</span></a><a href="settings.html" class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"><i class="fas fa-cog w-5 text-gray-400"></i><span>Settings</span></a></div>
-                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn" class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition"><i class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+            <h2 class="text-2xl font-semibold text-gray-800">All Projects</h2>
+            <div class="relative"><button id="profileDropdownBtn" class="flex items-center space-x-3"><span
+                  class="text-right hidden sm:block"><span class="block text-sm font-semibold text-gray-700">Alex
+                    Johnson</span><span class="block text-xs text-gray-400">Admin</span></span><span
+                  class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span><i
+                  class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                  id="dropdownIcon"></i></button>
+              <div id="profileDropdown"
+                class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
+                <div class="p-3 border-b border-gray-100">
+                  <p class="font-semibold text-gray-800">Alex Johnson</p>
+                  <p class="text-sm text-gray-500">alex@agency.com</p>
+                </div>
+                <div class="py-2"><a href="profile.html"
+                    class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                      class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
+                    class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
+                      class="fas fa-cog w-5"></i><span>Settings</span></a></div>
+                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
+                    class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
+                      class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
               </div>
             </div>
           </div>
         </header>
 
         <div class="p-6">
-          <!-- Add Project Button -->
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-semibold text-gray-800">Project List</h3>
-            <button id="addProjectBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition flex items-center space-x-2"><i class="fas fa-plus"></i><span>Add New Project</span></button>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+              <p class="text-2xl font-bold text-blue-600" id="totalProjects">0</p>
+              <p class="text-sm text-gray-500">Total Projects</p>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+              <p class="text-2xl font-bold text-green-600" id="activeProjects">0</p>
+              <p class="text-sm text-gray-500">Active Projects</p>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+              <p class="text-2xl font-bold text-yellow-600" id="pendingProjects">0</p>
+              <p class="text-sm text-gray-500">Pending</p>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+              <p class="text-2xl font-bold text-purple-600" id="completedProjects">0</p>
+              <p class="text-sm text-gray-500">Completed</p>
+            </div>
           </div>
 
-          <!-- Projects Table -->
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-800">Project List</h3><button id="addProjectBtn"
+              class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"><i
+                class="fas fa-plus mr-2"></i>Add New Project</button>
+          </div>
+
           <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
               <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50">
                   <tr>
                     <th class="text-left px-6 py-4 text-sm font-semibold text-gray-600">Project Name</th>
                     <th class="text-left px-6 py-4 text-sm font-semibold text-gray-600">Client</th>
@@ -96,104 +417,392 @@
                     <th class="text-left px-6 py-4 text-sm font-semibold text-gray-600">Progress</th>
                     <th class="text-left px-6 py-4 text-sm font-semibold text-gray-600">Deadline</th>
                     <th class="text-left px-6 py-4 text-sm font-semibold text-gray-600">Actions</th>
-                  </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4"><div><p class="font-medium text-gray-800">Brand Identity Design</p><p class="text-xs text-gray-400">ID: PRJ-001</p></div></td>
-                    <td class="px-6 py-4"><div class="flex items-center space-x-2"><div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-building text-blue-600 text-xs"></i></div><span>Creative Studio</span></div></td>
-                    <td class="px-6 py-4"><span class="status-badge status-active">Active</span></td>
-                    <td class="px-6 py-4"><div><div class="flex justify-between text-xs mb-1"><span>75%</span></div><div class="w-32 bg-gray-200 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div></div></div></td>
-                    <td class="px-6 py-4 text-sm">Dec 15, 2024</td>
-                    <td class="px-6 py-4"><div class="flex space-x-2"><button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button class="text-green-500 hover:text-green-700"><i class="fas fa-eye"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></div></td>
-                  </tr>
-                  <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4"><div><p class="font-medium text-gray-800">Website Development</p><p class="text-xs text-gray-400">ID: PRJ-002</p></div></td>
-                    <td class="px-6 py-4"><div class="flex items-center space-x-2"><div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"><i class="fas fa-building text-green-600 text-xs"></i></div><span>Tech Solutions</span></div></td>
-                    <td class="px-6 py-4"><span class="status-badge status-active">Active</span></td>
-                    <td class="px-6 py-4"><div><div class="flex justify-between text-xs mb-1"><span>45%</span></div><div class="w-32 bg-gray-200 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div></div></div></td>
-                    <td class="px-6 py-4 text-sm">Jan 20, 2025</td>
-                    <td class="px-6 py-4"><div class="flex space-x-2"><button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button class="text-green-500 hover:text-green-700"><i class="fas fa-eye"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></div></td>
-                  </tr>
-                  <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4"><div><p class="font-medium text-gray-800">Mobile App UI/UX</p><p class="text-xs text-gray-400">ID: PRJ-003</p></div></td>
-                    <td class="px-6 py-4"><div class="flex items-center space-x-2"><div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center"><i class="fas fa-building text-purple-600 text-xs"></i></div><span>AppMakers</span></div></td>
-                    <td class="px-6 py-4"><span class="status-badge status-pending">Pending</span></td>
-                    <td class="px-6 py-4"><div><div class="flex justify-between text-xs mb-1"><span>20%</span></div><div class="w-32 bg-gray-200 rounded-full h-2"><div class="bg-yellow-500 h-2 rounded-full" style="width: 20%"></div></div></div></td>
-                    <td class="px-6 py-4 text-sm">Feb 10, 2025</td>
-                    <td class="px-6 py-4"><div class="flex space-x-2"><button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button class="text-green-500 hover:text-green-700"><i class="fas fa-eye"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></div></td>
-                  </tr>
-                  <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4"><div><p class="font-medium text-gray-800">SEO Optimization</p><p class="text-xs text-gray-400">ID: PRJ-004</p></div></td>
-                    <td class="px-6 py-4"><div class="flex items-center space-x-2"><div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center"><i class="fas fa-building text-yellow-600 text-xs"></i></div><span>Digital Marketers</span></div></td>
-                    <td class="px-6 py-4"><span class="status-badge status-completed">Completed</span></td>
-                    <td class="px-6 py-4"><div><div class="flex justify-between text-xs mb-1"><span>100%</span></div><div class="w-32 bg-gray-200 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full" style="width: 100%"></div></div></div></td>
-                    <td class="px-6 py-4 text-sm">Nov 30, 2024</td>
-                    <td class="px-6 py-4"><div class="flex space-x-2"><button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button class="text-green-500 hover:text-green-700"><i class="fas fa-eye"></i></button><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></div></td>
-                  </tr>
-                </tbody>
-              </table>
+                <tbody id="projectsTableBody"></tbody>
+                </table< /div>
             </div>
           </div>
-
-          <!-- Project Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center"><p class="text-2xl font-bold text-blue-600">12</p><p class="text-sm text-gray-500">Total Projects</p></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center"><p class="text-2xl font-bold text-green-600">8</p><p class="text-sm text-gray-500">Active Projects</p></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center"><p class="text-2xl font-bold text-yellow-600">2</p><p class="text-sm text-gray-500">Pending</p></div>
-            <div class="bg-white rounded-xl p-4 shadow-sm text-center"><p class="text-2xl font-bold text-purple-600">2</p><p class="text-sm text-gray-500">Completed</p></div>
-          </div>
-        </div>
       </main>
     </div>
 
-    <!-- Add Project Modal -->
-    <div id="addProjectModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <!-- Add/Edit Project Modal -->
+    <div id="projectModal" class="fixed inset-0 z-50 hidden items-center justify-center">
       <div class="absolute inset-0 modal-backdrop" id="modalBackdropProject"></div>
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10">
-        <div class="p-6"><h3 class="text-xl font-semibold text-gray-800 mb-4">Add New Project</h3>
-          <form id="addProjectForm"><div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Project Name</label><input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter project name"></div><div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Client</label><select class="w-full px-4 py-2 border border-gray-300 rounded-lg"><option>Creative Studio</option><option>Tech Solutions</option><option>AppMakers</option></select></div><div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Deadline</label><input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div><div class="flex gap-3"><button type="submit" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Add Project</button><button type="button" id="cancelProjectBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button></div></form>
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto relative z-50">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 id="modalTitle" class="text-xl font-semibold text-gray-800">Add New Project</h3>
+            <button type="button" id="closeProjectModalBtn" class="text-gray-400 hover:text-gray-600 text-xl"><i
+                class="fas fa-times"></i></button>
+          </div>
+          <form id="projectForm">
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Project Name *</label><input
+                type="text" id="projectName"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter project name" required></div>
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Client *</label><select
+                id="projectClient" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+                <option value="">Select Client</option>
+              </select></div>
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Status</label><select
+                id="projectStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+              </select></div>
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Progress (%)</label><input
+                type="number" id="projectProgress" min="0" max="100"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg" value="0"></div>
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Deadline</label><input
+                type="date" id="projectDeadline" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div>
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">Priority</label><select
+                id="projectPriority" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select></div>
+            <div class="flex gap-3"><button type="submit"
+                class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Save
+                Project</button><button type="button" id="cancelProjectBtn"
+                class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
 
-    <!-- Logout Modal -->
-    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-      <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10"><div class="p-6 text-center"><div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3><p class="text-gray-500 mb-6">Are you sure you want to logout?</p><div class="flex gap-3"><button id="confirmLogoutBtn" class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">Logout</button><button id="cancelLogoutBtn" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button></div></div></div>
+    <!-- View Project Modal -->
+    <div id="viewProjectModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+      <div class="absolute inset-0 modal-backdrop" id="modalBackdropView"></div>
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto relative z-50"
+        id="viewProjectContent"></div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+      <div class="absolute inset-0 modal-backdrop" id="modalBackdropDelete"></div>
+      <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto relative z-50">
+        <div class="p-6 text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+              class="fas fa-exclamation-triangle text-red-500 text-2xl"></i></div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Delete Project</h3>
+          <p class="text-gray-500 mb-6">Are you sure you want to delete this project? This action cannot be undone.</p>
+          <div class="flex gap-3"><button id="confirmDeleteBtn"
+              class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button><button
+              id="cancelDeleteBtn"
+              class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+      <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <div class="p-6 text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
+              class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Confirm Logout</h3>
+          <p class="text-gray-500 mb-6">Are you sure you want to logout?</p>
+          <div class="flex gap-3"><button id="confirmLogoutBtn"
+              class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button><button id="cancelLogoutBtn"
+              class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
     <script>
-      function checkAuth() { const isLoggedIn = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn"); if (!isLoggedIn || isLoggedIn !== "true") { window.location.href = "login.html"; } }
-      checkAuth();
-      const currentPageUrl = window.location.pathname.split("/").pop() || "projects.html";
-      document.querySelectorAll(".menu-item").forEach(item => { if (item.getAttribute("href") === currentPageUrl) item.classList.add("active"); });
-      const sidebar = document.getElementById("sidebar"), collapseBtn = document.getElementById("collapseSidebarBtn"), collapseIcon = document.getElementById("collapseIcon");
-      let isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-      function updateSidebar() { if (!sidebar) return; if (isCollapsed) { sidebar.classList.remove('lg:w-72'); sidebar.classList.add('lg:w-20'); if(collapseIcon) collapseIcon.style.transform = 'rotate(180deg)'; document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(el => el.classList.add('lg:hidden')); document.querySelectorAll('.menu-item span.font-medium').forEach(el => el.classList.add('lg:hidden')); document.querySelectorAll('.user-avatar-container, .menu-item').forEach(el => el.classList.add('lg:justify-center')); document.querySelectorAll('.submenu').forEach(el => el.classList.add('hidden')); } else { sidebar.classList.remove('lg:w-20'); sidebar.classList.add('lg:w-72'); if(collapseIcon) collapseIcon.style.transform = 'rotate(0deg)'; document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(el => el.classList.remove('lg:hidden')); document.querySelectorAll('.menu-item span.font-medium').forEach(el => el.classList.remove('lg:hidden')); document.querySelectorAll('.user-avatar-container, .menu-item').forEach(el => el.classList.remove('lg:justify-center')); } }
-      function toggleSidebar() { isCollapsed = !isCollapsed; localStorage.setItem('sidebarCollapsed', isCollapsed); updateSidebar(); }
-      if(collapseBtn) { collapseBtn.addEventListener('click', toggleSidebar); updateSidebar(); }
-      function setupSubmenu(btnId, menuId, iconId) { const btn = document.getElementById(btnId), menu = document.getElementById(menuId), icon = document.getElementById(iconId); if(btn && menu) btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); if(!isCollapsed) { const hidden = menu.classList.contains('hidden'); document.querySelectorAll('.submenu').forEach(m => { if(m !== menu) m.classList.add('hidden'); }); document.querySelectorAll('[id$="DropdownIcon"]').forEach(i => { if(i !== icon && i.style.transform === 'rotate(180deg)') i.style.transform = 'rotate(0deg)'; }); menu.classList.toggle('hidden'); if(icon) icon.style.transform = hidden ? 'rotate(180deg)' : 'rotate(0deg)'; } }); } }
-      setupSubmenu('projectsMenuBtn','projectsSubmenu','projectsDropdownIcon'); setupSubmenu('tasksMenuBtn','tasksSubmenu','tasksDropdownIcon'); setupSubmenu('clientsMenuBtn','clientsSubmenu','clientsDropdownIcon'); setupSubmenu('teamMenuBtn','teamSubmenu','teamDropdownIcon');
-      document.addEventListener('click', (e) => { if(isCollapsed) return; if(!e.target.closest('[id$="MenuBtn"]') && !e.target.closest('.submenu')) { document.querySelectorAll('.submenu').forEach(m => m.classList.add('hidden')); document.querySelectorAll('[id$="DropdownIcon"]').forEach(i => i.style.transform = 'rotate(0deg)'); } });
-      const mobileToggle = document.getElementById("mobileMenuToggle"); if(mobileToggle) { mobileToggle.addEventListener("click", () => sidebar.classList.toggle("-translate-x-full")); document.addEventListener("click", (e) => { if(window.innerWidth < 1024 && sidebar && !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) sidebar.classList.add("-translate-x-full"); }); }
-      const profileBtn = document.getElementById("profileDropdownBtn"), profileDropdown = document.getElementById("profileDropdown"), dropdownIcon = document.getElementById("dropdownIcon");
-      if(profileBtn) profileBtn.addEventListener("click", (e) => { e.stopPropagation(); profileDropdown.classList.toggle("hidden"); if(dropdownIcon) dropdownIcon.style.transform = profileDropdown.classList.contains("hidden") ? "rotate(0deg)" : "rotate(180deg)"; });
-      document.addEventListener("click", (e) => { if(profileBtn && !profileBtn.contains(e.target) && profileDropdown && !profileDropdown.contains(e.target)) { profileDropdown.classList.add("hidden"); if(dropdownIcon) dropdownIcon.style.transform = "rotate(0deg)"; } });
-      function showToast(msg, type="success") { const existing = document.getElementById("centerToast"); if(existing) existing.remove(); const toast = document.createElement("div"); toast.id="centerToast"; let bg="bg-green-500", ic="fa-check-circle"; if(type==="error"){bg="bg-red-500";ic="fa-exclamation-circle";} else if(type==="info"){bg="bg-blue-500";ic="fa-info-circle";} toast.className=`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bg} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`; toast.innerHTML=`<i class="fas ${ic} text-2xl"></i><span class="text-lg font-medium">${msg}</span>`; document.body.appendChild(toast); setTimeout(()=>toast.remove(),2000); }
-      const addProjectBtn = document.getElementById("addProjectBtn"), addProjectModal = document.getElementById("addProjectModal"), cancelProjectBtn = document.getElementById("cancelProjectBtn"), modalBackdropProject = document.getElementById("modalBackdropProject");
-      if(addProjectBtn) addProjectBtn.addEventListener("click", () => { addProjectModal.classList.remove("hidden"); addProjectModal.classList.add("flex"); });
-      function closeProjectModal() { addProjectModal.classList.add("hidden"); addProjectModal.classList.remove("flex"); }
-      if(cancelProjectBtn) cancelProjectBtn.addEventListener("click", closeProjectModal);
-      if(modalBackdropProject) modalBackdropProject.addEventListener("click", closeProjectModal);
-      document.getElementById("addProjectForm")?.addEventListener("submit", (e) => { e.preventDefault(); showToast("Project added successfully!", "success"); closeProjectModal(); });
-      const logoutModal = document.getElementById("logoutModal"), sidebarLogout = document.getElementById("sidebarLogoutBtn"), dropdownLogout = document.getElementById("dropdownLogoutBtn"), confirmBtn = document.getElementById("confirmLogoutBtn"), cancelBtn = document.getElementById("cancelLogoutBtn"), backdrop = document.getElementById("modalBackdrop");
-      function showModal() { if(logoutModal){ logoutModal.classList.remove("hidden"); logoutModal.classList.add("flex"); } }
-      function hideModal() { if(logoutModal){ logoutModal.classList.add("hidden"); logoutModal.classList.remove("flex"); } }
-      function logout() { localStorage.removeItem("isLoggedIn"); sessionStorage.removeItem("isLoggedIn"); showToast("Logged out successfully!", "success"); hideModal(); setTimeout(()=>window.location.href="login.html",1500); }
-      if(sidebarLogout) sidebarLogout.addEventListener("click",showModal); if(dropdownLogout) dropdownLogout.addEventListener("click",showModal); if(confirmBtn) confirmBtn.addEventListener("click",logout); if(cancelBtn) cancelBtn.addEventListener("click",hideModal); if(backdrop) backdrop.addEventListener("click",hideModal);
-      document.addEventListener("DOMContentLoaded", () => { if(window.innerWidth < 1024) sidebar.classList.add("-translate-x-full"); });
+      // ==================== INITIAL DATA ====================
+      let projects = JSON.parse(localStorage.getItem('projects'));
+
+      if (!projects || projects.length === 0) {
+        projects = [
+          { id: 1, name: "Brand Identity Design", clientId: 1, clientName: "Creative Studio", status: "active", progress: 75, deadline: "2024-12-15", priority: "high" },
+          { id: 2, name: "Website Development", clientId: 2, clientName: "Tech Solutions", status: "active", progress: 45, deadline: "2025-01-20", priority: "high" },
+          { id: 3, name: "Mobile App UI/UX", clientId: 3, clientName: "AppMakers", status: "pending", progress: 20, deadline: "2025-02-10", priority: "medium" },
+          { id: 4, name: "SEO Optimization", clientId: 4, clientName: "Digital Marketers", status: "completed", progress: 100, deadline: "2024-11-30", priority: "low" }
+        ];
+        localStorage.setItem('projects', JSON.stringify(projects));
+      }
+
+      let editingId = null;
+      let deleteProjectId = null;
+
+      function saveProjects() {
+        localStorage.setItem('projects', JSON.stringify(projects));
+        window.dispatchEvent(new StorageEvent('storage', { key: 'projects', newValue: JSON.stringify(projects) }));
+      }
+
+      function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        let bgColor = 'bg-green-500', icon = 'fa-check-circle';
+        if (type === 'error') { bgColor = 'bg-red-500'; icon = 'fa-exclamation-circle'; }
+        else if (type === 'info') { bgColor = 'bg-blue-500'; icon = 'fa-info-circle'; }
+        toast.className = `toast-message ${bgColor} text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 min-w-[280px]`;
+        toast.innerHTML = `<i class="fas ${icon} text-lg"></i><span class="text-sm font-medium">${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 2000);
+      }
+
+      function updateStats() {
+        const total = projects.length;
+        const active = projects.filter(p => p.status === 'active').length;
+        const pending = projects.filter(p => p.status === 'pending').length;
+        const completed = projects.filter(p => p.status === 'completed').length;
+        document.getElementById('totalProjects').textContent = total;
+        document.getElementById('activeProjects').textContent = active;
+        document.getElementById('pendingProjects').textContent = pending;
+        document.getElementById('completedProjects').textContent = completed;
+      }
+
+      function getStatusBadgeClass(status) {
+        if (status === 'active') return 'status-active';
+        if (status === 'pending') return 'status-pending';
+        return 'status-completed';
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return 'Not set';
+        return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          return m;
+        });
+      }
+
+      function renderProjects() {
+        const tbody = document.getElementById('projectsTableBody');
+        if (!tbody) return;
+        if (projects.length === 0) {
+          tbody.innerHTML = '发展<td colspan="6" class="text-center py-8 text-gray-500">No projects found. Click "Add New Project" to create one.</td> </tr>';
+          return;
+        }
+        tbody.innerHTML = projects.map(project => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4"><div><p class="font-medium text-gray-800">${escapeHtml(project.name)}</p><p class="text-xs text-gray-400">ID: PRJ-${String(project.id).padStart(3, '0')}</p></div></td>
+                    <td class="px-6 py-4">${escapeHtml(project.clientName)}</td>
+                    <td class="px-6 py-4"><span class="status-badge ${getStatusBadgeClass(project.status)}">${project.status.charAt(0).toUpperCase() + project.status.slice(1)}</span></td>
+                    <td class="px-6 py-4"><div><div class="flex justify-between text-xs mb-1"><span>${project.progress}%</span></div><div class="w-32 bg-gray-200 rounded-full h-2"><div class="bg-${project.status === 'completed' ? 'blue' : project.status === 'active' ? 'green' : 'yellow'}-500 h-2 rounded-full" style="width: ${project.progress}%"></div></div></div></td>
+                    <td class="px-6 py-4 text-sm">${formatDate(project.deadline)}</td>
+                    <td class="px-6 py-4"><div class="flex space-x-2"><button class="edit-project text-blue-500 hover:text-blue-700" data-id="${project.id}"><i class="fas fa-edit"></i></button><button class="view-project text-green-500 hover:text-green-700" data-id="${project.id}"><i class="fas fa-eye"></i></button><button class="delete-project text-red-500 hover:text-red-700" data-id="${project.id}"><i class="fas fa-trash"></i></button></div></td>
+                </tr>
+            `).join('');
+
+        document.querySelectorAll('.edit-project').forEach(btn => btn.addEventListener('click', () => editProject(parseInt(btn.dataset.id))));
+        document.querySelectorAll('.view-project').forEach(btn => btn.addEventListener('click', () => viewProject(parseInt(btn.dataset.id))));
+        document.querySelectorAll('.delete-project').forEach(btn => btn.addEventListener('click', () => showDeleteModal(parseInt(btn.dataset.id))));
+      }
+
+      function loadClientsForSelect() {
+        const clients = JSON.parse(localStorage.getItem('clients')) || [];
+        const select = document.getElementById('projectClient');
+        if (!select) return;
+        select.innerHTML = '<option value="">Select Client</option>' + clients.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+      }
+
+      // ==================== MODAL FUNCTIONS ====================
+      function openProjectModal() {
+        const modal = document.getElementById('projectModal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          console.log("Modal opened");
+        }
+      }
+
+      function closeProjectModal() {
+        const modal = document.getElementById('projectModal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+        document.getElementById('projectForm')?.reset();
+        editingId = null;
+      }
+
+      function closeViewModal() {
+        const modal = document.getElementById('viewProjectModal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      }
+
+      function showDeleteModal(id) {
+        deleteProjectId = id;
+        const modal = document.getElementById('deleteModal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
+      }
+
+      function closeDeleteModal() {
+        deleteProjectId = null;
+        const modal = document.getElementById('deleteModal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      }
+
+      function editProject(id) {
+        const project = projects.find(p => p.id === id);
+        if (project) {
+          editingId = id;
+          document.getElementById('modalTitle').textContent = 'Edit Project';
+          document.getElementById('projectName').value = project.name;
+          loadClientsForSelect();
+          setTimeout(() => {
+            document.getElementById('projectClient').value = project.clientId;
+          }, 50);
+          document.getElementById('projectStatus').value = project.status;
+          document.getElementById('projectProgress').value = project.progress;
+          document.getElementById('projectDeadline').value = project.deadline || '';
+          document.getElementById('projectPriority').value = project.priority || 'medium';
+          openProjectModal();
+        }
+      }
+
+      function viewProject(id) {
+        const project = projects.find(p => p.id === id);
+        if (project) {
+          const modal = document.getElementById('viewProjectModal');
+          const content = document.getElementById('viewProjectContent');
+          content.innerHTML = `
+                    <div class="p-6 relative">
+                        <button id="closeViewModalBtn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fas fa-times"></i></button>
+                        <div class="text-center mb-4"><div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto"><i class="fas fa-folder-open text-blue-600 text-2xl"></i></div><h3 class="text-xl font-semibold text-gray-800 mt-2">${escapeHtml(project.name)}</h3><p class="text-sm text-gray-500">ID: PRJ-${String(project.id).padStart(3, '0')}</p></div>
+                        <div class="space-y-3 border-t border-gray-100 pt-4"><div class="flex justify-between"><span class="text-gray-500">Client:</span><span class="font-medium">${escapeHtml(project.clientName)}</span></div><div class="flex justify-between"><span class="text-gray-500">Status:</span><span class="status-badge ${getStatusBadgeClass(project.status)}">${project.status.charAt(0).toUpperCase() + project.status.slice(1)}</span></div><div class="flex justify-between"><span class="text-gray-500">Priority:</span><span class="px-3 py-1 rounded-full text-xs ${project.priority === 'high' ? 'priority-high' : project.priority === 'medium' ? 'priority-medium' : 'priority-low'}">${project.priority ? project.priority.toUpperCase() : 'MEDIUM'}</span></div><div class="flex justify-between"><span class="text-gray-500">Progress:</span><span>${project.progress}%</span></div><div class="flex justify-between"><span class="text-gray-500">Deadline:</span><span>${formatDate(project.deadline)}</span></div></div>
+                        <div class="mt-6"><button onclick="window.print()" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"><i class="fas fa-print mr-2"></i>Print Details</button></div>
+                    </div>
+                `;
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          setTimeout(() => {
+            const btn = document.getElementById('closeViewModalBtn');
+            if (btn) btn.addEventListener('click', closeViewModal);
+          }, 100);
+        }
+      }
+
+      function performDelete() {
+        if (deleteProjectId) {
+          const project = projects.find(p => p.id === deleteProjectId);
+          projects = projects.filter(p => p.id !== deleteProjectId);
+          saveProjects();
+          updateStats();
+          renderProjects();
+          showToast(`Project "${project?.name}" deleted successfully!`, 'info');
+          closeDeleteModal();
+        }
+      }
+
+      // ==================== SIDEBAR & AUTH ====================
+      function checkAuth() { const a = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn"); if (!a || a !== "true") window.location.href = "login.html" } checkAuth();
+      const cp = window.location.pathname.split("/").pop() || "projects.html"; document.querySelectorAll(".menu-item").forEach(i => { if (i.getAttribute("href") === cp) i.classList.add("active") });
+      const s = document.getElementById("sidebar"), cb = document.getElementById("collapseSidebarBtn"), ci = document.getElementById("collapseIcon"); let ic = localStorage.getItem('sidebarCollapsed') === 'true';
+      function us() { if (!s) return; if (ic) { s.classList.remove('lg:w-72'); s.classList.add('lg:w-20'); if (ci) ci.style.transform = 'rotate(180deg)'; document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.add('lg:hidden')); document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.add('lg:hidden')); document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.add('lg:justify-center')); document.querySelectorAll('.submenu').forEach(e => e.classList.add('hidden')) } else { s.classList.remove('lg:w-20'); s.classList.add('lg:w-72'); if (ci) ci.style.transform = 'rotate(0deg)'; document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.remove('lg:hidden')); document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.remove('lg:hidden')); document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.remove('lg:justify-center')) } }
+      function ts() { ic = !ic; localStorage.setItem('sidebarCollapsed', ic); us() } if (cb) { cb.addEventListener('click', ts); us() }
+      function ss(b, m, i) { const btn = document.getElementById(b), menu = document.getElementById(m), icon = document.getElementById(i); if (btn && menu) btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (!ic) { const h = menu.classList.contains('hidden'); document.querySelectorAll('.submenu').forEach(m2 => { if (m2 !== menu) m2.classList.add('hidden') }); document.querySelectorAll('[id$="DropdownIcon"]').forEach(ic2 => { if (ic2 !== icon && ic2.style.transform === 'rotate(180deg)') ic2.style.transform = 'rotate(0deg)' }); menu.classList.toggle('hidden'); if (icon) icon.style.transform = h ? 'rotate(180deg)' : 'rotate(0deg)' } }) }
+      ss('projectsMenuBtn', 'projectsSubmenu', 'projectsDropdownIcon'); ss('tasksMenuBtn', 'tasksSubmenu', 'tasksDropdownIcon'); ss('clientsMenuBtn', 'clientsSubmenu', 'clientsDropdownIcon'); ss('teamMenuBtn', 'teamSubmenu', 'teamDropdownIcon');
+      document.addEventListener('click', e => { if (ic) return; if (!e.target.closest('[id$="MenuBtn"]') && !e.target.closest('.submenu')) { document.querySelectorAll('.submenu').forEach(m => m.classList.add('hidden')); document.querySelectorAll('[id$="DropdownIcon"]').forEach(i => i.style.transform = 'rotate(0deg)') } });
+      const mt = document.getElementById("mobileMenuToggle"); if (mt) { mt.addEventListener("click", () => s.classList.toggle("-translate-x-full")); document.addEventListener("click", e => { if (window.innerWidth < 1024 && s && !s.contains(e.target) && !mt.contains(e.target)) s.classList.add("-translate-x-full") }) }
+      const pb = document.getElementById("profileDropdownBtn"), pd = document.getElementById("profileDropdown"), di = document.getElementById("dropdownIcon"); if (pb) pb.addEventListener("click", e => { e.stopPropagation(); pd.classList.toggle("hidden"); if (di) di.style.transform = pd.classList.contains("hidden") ? "rotate(0deg)" : "rotate(180deg)" }); document.addEventListener("click", e => { if (pb && !pb.contains(e.target) && pd && !pd.contains(e.target)) { pd.classList.add("hidden"); if (di) di.style.transform = "rotate(0deg)" } });
+
+      // ==================== MODAL EVENT LISTENERS ====================
+      const addProjectBtn = document.getElementById('addProjectBtn');
+      const cancelProjectBtn = document.getElementById('cancelProjectBtn');
+      const closeProjectModalBtn = document.getElementById('closeProjectModalBtn');
+      const modalBackdropProject = document.getElementById('modalBackdropProject');
+      const modalBackdropView = document.getElementById('modalBackdropView');
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+      const modalBackdropDelete = document.getElementById('modalBackdropDelete');
+
+      if (addProjectBtn) {
+        addProjectBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          console.log("Add Project button clicked");
+          editingId = null;
+          document.getElementById('modalTitle').textContent = 'Add New Project';
+          const form = document.getElementById('projectForm');
+          if (form) form.reset();
+          const progressInput = document.getElementById('projectProgress');
+          if (progressInput) progressInput.value = 0;
+          const deadlineInput = document.getElementById('projectDeadline');
+          if (deadlineInput) deadlineInput.value = '';
+          loadClientsForSelect();
+          openProjectModal();
+        });
+      } else {
+        console.log("Add Project button not found");
+      }
+
+      if (cancelProjectBtn) cancelProjectBtn.addEventListener('click', closeProjectModal);
+      if (closeProjectModalBtn) closeProjectModalBtn.addEventListener('click', closeProjectModal);
+      if (modalBackdropProject) modalBackdropProject.addEventListener('click', closeProjectModal);
+      if (modalBackdropView) modalBackdropView.addEventListener('click', closeViewModal);
+      if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', performDelete);
+      if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+      if (modalBackdropDelete) modalBackdropDelete.addEventListener('click', closeDeleteModal);
+
+      document.getElementById('projectForm')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const projectName = document.getElementById('projectName')?.value.trim();
+        const clientId = parseInt(document.getElementById('projectClient')?.value);
+        const clients = JSON.parse(localStorage.getItem('clients')) || [];
+        const client = clients.find(c => c.id === clientId);
+        if (!projectName) { showToast("Please enter project name!", "error"); return; }
+        if (!clientId || !client) { showToast("Please select a client!", "error"); return; }
+
+        const projectData = {
+          id: editingId || Date.now(),
+          name: projectName,
+          clientId: clientId,
+          clientName: client.name,
+          status: document.getElementById('projectStatus')?.value || 'active',
+          progress: parseInt(document.getElementById('projectProgress')?.value) || 0,
+          deadline: document.getElementById('projectDeadline')?.value || '',
+          priority: document.getElementById('projectPriority')?.value || 'medium'
+        };
+
+        if (editingId) {
+          const index = projects.findIndex(p => p.id === editingId);
+          if (index !== -1) projects[index] = projectData;
+          showToast("Project updated successfully!", "success");
+        } else {
+          projects.push(projectData);
+          showToast("Project added successfully!", "success");
+        }
+        saveProjects();
+        updateStats();
+        renderProjects();
+        closeProjectModal();
+      });
+
+      // ==================== LOGOUT ====================
+      const lm = document.getElementById("logoutModal"), sl = document.getElementById("sidebarLogoutBtn"), dl = document.getElementById("dropdownLogoutBtn"), cf = document.getElementById("confirmLogoutBtn"), cl = document.getElementById("cancelLogoutBtn"), bd = document.getElementById("modalBackdrop");
+      function sm() { if (lm) { lm.classList.remove("hidden"); lm.classList.add("flex") } } function hm() { if (lm) { lm.classList.add("hidden"); lm.classList.remove("flex") } } function lg() { localStorage.removeItem("isLoggedIn"); sessionStorage.removeItem("isLoggedIn"); showToast("Logged out successfully!", "success"); hm(); setTimeout(() => window.location.href = "login.html", 1500) } if (sl) sl.addEventListener("click", sm); if (dl) dl.addEventListener("click", sm); if (cf) cf.addEventListener("click", lg); if (cl) cl.addEventListener("click", hm); if (bd) bd.addEventListener("click", hm);
+
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.innerWidth < 1024) s.classList.add("-translate-x-full");
+        updateStats();
+        renderProjects();
+        loadClientsForSelect();
+        console.log("Page loaded, addProjectBtn exists:", !!document.getElementById('addProjectBtn'));
+      });
     </script>
-    <script src="main.js"></script>
+
   </body>
+
 </html>
