@@ -1,9 +1,4 @@
 
-      /* =========================================================
-   Agency Dashboard - Organized JavaScript File
-   Purpose: Clean, modular, and fully commented JS for easy scaling
-   ========================================================= */
-
 /* =====================
    1. AUTHENTICATION CHECK
    ===================== */

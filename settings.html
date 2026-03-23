@@ -54,6 +54,10 @@
                 backdrop-filter: blur(4px);
             }
 
+            .sidebar {
+                transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            }
+
             .settings-card {
                 transition: all 0.3s ease;
             }
@@ -117,6 +121,67 @@
             input:checked+.toggle-slider:before {
                 transform: translateX(20px);
             }
+
+            /* Modal Overlay Styles */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 9998;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-overlay.flex-modal {
+                display: flex !important;
+            }
+
+            .modal-overlay.hidden-modal {
+                display: none !important;
+            }
+
+            .modal-container {
+                position: relative;
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                z-index: 9999;
+                width: 90%;
+                max-width: 500px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .toast-message {
+                animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+            }
         </style>
 
         <script>
@@ -127,8 +192,6 @@
                     window.location.href = 'login.html';
                 }
             }
-
-            // Run auth check on page load
             checkAuth();
         </script>
     </head>
@@ -141,84 +204,67 @@
 
         <div class="flex h-screen overflow-hidden">
             <!-- Sidebar -->
-            <!-- Sidebar - Professional Agency Version with Grouping -->
             <aside id="sidebar"
-                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto"
-                :class="sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'">
-                <!-- Logo Section -->
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
                 <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                    <a href="index.html" class="flex items-center space-x-3 group"
-                        :class="sidebarCollapsed ? 'lg:justify-center lg:w-full' : ''">
+                    <a href="index.html" class="flex items-center space-x-3 group">
                         <div
                             class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                             <i class="fas fa-chart-line text-white text-xl"></i>
                         </div>
-                        <div :class="sidebarCollapsed ? 'lg:hidden' : ''">
-                            <h1 class="text-xl font-bold text-gray-800">
-                                Agency<span class="text-blue-600">Dash</span>
+                        <div class="logo-text">
+                            <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
                             </h1>
                             <p class="text-xs text-gray-400">Professional Agency Suite</p>
                         </div>
                     </a>
-
-                    <!-- Collapse Toggle Button -->
                     <button id="collapseSidebarBtn"
                         class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200 transition flex-shrink-0">
                         <i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
                             id="collapseIcon"></i>
                     </button>
                 </div>
-
-                <!-- Navigation Menu with Categories -->
                 <nav class="flex-1 px-4 py-4 space-y-6">
-
-                    <!-- MAIN Section -->
                     <div>
-                        <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                        <div class="px-4 mb-2 category-header">
                             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</p>
                         </div>
                         <div class="space-y-1">
                             <a href="dashboard.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Dashboard">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i class="fas fa-th-large w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Dashboard</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Dashboard</div>
+                                <span class="font-medium">Dashboard</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Dashboard</div>
                             </a>
-
                             <a href="analytics.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Analytics">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i class="fas fa-chart-line w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Analytics</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Analytics</div>
+                                <span class="font-medium">Analytics</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Analytics</div>
                             </a>
                         </div>
                     </div>
-
-                    <!-- MANAGEMENT Section -->
                     <div>
-                        <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                        <div class="px-4 mb-2 category-header">
                             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
                         </div>
                         <div class="space-y-1">
-                            <!-- Projects Dropdown -->
                             <div class="relative">
                                 <button id="projectsMenuBtn"
                                     class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
                                     <div class="flex items-center space-x-3">
                                         <i
                                             class="fas fa-folder-open w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                        <span class="font-medium"
-                                            :class="sidebarCollapsed ? 'lg:hidden' : ''">Projects</span>
+                                        <span class="font-medium">Projects</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
-                                        id="projectsDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+                                        id="projectsDropdownIcon"></i>
                                 </button>
-                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"
-                                    :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
                                     <a href="projects.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i
                                             class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All
@@ -226,29 +272,27 @@
                                     <a href="active-projects.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i
                                             class="fas fa-play-circle w-4 text-gray-400"></i><span
-                                            class="text-sm">Active Projects</span></a>
+                                            class="text-sm">Active
+                                            Projects</span></a>
                                 </div>
                             </div>
-
-                            <!-- Tasks Dropdown (New) -->
                             <div class="relative">
                                 <button id="tasksMenuBtn"
                                     class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
                                     <div class="flex items-center space-x-3">
                                         <i
                                             class="fas fa-tasks w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                        <span class="font-medium"
-                                            :class="sidebarCollapsed ? 'lg:hidden' : ''">Tasks</span>
+                                        <span class="font-medium">Tasks</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
-                                        id="tasksDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+                                        id="tasksDropdownIcon"></i>
                                 </button>
-                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"
-                                    :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
                                     <a href="todo.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i
                                             class="fas fa-check-square w-4 text-gray-400"></i><span
-                                            class="text-sm">To-Do List</span></a>
+                                            class="text-sm">To-Do
+                                            List</span></a>
                                     <a href="kanban.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i
                                             class="fas fa-columns w-4 text-gray-400"></i><span class="text-sm">Kanban
@@ -259,22 +303,18 @@
                                             class="text-sm">Calendar</span></a>
                                 </div>
                             </div>
-
-                            <!-- Clients Dropdown (Expanded) -->
                             <div class="relative">
                                 <button id="clientsMenuBtn"
                                     class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
                                     <div class="flex items-center space-x-3">
                                         <i
                                             class="fas fa-users w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                        <span class="font-medium"
-                                            :class="sidebarCollapsed ? 'lg:hidden' : ''">Clients</span>
+                                        <span class="font-medium">Clients</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
-                                        id="clientsDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+                                        id="clientsDropdownIcon"></i>
                                 </button>
-                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"
-                                    :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
                                     <a href="clients.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i
                                             class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All
@@ -295,94 +335,80 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- FINANCE Section -->
                     <div>
-                        <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                        <div class="px-4 mb-2 category-header">
                             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Finance</p>
                         </div>
                         <div class="space-y-1">
                             <a href="invoices.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Invoices">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i
                                     class="fas fa-file-invoice-dollar w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Invoices</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Invoices</div>
+                                <span class="font-medium">Invoices</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Invoices</div>
                             </a>
-
                             <a href="payments.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Payments">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i
                                     class="fas fa-credit-card w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Payments</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Payments</div>
+                                <span class="font-medium">Payments</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Payments</div>
                             </a>
-
                             <a href="subscriptions.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Subscriptions">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i class="fas fa-sync-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium"
-                                    :class="sidebarCollapsed ? 'lg:hidden' : ''">Subscriptions</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Subscriptions</div>
+                                <span class="font-medium">Subscriptions</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Subscriptions</div>
                             </a>
                         </div>
                     </div>
-
-                    <!-- RESOURCES Section -->
                     <div>
-                        <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                        <div class="px-4 mb-2 category-header">
                             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resources</p>
                         </div>
                         <div class="space-y-1">
                             <a href="file-manager.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="File Manager">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i
                                     class="fas fa-cloud-upload-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">File
-                                    Manager</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">File Manager</div>
+                                <span class="font-medium">File Manager</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    File Manager</div>
                             </a>
-
                             <a href="reports.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Reports">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i class="fas fa-chart-bar w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Reports</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Reports</div>
+                                <span class="font-medium">Reports</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Reports</div>
                             </a>
                         </div>
                     </div>
-
-                    <!-- SYSTEM Section -->
                     <div>
-                        <div class="px-4 mb-2" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                        <div class="px-4 mb-2 category-header">
                             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">System</p>
                         </div>
                         <div class="space-y-1">
-                            <!-- Team Dropdown -->
                             <div class="relative">
                                 <button id="teamMenuBtn"
                                     class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
                                     <div class="flex items-center space-x-3">
                                         <i
                                             class="fas fa-user-friends w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                        <span class="font-medium"
-                                            :class="sidebarCollapsed ? 'lg:hidden' : ''">Team</span>
+                                        <span class="font-medium">Team</span>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
-                                        id="teamDropdownIcon" :class="sidebarCollapsed ? 'lg:hidden' : ''"></i>
+                                        id="teamDropdownIcon"></i>
                                 </button>
-                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1"
-                                    :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
                                     <a href="team-members.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition"><i
                                             class="fas fa-users w-4 text-gray-400"></i><span class="text-sm">Team
@@ -393,53 +419,44 @@
                                             Logs</span></a>
                                 </div>
                             </div>
-
                             <a href="settings.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Settings">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i class="fas fa-cog w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Settings</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Settings</div>
+                                <span class="font-medium">Settings</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Settings</div>
                             </a>
-
-                            <!-- Support Tickets (New) -->
                             <a href="support-tickets.html"
-                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative"
-                                data-tooltip="Support Tickets">
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
                                 <i class="fas fa-ticket-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
-                                <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Support
-                                    Tickets</span>
-                                <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                                    :class="sidebarCollapsed ? '' : 'hidden'">Support Tickets</div>
+                                <span class="font-medium">Support Tickets</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Support Tickets</div>
                             </a>
                         </div>
                     </div>
                 </nav>
-
-                <!-- Bottom Section with User & Logout -->
                 <div class="p-4 border-t border-gray-100">
-                    <!-- User Info (New) -->
-                    <div class="flex items-center space-x-3 mb-4 px-2"
-                        :class="sidebarCollapsed ? 'lg:justify-center' : ''">
+                    <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
                         <div
                             class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
                             AJ</div>
-                        <div :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                        <div class="user-info-text">
                             <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
                             <p class="text-xs text-gray-400">Admin</p>
                         </div>
                     </div>
-
                     <button id="sidebarLogoutBtn"
                         class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-200 group relative">
                         <i class="fas fa-sign-out-alt w-5"></i>
-                        <span class="font-medium" :class="sidebarCollapsed ? 'lg:hidden' : ''">Logout</span>
-                        <div class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block"
-                            :class="sidebarCollapsed ? '' : 'hidden'">Logout</div>
+                        <span class="font-medium">Logout</span>
+                        <div
+                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                            Logout</div>
                     </button>
-                    <p class="text-xs text-gray-400 text-center mt-3" :class="sidebarCollapsed ? 'lg:hidden' : ''">©
-                        2024 AgencyDash Pro</p>
+                    <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
                 </div>
             </aside>
 
@@ -543,46 +560,46 @@
                                 <div class="space-y-4">
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Agency Name</label>
-                                        <input type="text" value="AgencyDash"
+                                        <input type="text" id="agencyName" value="AgencyDash"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Agency Email</label>
-                                        <input type="email" value="info@agencydash.com"
+                                        <input type="email" id="agencyEmail" value="info@agencydash.com"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Website URL</label>
-                                        <input type="url" value="https://agencydash.com"
+                                        <input type="url" id="websiteUrl" value="https://agencydash.com"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Time Zone</label>
-                                        <select
+                                        <select id="timeZone"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                            <option>UTC (GMT)</option>
-                                            <option selected>Asia/Dhaka (GMT+6)</option>
-                                            <option>America/New York (GMT-5)</option>
+                                            <option value="UTC">UTC (GMT)</option>
+                                            <option value="Asia/Dhaka" selected>Asia/Dhaka (GMT+6)</option>
+                                            <option value="America/New_York">America/New York (GMT-5)</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Language</label>
-                                        <select
+                                        <select id="language"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                            <option>English</option>
-                                            <option>Bengali</option>
-                                            <option>Spanish</option>
+                                            <option value="en" selected>English</option>
+                                            <option value="bn">Bengali</option>
+                                            <option value="es">Spanish</option>
                                         </select>
                                     </div>
                                     <div class="pt-4">
-                                        <button
+                                        <button id="saveGeneralBtn"
                                             class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Save
                                             Changes</button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Notifications Settings - FIXED: Replaced div inside label with span -->
+                            <!-- Notifications Settings -->
                             <div id="notifications" class="settings-content bg-white rounded-2xl shadow-sm p-6 hidden">
                                 <h3 class="font-bold text-xl text-gray-800 mb-4">Notification Preferences</h3>
                                 <div class="space-y-4">
@@ -593,7 +610,7 @@
                                             </p>
                                         </div>
                                         <label class="toggle-switch">
-                                            <input type="checkbox" checked>
+                                            <input type="checkbox" id="emailNotifications" checked>
                                             <span class="toggle-slider"></span>
                                         </label>
                                     </div>
@@ -603,7 +620,7 @@
                                             <p class="text-sm text-gray-500">Browser push notifications</p>
                                         </div>
                                         <label class="toggle-switch">
-                                            <input type="checkbox">
+                                            <input type="checkbox" id="pushNotifications">
                                             <span class="toggle-slider"></span>
                                         </label>
                                     </div>
@@ -614,7 +631,7 @@
                                             </p>
                                         </div>
                                         <label class="toggle-switch">
-                                            <input type="checkbox" checked>
+                                            <input type="checkbox" id="projectUpdates" checked>
                                             <span class="toggle-slider"></span>
                                         </label>
                                     </div>
@@ -624,13 +641,13 @@
                                             <p class="text-sm text-gray-500">Weekly summary of activities</p>
                                         </div>
                                         <label class="toggle-switch">
-                                            <input type="checkbox">
+                                            <input type="checkbox" id="weeklyDigest">
                                             <span class="toggle-slider"></span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="pt-4">
-                                    <button
+                                    <button id="saveNotificationsBtn"
                                         class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Save
                                         Preferences</button>
                                 </div>
@@ -642,17 +659,17 @@
                                 <div class="space-y-4">
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Current Password</label>
-                                        <input type="password" placeholder="Enter current password"
+                                        <input type="password" id="currentPassword" placeholder="Enter current password"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">New Password</label>
-                                        <input type="password" placeholder="Enter new password"
+                                        <input type="password" id="newPassword" placeholder="Enter new password"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Confirm New Password</label>
-                                        <input type="password" placeholder="Confirm new password"
+                                        <input type="password" id="confirmPassword" placeholder="Confirm new password"
                                             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                     </div>
                                     <div class="flex items-center justify-between py-3 border-t border-gray-100 pt-4">
@@ -660,31 +677,31 @@
                                             <p class="font-medium text-gray-800">Two-Factor Authentication</p>
                                             <p class="text-sm text-gray-500">Add an extra layer of security</p>
                                         </div>
-                                        <button
+                                        <button id="enable2faBtn"
                                             class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">Enable
                                             2FA</button>
                                     </div>
                                     <div class="pt-4">
-                                        <button
+                                        <button id="updatePasswordBtn"
                                             class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Update
                                             Password</button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Appearance Settings - FIXED: Replaced p with span inside buttons -->
+                            <!-- Appearance Settings -->
                             <div id="appearance" class="settings-content bg-white rounded-2xl shadow-sm p-6 hidden">
                                 <h3 class="font-bold text-xl text-gray-800 mb-4">Appearance Settings</h3>
                                 <div class="space-y-4">
                                     <div>
                                         <label class="block text-gray-700 font-medium mb-2">Theme Mode</label>
                                         <div class="grid grid-cols-2 gap-3">
-                                            <button
+                                            <button id="lightModeBtn"
                                                 class="border-2 border-blue-500 rounded-lg p-4 text-center hover:bg-gray-50 transition">
                                                 <i class="fas fa-sun text-yellow-500 text-2xl mb-2"></i>
                                                 <span class="block font-medium">Light Mode</span>
                                             </button>
-                                            <button
+                                            <button id="darkModeBtn"
                                                 class="border-2 border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition">
                                                 <i class="fas fa-moon text-gray-600 text-2xl mb-2"></i>
                                                 <span class="block font-medium">Dark Mode</span>
@@ -692,25 +709,8 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-gray-700 font-medium mb-2">Sidebar Color</label>
-                                        <div class="flex space-x-3">
-                                            <div
-                                                class="w-10 h-10 bg-white border-2 border-blue-500 rounded-full cursor-pointer shadow">
-                                            </div>
-                                            <div
-                                                class="w-10 h-10 bg-gray-800 rounded-full cursor-pointer hover:ring-2 hover:ring-gray-400">
-                                            </div>
-                                            <div
-                                                class="w-10 h-10 bg-blue-600 rounded-full cursor-pointer hover:ring-2 hover:ring-blue-400">
-                                            </div>
-                                            <div
-                                                class="w-10 h-10 bg-purple-600 rounded-full cursor-pointer hover:ring-2 hover:ring-purple-400">
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="pt-4">
-                                        <button
+                                        <button id="saveAppearanceBtn"
                                             class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Save
                                             Appearance</button>
                                     </div>
@@ -731,7 +731,7 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <button
+                                        <button id="googleConnectBtn"
                                             class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">Connect</button>
                                     </div>
                                     <div
@@ -743,7 +743,7 @@
                                                 <p class="text-sm text-gray-500">Get notifications in Slack</p>
                                             </div>
                                         </div>
-                                        <button
+                                        <button id="slackConnectBtn"
                                             class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">Connect</button>
                                     </div>
                                     <div
@@ -755,7 +755,7 @@
                                                 <p class="text-sm text-gray-500">Connect payment processing</p>
                                             </div>
                                         </div>
-                                        <button
+                                        <button id="stripeConnectBtn"
                                             class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition">Connect</button>
                                     </div>
                                 </div>
@@ -767,9 +767,8 @@
         </div>
 
         <!-- Logout Modal -->
-        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10">
+        <div id="logoutModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-sign-out-alt text-red-500 text-2xl"></i>
@@ -786,35 +785,326 @@
             </div>
         </div>
 
-        <script>
-            // Set active menu based on current page
-            const currentPage = window.location.pathname.split('/').pop();
-            const menuItems = document.querySelectorAll('.menu-item');
+        <!-- Toast Container -->
+        <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
 
-            menuItems.forEach(item => {
-                const href = item.getAttribute('href');
-                if (href === currentPage) {
-                    item.classList.add('active');
-                }
+            <script>
+        // ==================== SETTINGS DATA ====================
+        let settings = {
+            general: {
+                agencyName: "AgencyDash",
+                agencyEmail: "info@agencydash.com",
+                websiteUrl: "https://agencydash.com",
+                timeZone: "Asia/Dhaka",
+                language: "en"
+            },
+            notifications: {
+                email: true,
+                push: false,
+                projectUpdates: true,
+                weeklyDigest: false
+            },
+            integrations: {
+                google: false,
+                slack: false,
+                stripe: false
+            }
+        };
+
+        // ==================== TOAST FUNCTION ====================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            let bgColor = 'bg-green-500', icon = 'fa-check-circle';
+            if (type === 'error') { bgColor = 'bg-red-500'; icon = 'fa-exclamation-circle'; }
+            else if (type === 'info') { bgColor = 'bg-blue-500'; icon = 'fa-info-circle'; }
+            toast.className = `toast-message ${bgColor} text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 min-w-[280px]`;
+            toast.innerHTML = `<i class="fas ${icon} text-lg"></i><span class="text-sm font-medium">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 2000);
+        }
+
+        // ==================== LOAD SETTINGS ====================
+        function loadSettings() {
+            const saved = localStorage.getItem('appSettings');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.general) settings.general = { ...settings.general, ...parsed.general };
+                    if (parsed.notifications) settings.notifications = { ...settings.notifications, ...parsed.notifications };
+                    if (parsed.integrations) settings.integrations = { ...settings.integrations, ...parsed.integrations };
+                } catch (e) { console.log("Error loading settings"); }
+            }
+        }
+
+        // ==================== SAVE ALL SETTINGS ====================
+        function saveAllSettings() {
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+        }
+
+        // ==================== APPLY SETTINGS TO FORM ====================
+        function applySettingsToForm() {
+            // General Settings
+            const agencyNameInput = document.getElementById('agencyName');
+            const agencyEmailInput = document.getElementById('agencyEmail');
+            const websiteUrlInput = document.getElementById('websiteUrl');
+            const timeZoneSelect = document.getElementById('timeZone');
+            const languageSelect = document.getElementById('language');
+
+            if (agencyNameInput) agencyNameInput.value = settings.general.agencyName;
+            if (agencyEmailInput) agencyEmailInput.value = settings.general.agencyEmail;
+            if (websiteUrlInput) websiteUrlInput.value = settings.general.websiteUrl;
+            if (timeZoneSelect) timeZoneSelect.value = settings.general.timeZone;
+            if (languageSelect) languageSelect.value = settings.general.language;
+
+            // Notification Settings
+            const emailNotif = document.getElementById('emailNotifications');
+            const pushNotif = document.getElementById('pushNotifications');
+            const projectUpdates = document.getElementById('projectUpdates');
+            const weeklyDigest = document.getElementById('weeklyDigest');
+
+            if (emailNotif) emailNotif.checked = settings.notifications.email;
+            if (pushNotif) pushNotif.checked = settings.notifications.push;
+            if (projectUpdates) projectUpdates.checked = settings.notifications.projectUpdates;
+            if (weeklyDigest) weeklyDigest.checked = settings.notifications.weeklyDigest;
+
+            // Update integration buttons
+            updateIntegrationButtons();
+        }
+
+        // ==================== UPDATE INTEGRATION BUTTONS ====================
+        function updateIntegrationButtons() {
+            const googleBtn = document.getElementById('googleConnectBtn');
+            const slackBtn = document.getElementById('slackConnectBtn');
+            const stripeBtn = document.getElementById('stripeConnectBtn');
+
+            if (settings.integrations.google && googleBtn) {
+                googleBtn.textContent = 'Connected';
+                googleBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                googleBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            }
+            if (settings.integrations.slack && slackBtn) {
+                slackBtn.textContent = 'Connected';
+                slackBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                slackBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            }
+            if (settings.integrations.stripe && stripeBtn) {
+                stripeBtn.textContent = 'Connected';
+                stripeBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                stripeBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            }
+        }
+
+        // ==================== SAVE GENERAL SETTINGS ====================
+        function saveGeneralSettings() {
+            const agencyName = document.getElementById('agencyName')?.value || "AgencyDash";
+            const agencyEmail = document.getElementById('agencyEmail')?.value || "info@agencydash.com";
+            const websiteUrl = document.getElementById('websiteUrl')?.value || "https://agencydash.com";
+            const timeZone = document.getElementById('timeZone')?.value || "Asia/Dhaka";
+            const language = document.getElementById('language')?.value || "en";
+
+            settings.general = {
+                agencyName: agencyName,
+                agencyEmail: agencyEmail,
+                websiteUrl: websiteUrl,
+                timeZone: timeZone,
+                language: language
+            };
+            
+            saveAllSettings();
+            showToast('General settings saved successfully!', 'success');
+            console.log("General settings saved:", settings.general);
+        }
+
+        // ==================== SAVE NOTIFICATION SETTINGS ====================
+        function saveNotificationSettings() {
+            settings.notifications = {
+                email: document.getElementById('emailNotifications')?.checked || false,
+                push: document.getElementById('pushNotifications')?.checked || false,
+                projectUpdates: document.getElementById('projectUpdates')?.checked || false,
+                weeklyDigest: document.getElementById('weeklyDigest')?.checked || false
+            };
+            saveAllSettings();
+            showToast('Notification preferences saved!', 'success');
+        }
+
+        // ==================== UPDATE PASSWORD ====================
+        function updatePassword() {
+            const currentPwd = document.getElementById('currentPassword')?.value || '';
+            const newPwd = document.getElementById('newPassword')?.value || '';
+            const confirmPwd = document.getElementById('confirmPassword')?.value || '';
+
+            if (!currentPwd || !newPwd || !confirmPwd) {
+                showToast('Please fill all password fields!', 'error');
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                showToast('New passwords do not match!', 'error');
+                return;
+            }
+            if (newPwd.length < 6) {
+                showToast('Password must be at least 6 characters!', 'error');
+                return;
+            }
+
+            showToast('Password updated successfully!', 'success');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // ==================== SAVE APPEARANCE ====================
+        function saveAppearanceSettings() {
+            showToast('Appearance settings saved!', 'success');
+        }
+
+        // ==================== ENABLE 2FA ====================
+        function enable2FA() {
+            showToast('2FA setup initiated! Check your email.', 'info');
+        }
+
+        // ==================== INTEGRATION FUNCTIONS ====================
+        function connectGoogle() {
+            settings.integrations.google = true;
+            saveAllSettings();
+            updateIntegrationButtons();
+            showToast('Google Analytics connected successfully!', 'success');
+        }
+
+        function connectSlack() {
+            settings.integrations.slack = true;
+            saveAllSettings();
+            updateIntegrationButtons();
+            showToast('Slack connected successfully!', 'success');
+        }
+
+        function connectStripe() {
+            settings.integrations.stripe = true;
+            saveAllSettings();
+            updateIntegrationButtons();
+            showToast('Stripe connected successfully!', 'success');
+        }
+
+        // ==================== TAB NAVIGATION ====================
+        function initTabs() {
+            const tabs = document.querySelectorAll('.settings-tab');
+            const contents = document.querySelectorAll('.settings-content');
+
+            if (tabs.length && contents.length) {
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        tabs.forEach(t => t.classList.remove('active-tab'));
+                        tab.classList.add('active-tab');
+                        contents.forEach(content => content.classList.add('hidden'));
+                        const tabId = tab.getAttribute('data-tab');
+                        const selectedContent = document.getElementById(tabId);
+                        if (selectedContent) selectedContent.classList.remove('hidden');
+                    });
+                });
+            }
+        }
+
+        // ==================== SIDEBAR FUNCTIONS ====================
+        function initSidebar() {
+            function checkAuth() {
+                const a = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn");
+                if (!a || a !== "true") window.location.href = "login.html";
+            }
+            checkAuth();
+
+            const cp = window.location.pathname.split("/").pop() || "settings.html";
+            document.querySelectorAll(".menu-item").forEach(i => {
+                if (i.getAttribute("href") === cp) i.classList.add("active");
             });
 
-            // Check if user is logged in
-            function checkAuth() {
-                const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
-                if (!isLoggedIn || isLoggedIn !== 'true') {
-                    window.location.href = 'login.html';
+            const s = document.getElementById("sidebar");
+            const cb = document.getElementById("collapseSidebarBtn");
+            const ci = document.getElementById("collapseIcon");
+            let ic = localStorage.getItem('sidebarCollapsed') === 'true';
+
+            function updateSidebar() {
+                if (!s) return;
+                if (ic) {
+                    s.classList.remove('lg:w-72');
+                    s.classList.add('lg:w-20');
+                    if (ci) ci.style.transform = 'rotate(180deg)';
+                    document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.add('lg:hidden'));
+                    document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.add('lg:hidden'));
+                    document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.add('lg:justify-center'));
+                    document.querySelectorAll('.submenu').forEach(e => e.classList.add('hidden'));
+                } else {
+                    s.classList.remove('lg:w-20');
+                    s.classList.add('lg:w-72');
+                    if (ci) ci.style.transform = 'rotate(0deg)';
+                    document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.remove('lg:hidden'));
+                    document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.remove('lg:hidden'));
+                    document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.remove('lg:justify-center'));
                 }
             }
 
-            // Run auth check on page load
-            checkAuth();
+            function toggleSidebar() { 
+                ic = !ic; 
+                localStorage.setItem('sidebarCollapsed', ic); 
+                updateSidebar(); 
+            }
+            
+            if (cb) { 
+                cb.addEventListener('click', toggleSidebar); 
+                updateSidebar(); 
+            }
 
-            // Profile Dropdown
+            function setupSubmenu(b, m, i) {
+                const btn = document.getElementById(b);
+                const menu = document.getElementById(m);
+                const icon = document.getElementById(i);
+                if (btn && menu) {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!ic) {
+                            const hidden = menu.classList.contains('hidden');
+                            document.querySelectorAll('.submenu').forEach(m2 => { if (m2 !== menu) m2.classList.add('hidden'); });
+                            document.querySelectorAll('[id$="DropdownIcon"]').forEach(ic2 => { if (ic2 !== icon && ic2.style.transform === 'rotate(180deg)') ic2.style.transform = 'rotate(0deg)'; });
+                            menu.classList.toggle('hidden');
+                            if (icon) icon.style.transform = hidden ? 'rotate(180deg)' : 'rotate(0deg)';
+                        }
+                    });
+                }
+            }
+            
+            setupSubmenu('projectsMenuBtn', 'projectsSubmenu', 'projectsDropdownIcon');
+            setupSubmenu('tasksMenuBtn', 'tasksSubmenu', 'tasksDropdownIcon');
+            setupSubmenu('clientsMenuBtn', 'clientsSubmenu', 'clientsDropdownIcon');
+            setupSubmenu('teamMenuBtn', 'teamSubmenu', 'teamDropdownIcon');
+
+            document.addEventListener('click', e => {
+                if (ic) return;
+                if (!e.target.closest('[id$="MenuBtn"]') && !e.target.closest('.submenu')) {
+                    document.querySelectorAll('.submenu').forEach(m => m.classList.add('hidden'));
+                    document.querySelectorAll('[id$="DropdownIcon"]').forEach(i => i.style.transform = 'rotate(0deg)');
+                }
+            });
+
+            const mt = document.getElementById("mobileMenuToggle");
+            if (mt) {
+                mt.addEventListener("click", () => s.classList.toggle("-translate-x-full"));
+                document.addEventListener("click", e => {
+                    if (window.innerWidth < 1024 && s && !s.contains(e.target) && !mt.contains(e.target)) {
+                        s.classList.add("-translate-x-full");
+                    }
+                });
+            }
+        }
+
+        // ==================== PROFILE DROPDOWN ====================
+        function initProfileDropdown() {
             const profileBtn = document.getElementById('profileDropdownBtn');
             const profileDropdown = document.getElementById('profileDropdown');
             const dropdownIcon = document.getElementById('dropdownIcon');
 
-            if (profileBtn) {
+            if (profileBtn && profileDropdown) {
                 profileBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     profileDropdown.classList.toggle('hidden');
@@ -830,152 +1120,98 @@
                     if (dropdownIcon) dropdownIcon.style.transform = 'rotate(0deg)';
                 }
             });
+        }
 
-            // Mobile Sidebar Toggle
-            const mobileToggle = document.getElementById('mobileMenuToggle');
-            const sidebar = document.getElementById('sidebar');
-
-            if (mobileToggle) {
-                mobileToggle.addEventListener('click', () => {
-                    sidebar.classList.toggle('-translate-x-full');
-                });
-            }
-
-            // Settings Tab Navigation
-            const tabs = document.querySelectorAll('.settings-tab');
-            const contents = document.querySelectorAll('.settings-content');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    e.preventDefault();
-
-                    tabs.forEach(t => {
-                        t.classList.remove('active-tab');
-                    });
-
-                    tab.classList.add('active-tab');
-
-                    contents.forEach(content => {
-                        content.classList.add('hidden');
-                    });
-
-                    const tabId = tab.getAttribute('data-tab');
-                    const selectedContent = document.getElementById(tabId);
-                    if (selectedContent) {
-                        selectedContent.classList.remove('hidden');
-                    }
-                });
-            });
-
-            // Show Center Toast Message
-            function showCenterToast(message, type = 'success') {
-                const existingToast = document.getElementById('centerToast');
-                if (existingToast) {
-                    existingToast.remove();
-                }
-
-                const toast = document.createElement('div');
-                toast.id = 'centerToast';
-
-                let bgColor = 'bg-green-500';
-                let icon = 'fa-check-circle';
-                if (type === 'error') {
-                    bgColor = 'bg-red-500';
-                    icon = 'fa-exclamation-circle';
-                } else if (type === 'info') {
-                    bgColor = 'bg-blue-500';
-                    icon = 'fa-info-circle';
-                } else if (type === 'warning') {
-                    bgColor = 'bg-yellow-500';
-                    icon = 'fa-exclamation-triangle';
-                }
-
-                toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bgColor} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`;
-                toast.style.animation = 'fadeInScale 0.3s ease-out';
-                toast.innerHTML = `
-            <i class="fas ${icon} text-2xl"></i>
-            <span class="text-lg font-medium">${message}</span>
-        `;
-
-                document.body.appendChild(toast);
-
-                const style = document.createElement('style');
-                style.textContent = `
-            @keyframes fadeInScale {
-                from {
-                    opacity: 0;
-                    transform: translate(-50%, -50%) scale(0.8);
-                }
-                to {
-                    opacity: 1;
-                    transform: translate(-50%, -50%) scale(1);
-                }
-            }
-            @keyframes fadeOutScale {
-                from {
-                    opacity: 1;
-                    transform: translate(-50%, -50%) scale(1);
-                }
-                to {
-                    opacity: 0;
-                    transform: translate(-50%, -50%) scale(0.8);
-                }
-            }
-        `;
-                document.head.appendChild(style);
-
-                setTimeout(() => {
-                    toast.style.animation = 'fadeOutScale 0.3s ease-out';
-                    setTimeout(() => {
-                        toast.remove();
-                        style.remove();
-                    }, 300);
-                }, 2000);
-            }
-
-            // Logout Modal Logic
-            const logoutModal = document.getElementById('logoutModal');
-            const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
-            const dropdownLogoutBtn = document.getElementById('dropdownLogoutBtn');
-            const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
-            const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
-            const modalBackdrop = document.getElementById('modalBackdrop');
+        // ==================== LOGOUT ====================
+        function initLogout() {
+            const logoutModal = document.getElementById("logoutModal");
+            const sidebarLogout = document.getElementById("sidebarLogoutBtn");
+            const dropdownLogout = document.getElementById("dropdownLogoutBtn");
+            const confirmLogout = document.getElementById("confirmLogoutBtn");
+            const cancelLogout = document.getElementById("cancelLogoutBtn");
 
             function showLogoutModal() {
                 if (logoutModal) {
-                    logoutModal.classList.remove('hidden');
-                    logoutModal.classList.add('flex');
+                    logoutModal.classList.remove('hidden-modal');
+                    logoutModal.classList.add('flex-modal');
                 }
             }
 
             function hideLogoutModal() {
                 if (logoutModal) {
-                    logoutModal.classList.add('hidden');
-                    logoutModal.classList.remove('flex');
+                    logoutModal.classList.add('hidden-modal');
+                    logoutModal.classList.remove('flex-modal');
                 }
             }
 
             function handleLogout() {
-                localStorage.removeItem('isLoggedIn');
-                sessionStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('userEmail');
-                sessionStorage.removeItem('userEmail');
-
-                showCenterToast('Logged out successfully!', 'success');
+                localStorage.removeItem("isLoggedIn");
+                sessionStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("userEmail");
+                sessionStorage.removeItem("userEmail");
+                showToast("Logged out successfully!", "success");
                 hideLogoutModal();
-
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = "login.html";
                 }, 1500);
             }
 
-            if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener('click', showLogoutModal);
-            if (dropdownLogoutBtn) dropdownLogoutBtn.addEventListener('click', showLogoutModal);
-            if (confirmLogoutBtn) confirmLogoutBtn.addEventListener('click', handleLogout);
-            if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', hideLogoutModal);
-            if (modalBackdrop) modalBackdrop.addEventListener('click', hideLogoutModal);
-        </script>
-        <script src="main.js"></script>
+            if (sidebarLogout) sidebarLogout.addEventListener("click", showLogoutModal);
+            if (dropdownLogout) dropdownLogout.addEventListener("click", showLogoutModal);
+            if (confirmLogout) confirmLogout.addEventListener("click", handleLogout);
+            if (cancelLogout) cancelLogout.addEventListener("click", hideLogoutModal);
+            if (logoutModal) {
+                logoutModal.addEventListener('click', (e) => { 
+                    if (e.target === logoutModal) hideLogoutModal(); 
+                });
+            }
+        }
+
+        // ==================== BUTTON EVENT LISTENERS ====================
+        function initButtons() {
+            const saveGeneralBtn = document.getElementById('saveGeneralBtn');
+            const saveNotificationsBtn = document.getElementById('saveNotificationsBtn');
+            const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+            const saveAppearanceBtn = document.getElementById('saveAppearanceBtn');
+            const enable2faBtn = document.getElementById('enable2faBtn');
+            const lightModeBtn = document.getElementById('lightModeBtn');
+            const darkModeBtn = document.getElementById('darkModeBtn');
+            const googleConnectBtn = document.getElementById('googleConnectBtn');
+            const slackConnectBtn = document.getElementById('slackConnectBtn');
+            const stripeConnectBtn = document.getElementById('stripeConnectBtn');
+
+            if (saveGeneralBtn) {
+                saveGeneralBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log("Save General button clicked");
+                    saveGeneralSettings();
+                });
+            }
+            
+            if (saveNotificationsBtn) saveNotificationsBtn.addEventListener('click', saveNotificationSettings);
+            if (updatePasswordBtn) updatePasswordBtn.addEventListener('click', updatePassword);
+            if (saveAppearanceBtn) saveAppearanceBtn.addEventListener('click', saveAppearanceSettings);
+            if (enable2faBtn) enable2faBtn.addEventListener('click', enable2FA);
+            if (lightModeBtn) lightModeBtn.addEventListener('click', () => showToast('Light mode selected. Refresh to apply.', 'info'));
+            if (darkModeBtn) darkModeBtn.addEventListener('click', () => showToast('Dark mode coming soon!', 'info'));
+            if (googleConnectBtn) googleConnectBtn.addEventListener('click', connectGoogle);
+            if (slackConnectBtn) slackConnectBtn.addEventListener('click', connectSlack);
+            if (stripeConnectBtn) stripeConnectBtn.addEventListener('click', connectStripe);
+        }
+
+        // ==================== INITIALIZE ====================
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOM loaded - initializing settings page");
+            loadSettings();
+            applySettingsToForm();
+            initTabs();
+            initSidebar();
+            initProfileDropdown();
+            initLogout();
+            initButtons();
+        });
+    </script>
+  
     </body>
 
 </html>

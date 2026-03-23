@@ -46,11 +46,6 @@
                 }
             }
 
-            .modal-backdrop {
-                background-color: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-            }
-
             .sidebar {
                 transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
             }
@@ -86,11 +81,73 @@
             .upload-area {
                 border: 2px dashed #cbd5e1;
                 transition: all 0.2s ease;
+                cursor: pointer;
             }
 
             .upload-area.drag-over {
                 border-color: #3b82f6;
                 background: #eff6ff;
+            }
+
+            /* Modal Overlay Styles */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 9998;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-overlay.flex-modal {
+                display: flex !important;
+            }
+
+            .modal-overlay.hidden-modal {
+                display: none !important;
+            }
+
+            .modal-container {
+                position: relative;
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                z-index: 9999;
+                width: 90%;
+                max-width: 500px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .toast-message {
+                animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    visibility: hidden;
+                }
             }
         </style>
     </head>
@@ -174,7 +231,8 @@
                                             Board</span></a><a href="calendar.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
                                             class="fas fa-calendar-alt w-4"></i><span
-                                            class="text-sm">Calendar</span></a></div>
+                                            class="text-sm">Calendar</span></a>
+                                </div>
                             </div>
                             <div class="relative"><button id="clientsMenuBtn"
                                     class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
@@ -262,7 +320,8 @@
                                         href="activities.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
                                             class="fas fa-history w-4"></i><span class="text-sm">Activity
-                                            Logs</span></a></div>
+                                            Logs</span></a>
+                                </div>
                             </div><a href="settings.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
                                     class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
@@ -380,61 +439,101 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4"
                             id="fileExplorer"></div>
                     </div>
-
-                    <!-- Upload Modal -->
-                    <!-- Upload Modal -->
-                    <div id="uploadModal" class="fixed inset-0 hidden items-center justify-center z-50">
-                        <!-- Backdrop -->
-                        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm z-40"></div>
-
-                        <!-- Modal Content -->
-                        <div class="relative z-50 bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
-                            <div class="p-6">
-                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Upload File</h3>
-                                <div id="dropZone"
-                                    class="upload-area rounded-xl p-8 text-center cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500">
-                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
-                                    <p class="text-gray-500">Drag & drop files here or click to browse</p>
-                                    <input type="file" id="fileInput" class="hidden" multiple>
-                                </div>
-                                <div id="uploadPreview" class="mt-4 space-y-2"></div>
-                                <div class="flex gap-3 mt-4">
-                                    <button id="confirmUploadBtn"
-                                        class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Upload</button>
-                                    <button id="cancelUploadBtn"
-                                        class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- New Folder Modal -->
-                    <!-- New Folder Modal -->
-                    <div id="folderModal" class="fixed inset-0 hidden items-center justify-center z-50">
-                        <!-- Backdrop -->
-                        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm z-40"></div>
-                        <!-- Modal Content -->
-                        <div class="relative z-50 bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
-                            <div class="p-6">
-                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Create New Folder</h3>
-                                <input type="text" id="folderName" placeholder="Folder name"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4">
-                                <div class="flex gap-3">
-                                    <button id="createFolderBtn"
-                                        class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create</button>
-                                    <button id="cancelFolderBtn"
-                                        class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </main>
         </div>
 
-        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <!-- Upload Modal -->
+        <div id="uploadModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Upload File</h3>
+                        <button id="closeUploadModalBtn" class="text-gray-400 hover:text-gray-600 text-xl"><i
+                                class="fas fa-times"></i></button>
+                    </div>
+                    <div id="dropZone"
+                        class="upload-area rounded-xl p-8 text-center cursor-pointer border-2 border-dashed border-gray-300 hover:border-blue-500">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-500">Drag & drop files here or click to browse</p>
+                        <input type="file" id="fileInput" class="hidden" multiple>
+                    </div>
+                    <div id="uploadPreview" class="mt-4 space-y-2 max-h-40 overflow-y-auto"></div>
+                    <div class="flex gap-3 mt-4">
+                        <button id="confirmUploadBtn"
+                            class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Upload</button>
+                        <button id="cancelUploadBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Folder Modal -->
+        <div id="folderModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Create New Folder</h3>
+                        <button id="closeFolderModalBtn" class="text-gray-400 hover:text-gray-600 text-xl"><i
+                                class="fas fa-times"></i></button>
+                    </div>
+                    <input type="text" id="folderName" placeholder="Folder name"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4">
+                    <div class="flex gap-3">
+                        <button id="createFolderBtn"
+                            class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create</button>
+                        <button id="cancelFolderBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete File Confirmation Modal -->
+        <div id="deleteFileModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Delete File</h3>
+                    <p class="text-gray-500 mb-4">Are you sure you want to delete this file?</p>
+                    <p class="text-sm font-medium text-gray-700 mb-6" id="deleteFileName"></p>
+                    <div class="flex gap-3">
+                        <button id="confirmDeleteFileBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+                        <button id="cancelDeleteFileBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Folder Confirmation Modal -->
+        <div id="deleteFolderConfirmModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Delete Folder</h3>
+                    <p class="text-gray-500 mb-4">Are you sure you want to delete this folder?</p>
+                    <p class="text-sm font-medium text-gray-700 mb-4" id="deleteFolderName"></p>
+                    <p class="text-xs text-red-500 mb-4">All files inside this folder will also be deleted!</p>
+                    <div class="flex gap-3">
+                        <button id="confirmDeleteFolderBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+                        <button id="cancelDeleteFolderBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Modal -->
+        <div id="logoutModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
                             class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
@@ -447,6 +546,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- Toast Container -->
+        <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
 
         <script>
             // File System Data Structure
@@ -468,15 +570,27 @@
 
             let currentPath = "";
             let selectedFiles = [];
+            let deleteFileId = null;
+            let deleteFolderId = null;
 
             function saveFileSystem() { localStorage.setItem('fileSystem', JSON.stringify(fileSystem)); }
 
             function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
                 const toast = document.createElement('div');
-                toast.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-                toast.innerHTML = message;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
+                let bgColor = 'bg-green-500', icon = 'fa-check-circle';
+                if (type === 'error') { bgColor = 'bg-red-500'; icon = 'fa-exclamation-circle'; }
+                else if (type === 'info') { bgColor = 'bg-blue-500'; icon = 'fa-info-circle'; }
+                toast.className = `toast-message ${bgColor} text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 min-w-[280px]`;
+                toast.innerHTML = `<i class="fas ${icon} text-lg"></i><span class="text-sm font-medium">${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 2000);
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : m);
             }
 
             function updateStats() {
@@ -519,6 +633,88 @@
                 return size.toFixed(1) + ' MB';
             }
 
+            function downloadFile(fileName, fileType) {
+                // Create a dummy download
+                const link = document.createElement('a');
+                const content = `This is a sample ${fileType} file: ${fileName}`;
+                const blob = new Blob([content], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                showToast(`Downloading ${fileName}...`, 'success');
+            }
+
+            // ==================== DELETE MODAL FUNCTIONS ====================
+            function showDeleteFileModal(id, name) {
+                deleteFileId = id;
+                document.getElementById('deleteFileName').textContent = name;
+                const modal = document.getElementById('deleteFileModal');
+                if (modal) {
+                    modal.classList.remove('hidden-modal');
+                    modal.classList.add('flex-modal');
+                }
+            }
+
+            function closeDeleteFileModal() {
+                deleteFileId = null;
+                const modal = document.getElementById('deleteFileModal');
+                if (modal) {
+                    modal.classList.add('hidden-modal');
+                    modal.classList.remove('flex-modal');
+                }
+            }
+
+            function performDeleteFile() {
+                if (deleteFileId) {
+                    const file = fileSystem.files.find(f => f.id === deleteFileId);
+                    fileSystem.files = fileSystem.files.filter(f => f.id !== deleteFileId);
+                    saveFileSystem();
+                    updateStats();
+                    renderExplorer();
+                    showToast(`File "${file?.name}" deleted successfully!`, 'info');
+                    closeDeleteFileModal();
+                }
+            }
+
+            function showDeleteFolderModal(id, name) {
+                deleteFolderId = id;
+                document.getElementById('deleteFolderName').textContent = name;
+                const modal = document.getElementById('deleteFolderConfirmModal');
+                if (modal) {
+                    modal.classList.remove('hidden-modal');
+                    modal.classList.add('flex-modal');
+                }
+            }
+
+            function closeDeleteFolderModal() {
+                deleteFolderId = null;
+                const modal = document.getElementById('deleteFolderConfirmModal');
+                if (modal) {
+                    modal.classList.add('hidden-modal');
+                    modal.classList.remove('flex-modal');
+                }
+            }
+
+            function performDeleteFolder() {
+                if (deleteFolderId) {
+                    const folder = fileSystem.folders.find(f => f.id === deleteFolderId);
+                    if (folder) {
+                        const folderPath = folder.path ? `${folder.path}/${folder.name}` : folder.name;
+                        fileSystem.folders = fileSystem.folders.filter(f => f.id !== deleteFolderId && !(f.path === folderPath || f.path.startsWith(folderPath + '/')));
+                        fileSystem.files = fileSystem.files.filter(f => !(f.path === folderPath || f.path.startsWith(folderPath + '/')));
+                        saveFileSystem();
+                        updateStats();
+                        renderExplorer();
+                        showToast(`Folder "${folder.name}" and its contents deleted successfully!`, 'info');
+                    }
+                    closeDeleteFolderModal();
+                }
+            }
+
             function renderExplorer() {
                 const container = document.getElementById('fileExplorer');
                 const foldersInPath = fileSystem.folders.filter(f => f.path === currentPath);
@@ -533,8 +729,8 @@
                 foldersInPath.forEach(folder => {
                     html += `
                     <div class="folder-item bg-gray-50 rounded-xl p-4 hover:shadow-md transition">
-                        <div class="flex items-center justify-between mb-3"><i class="fas fa-folder text-yellow-500 text-3xl"></i><div class="flex gap-2"><button class="delete-folder text-red-500 hover:text-red-700" data-id="${folder.id}"><i class="fas fa-trash"></i></button></div></div>
-                        <div class="folder-name cursor-pointer" data-path="${folder.name}"><p class="font-semibold text-gray-800">${folder.name}</p><p class="text-xs text-gray-400">Created: ${new Date(folder.createdAt).toLocaleDateString()}</p></div>
+                        <div class="flex items-center justify-between mb-3"><i class="fas fa-folder text-yellow-500 text-3xl"></i><div class="flex gap-2"><button class="delete-folder text-red-500 hover:text-red-700" data-id="${folder.id}" data-name="${escapeHtml(folder.name)}"><i class="fas fa-trash"></i></button></div></div>
+                        <div class="folder-name cursor-pointer" data-path="${folder.name}"><p class="font-semibold text-gray-800">${escapeHtml(folder.name)}</p><p class="text-xs text-gray-400">Created: ${new Date(folder.createdAt).toLocaleDateString()}</p></div>
                     </div>
                 `;
                 });
@@ -542,8 +738,8 @@
                 filesInPath.forEach(file => {
                     html += `
                     <div class="file-item bg-white rounded-xl p-4 border border-gray-100 hover:shadow-md transition">
-                        <div class="flex items-center justify-between mb-3"><i class="fas ${getFileIcon(file.type)} text-3xl"></i><div class="flex gap-2"><button class="download-file text-blue-500 hover:text-blue-700" data-id="${file.id}"><i class="fas fa-download"></i></button><button class="delete-file text-red-500 hover:text-red-700" data-id="${file.id}"><i class="fas fa-trash"></i></button></div></div>
-                        <div><p class="font-semibold text-gray-800 truncate">${file.name}</p><p class="text-xs text-gray-400 mt-1">${formatFileSize(file.size)} • ${new Date(file.uploadedAt).toLocaleDateString()}</p></div>
+                        <div class="flex items-center justify-between mb-3"><i class="fas ${getFileIcon(file.type)} text-3xl"></i><div class="flex gap-2"><button class="download-file text-blue-500 hover:text-blue-700" data-id="${file.id}" data-name="${escapeHtml(file.name)}"><i class="fas fa-download"></i></button><button class="delete-file text-red-500 hover:text-red-700" data-id="${file.id}" data-name="${escapeHtml(file.name)}"><i class="fas fa-trash"></i></button></div></div>
+                        <div><p class="font-semibold text-gray-800 truncate">${escapeHtml(file.name)}</p><p class="text-xs text-gray-400 mt-1">${formatFileSize(file.size)} • ${new Date(file.uploadedAt).toLocaleDateString()}</p></div>
                     </div>
                 `;
                 });
@@ -563,18 +759,8 @@
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         const id = parseInt(btn.dataset.id);
-                        if (confirm('Delete this folder and all contents?')) {
-                            const folder = fileSystem.folders.find(f => f.id === id);
-                            if (folder) {
-                                const folderPath = folder.path ? `${folder.path}/${folder.name}` : folder.name;
-                                fileSystem.folders = fileSystem.folders.filter(f => f.id !== id && !(f.path === folderPath || f.path.startsWith(folderPath + '/')));
-                                fileSystem.files = fileSystem.files.filter(f => !(f.path === folderPath || f.path.startsWith(folderPath + '/')));
-                                saveFileSystem();
-                                updateStats();
-                                renderExplorer();
-                                showToast('Folder deleted!', 'info');
-                            }
-                        }
+                        const name = btn.dataset.name;
+                        showDeleteFolderModal(id, name);
                     });
                 });
 
@@ -582,20 +768,19 @@
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         const id = parseInt(btn.dataset.id);
-                        if (confirm('Delete this file?')) {
-                            fileSystem.files = fileSystem.files.filter(f => f.id !== id);
-                            saveFileSystem();
-                            updateStats();
-                            renderExplorer();
-                            showToast('File deleted!', 'info');
-                        }
+                        const name = btn.dataset.name;
+                        showDeleteFileModal(id, name);
                     });
                 });
 
                 document.querySelectorAll('.download-file').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        showToast('Download started!', 'success');
+                        const fileName = btn.dataset.name;
+                        const file = fileSystem.files.find(f => f.id === parseInt(btn.dataset.id));
+                        if (file) {
+                            downloadFile(fileName, file.type);
+                        }
                     });
                 });
             }
@@ -607,7 +792,7 @@
                 let cumulativePath = '';
                 parts.forEach((part, index) => {
                     cumulativePath += (index === 0 ? part : '/' + part);
-                    html += `<i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i><span class="cursor-pointer hover:text-blue-600" data-path="${cumulativePath}">${part}</span>`;
+                    html += `<i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i><span class="cursor-pointer hover:text-blue-600" data-path="${cumulativePath}">${escapeHtml(part)}</span>`;
                 });
                 breadcrumb.innerHTML = html;
 
@@ -625,25 +810,38 @@
             const folderModal = document.getElementById('folderModal');
 
             document.getElementById('uploadFileBtn')?.addEventListener('click', () => {
-                uploadModal.classList.remove('hidden');
-                uploadModal.classList.add('flex');
+                uploadModal.classList.remove('hidden-modal');
+                uploadModal.classList.add('flex-modal');
             });
 
             document.getElementById('newFolderBtn')?.addEventListener('click', () => {
-                folderModal.classList.remove('hidden');
-                folderModal.classList.add('flex');
+                folderModal.classList.remove('hidden-modal');
+                folderModal.classList.add('flex-modal');
             });
 
-            document.getElementById('cancelUploadBtn')?.addEventListener('click', () => {
-                uploadModal.classList.add('hidden');
-                uploadModal.classList.remove('flex');
+            document.getElementById('closeUploadModalBtn')?.addEventListener('click', () => {
+                uploadModal.classList.add('hidden-modal');
+                uploadModal.classList.remove('flex-modal');
                 selectedFiles = [];
                 document.getElementById('uploadPreview').innerHTML = '';
             });
 
+            document.getElementById('cancelUploadBtn')?.addEventListener('click', () => {
+                uploadModal.classList.add('hidden-modal');
+                uploadModal.classList.remove('flex-modal');
+                selectedFiles = [];
+                document.getElementById('uploadPreview').innerHTML = '';
+            });
+
+            document.getElementById('closeFolderModalBtn')?.addEventListener('click', () => {
+                folderModal.classList.add('hidden-modal');
+                folderModal.classList.remove('flex-modal');
+                document.getElementById('folderName').value = '';
+            });
+
             document.getElementById('cancelFolderBtn')?.addEventListener('click', () => {
-                folderModal.classList.add('hidden');
-                folderModal.classList.remove('flex');
+                folderModal.classList.add('hidden-modal');
+                folderModal.classList.remove('flex-modal');
                 document.getElementById('folderName').value = '';
             });
 
@@ -651,16 +849,20 @@
             const dropZone = document.getElementById('dropZone');
             const fileInput = document.getElementById('fileInput');
 
-            dropZone.addEventListener('click', () => fileInput.click());
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-            dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
-            fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+            if (dropZone) {
+                dropZone.addEventListener('click', () => fileInput.click());
+                dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+                dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+                dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+            }
+            if (fileInput) fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
             function handleFiles(files) {
                 selectedFiles = Array.from(files);
                 const preview = document.getElementById('uploadPreview');
-                preview.innerHTML = selectedFiles.map(f => `<div class="flex justify-between items-center p-2 bg-gray-50 rounded"><span><i class="fas fa-file mr-2"></i>${f.name}</span><span class="text-xs text-gray-500">${(f.size / 1024 / 1024).toFixed(2)} MB</span></div>`).join('');
+                if (preview) {
+                    preview.innerHTML = selectedFiles.map(f => `<div class="flex justify-between items-center p-2 bg-gray-50 rounded"><span><i class="fas fa-file mr-2"></i>${escapeHtml(f.name)}</span><span class="text-xs text-gray-500">${(f.size / 1024 / 1024).toFixed(2)} MB</span></div>`).join('');
+                }
             }
 
             document.getElementById('confirmUploadBtn')?.addEventListener('click', () => {
@@ -670,7 +872,7 @@
                         id: Date.now() + Math.random(),
                         name: file.name,
                         size: parseFloat((file.size / 1024 / 1024).toFixed(2)),
-                        type: file.name.split('.').pop(),
+                        type: file.name.split('.').pop().toLowerCase(),
                         path: currentPath,
                         uploadedAt: new Date().toISOString().split('T')[0]
                     };
@@ -679,11 +881,11 @@
                 saveFileSystem();
                 updateStats();
                 renderExplorer();
-                uploadModal.classList.add('hidden');
-                uploadModal.classList.remove('flex');
+                uploadModal.classList.add('hidden-modal');
+                uploadModal.classList.remove('flex-modal');
+                showToast(`${selectedFiles.length} file(s) uploaded successfully!`, 'success');
                 selectedFiles = [];
                 document.getElementById('uploadPreview').innerHTML = '';
-                showToast(`${selectedFiles.length} files uploaded!`, 'success');
             });
 
             document.getElementById('createFolderBtn')?.addEventListener('click', () => {
@@ -699,10 +901,10 @@
                 saveFileSystem();
                 updateStats();
                 renderExplorer();
-                folderModal.classList.add('hidden');
-                folderModal.classList.remove('flex');
+                folderModal.classList.add('hidden-modal');
+                folderModal.classList.remove('flex-modal');
                 document.getElementById('folderName').value = '';
-                showToast('Folder created!', 'success');
+                showToast('Folder created successfully!', 'success');
             });
 
             document.getElementById('searchFile')?.addEventListener('input', (e) => {
@@ -712,9 +914,36 @@
                 if (searchTerm === '') { renderExplorer(); return; }
                 if (filteredFiles.length === 0) { container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">No files found</div>'; return; }
                 container.innerHTML = filteredFiles.map(file => `
-                <div class="file-item bg-white rounded-xl p-4 border border-gray-100"><div class="flex items-center justify-between mb-3"><i class="fas ${getFileIcon(file.type)} text-3xl"></i><div class="flex gap-2"><button class="download-file text-blue-500"><i class="fas fa-download"></i></button></div></div><div><p class="font-semibold text-gray-800">${file.name}</p><p class="text-xs text-gray-400 mt-1">${formatFileSize(file.size)} • Path: ${file.path || 'Root'}</p></div></div>
+                <div class="file-item bg-white rounded-xl p-4 border border-gray-100"><div class="flex items-center justify-between mb-3"><i class="fas ${getFileIcon(file.type)} text-3xl"></i><div class="flex gap-2"><button class="download-file text-blue-500" data-id="${file.id}" data-name="${escapeHtml(file.name)}"><i class="fas fa-download"></i></button></div></div><div><p class="font-semibold text-gray-800">${escapeHtml(file.name)}</p><p class="text-xs text-gray-400 mt-1">${formatFileSize(file.size)} • Path: ${file.path || 'Root'}</p></div></div>
             `).join('');
+
+                document.querySelectorAll('.download-file').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const fileName = btn.dataset.name;
+                        const file = fileSystem.files.find(f => f.id === parseInt(btn.dataset.id));
+                        if (file) downloadFile(fileName, file.type);
+                    });
+                });
             });
+
+            // Delete modal close handlers
+            const confirmDeleteFile = document.getElementById('confirmDeleteFileBtn');
+            const cancelDeleteFile = document.getElementById('cancelDeleteFileBtn');
+            const deleteFileModal = document.getElementById('deleteFileModal');
+            const confirmDeleteFolder = document.getElementById('confirmDeleteFolderBtn');
+            const cancelDeleteFolder = document.getElementById('cancelDeleteFolderBtn');
+            const deleteFolderModal = document.getElementById('deleteFolderConfirmModal');
+
+            if (confirmDeleteFile) confirmDeleteFile.addEventListener('click', performDeleteFile);
+            if (cancelDeleteFile) cancelDeleteFile.addEventListener('click', closeDeleteFileModal);
+            if (deleteFileModal) deleteFileModal.addEventListener('click', (e) => { if (e.target === deleteFileModal) closeDeleteFileModal(); });
+            if (confirmDeleteFolder) confirmDeleteFolder.addEventListener('click', performDeleteFolder);
+            if (cancelDeleteFolder) cancelDeleteFolder.addEventListener('click', closeDeleteFolderModal);
+            if (deleteFolderModal) deleteFolderModal.addEventListener('click', (e) => { if (e.target === deleteFolderModal) closeDeleteFolderModal(); });
+
+            // Close modals on outside click
+            if (uploadModal) uploadModal.addEventListener('click', (e) => { if (e.target === uploadModal) { uploadModal.classList.add('hidden-modal'); uploadModal.classList.remove('flex-modal'); selectedFiles = []; document.getElementById('uploadPreview').innerHTML = ''; } });
+            if (folderModal) folderModal.addEventListener('click', (e) => { if (e.target === folderModal) { folderModal.classList.add('hidden-modal'); folderModal.classList.remove('flex-modal'); document.getElementById('folderName').value = ''; } });
 
             updateStats();
             renderExplorer();

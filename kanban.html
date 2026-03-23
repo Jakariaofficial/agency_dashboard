@@ -133,10 +133,10 @@
                             <p class="text-xs text-gray-400">Professional Agency Suite</p>
                         </div>
                     </a>
-                    <button id="collapseSidebarBtn"
+                   <!---<button id="collapseSidebarBtn"
                         class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200"><i
                             class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
-                            id="collapseIcon"></i></button>
+                            id="collapseIcon"></i></button>-->
                 </div>
                 <nav class="flex-1 px-4 py-4 space-y-6">
                     <div>
@@ -380,7 +380,8 @@
 
         <div id="addTaskModal" class="fixed inset-0 z-50 hidden items-center justify-center">
             <div class="absolute inset-0 modal-backdrop" id="modalBackdropTask"></div>
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div
+                class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto relative z-50">
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Add New Task</h3><input type="text"
                         id="taskTitle" placeholder="Task title"
@@ -440,7 +441,7 @@
             cancelCardBtn.addEventListener('click', closeModal); modalBackdropTask.addEventListener('click', closeModal);
             saveCardBtn.addEventListener('click', () => { const title = document.getElementById('taskTitle').value.trim(); const desc = document.getElementById('taskDesc').value.trim(); const status = document.getElementById('taskStatus').value; if (title) { const newTask = { id: Date.now(), title, desc, status }; kanbanTasks.push(newTask); saveKanban(); loadKanban(); closeModal(); st('Task added!', 'success') } else { st('Please enter task title!', 'error') } });
         </script>
-        <script src="main.js"></script>
+
     </body>
 
 </html>

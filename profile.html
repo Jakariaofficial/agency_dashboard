@@ -53,6 +53,99 @@
                 background-color: rgba(0, 0, 0, 0.5);
                 backdrop-filter: blur(4px);
             }
+
+            .sidebar {
+                transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            }
+
+            .sidebar .submenu {
+                transition: all 0.2s ease;
+            }
+
+            .lg\:w-20 {
+                width: 5rem;
+            }
+
+            .lg\:w-72 {
+                width: 18rem;
+            }
+
+            .lg\:justify-center {
+                justify-content: center;
+            }
+
+            .lg\:hidden {
+                display: none;
+            }
+
+            .tooltip-text {
+                transition: opacity 0.2s ease;
+            }
+
+            .group:hover .tooltip-text {
+                opacity: 1;
+            }
+
+            /* Modal Styles */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 9998;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-overlay.flex-modal {
+                display: flex !important;
+            }
+
+            .modal-overlay.hidden-modal {
+                display: none !important;
+            }
+
+            .modal-container {
+                position: relative;
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                z-index: 9999;
+                width: 90%;
+                max-width: 550px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .toast-message {
+                animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+            }
         </style>
 
         <script>
@@ -63,8 +156,6 @@
                     window.location.href = 'login.html';
                 }
             }
-
-            // Run auth check on page load
             checkAuth();
         </script>
     </head>
@@ -76,47 +167,274 @@
         </button>
 
         <div class="flex h-screen overflow-hidden">
-            <!-- Sidebar -->
+            <!-- Sidebar - Complete -->
             <aside id="sidebar"
-                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
-                <div class="p-6 border-b border-gray-100">
+                class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
                     <a href="index.html" class="flex items-center space-x-3 group">
                         <div
-                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                             <i class="fas fa-chart-line text-white text-xl"></i>
                         </div>
-                        <div>
+                        <div class="logo-text">
                             <h1 class="text-xl font-bold text-gray-800">Agency<span class="text-blue-600">Dash</span>
                             </h1>
-                            <p class="text-xs text-gray-400">Website Management</p>
+                            <p class="text-xs text-gray-400">Professional Agency Suite</p>
                         </div>
                     </a>
+                    <button id="collapseSidebarBtn"
+                        class="hidden lg:flex w-8 h-8 bg-gray-100 rounded-lg items-center justify-center hover:bg-gray-200 transition flex-shrink-0">
+                        <i class="fas fa-chevron-left text-gray-600 text-sm transition-transform duration-300"
+                            id="collapseIcon"></i>
+                    </button>
                 </div>
-                <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-                    <a href="dashboard.html"
-                        class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
-                            class="fas fa-th-large w-5"></i><span>Dashboard</span></a>
-                    <a href="clients.html"
-                        class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
-                            class="fas fa-users w-5"></i><span>Clients</span></a>
-                    <a href="projects.html"
-                        class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
-                            class="fas fa-folder-open w-5"></i><span>Projects</span></a>
-                    <a href="analytics.html"
-                        class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
-                            class="fas fa-chart-line w-5"></i><span>Analytics</span></a>
-                    <a href="reports.html"
-                        class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
-                            class="fas fa-file-alt w-5"></i><span>Reports</span></a>
-                    <a href="settings.html"
-                        class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition"><i
-                            class="fas fa-cog w-5"></i><span>Settings</span></a>
+                <nav class="flex-1 px-4 py-4 space-y-6">
+                    <!-- MAIN Section -->
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</p>
+                        </div>
+                        <div class="space-y-1">
+                            <a href="dashboard.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i class="fas fa-th-large w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Dashboard</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Dashboard</div>
+                            </a>
+                            <a href="analytics.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i class="fas fa-chart-line w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Analytics</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Analytics</div>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- MANAGEMENT Section -->
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative">
+                                <button id="projectsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+                                    <div class="flex items-center space-x-3">
+                                        <i
+                                            class="fas fa-folder-open w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                        <span class="font-medium">Projects</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="projectsDropdownIcon"></i>
+                                </button>
+                                <div id="projectsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
+                                    <a href="projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All
+                                            Projects</span>
+                                    </a>
+                                    <a href="active-projects.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-play-circle w-4 text-gray-400"></i><span class="text-sm">Active
+                                            Projects</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <button id="tasksMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+                                    <div class="flex items-center space-x-3">
+                                        <i
+                                            class="fas fa-tasks w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                        <span class="font-medium">Tasks</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="tasksDropdownIcon"></i>
+                                </button>
+                                <div id="tasksSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
+                                    <a href="todo.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-check-square w-4 text-gray-400"></i><span class="text-sm">To-Do
+                                            List</span>
+                                    </a>
+                                    <a href="kanban.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-columns w-4 text-gray-400"></i><span class="text-sm">Kanban
+                                            Board</span>
+                                    </a>
+                                    <a href="calendar.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-calendar-alt w-4 text-gray-400"></i><span
+                                            class="text-sm">Calendar</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <button id="clientsMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+                                    <div class="flex items-center space-x-3">
+                                        <i
+                                            class="fas fa-users w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                        <span class="font-medium">Clients</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="clientsDropdownIcon"></i>
+                                </button>
+                                <div id="clientsSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
+                                    <a href="clients.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-list w-4 text-gray-400"></i><span class="text-sm">All
+                                            Clients</span>
+                                    </a>
+                                    <a href="add-client.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-user-plus w-4 text-gray-400"></i><span class="text-sm">Add
+                                            Client</span>
+                                    </a>
+                                    <a href="client-messages.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-comments w-4 text-gray-400"></i><span
+                                            class="text-sm">Messages</span>
+                                    </a>
+                                    <a href="client-assets.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-folder w-4 text-gray-400"></i><span
+                                            class="text-sm">Assets</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FINANCE Section -->
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Finance</p>
+                        </div>
+                        <div class="space-y-1">
+                            <a href="invoices.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i
+                                    class="fas fa-file-invoice-dollar w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Invoices</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Invoices</div>
+                            </a>
+                            <a href="payments.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i
+                                    class="fas fa-credit-card w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Payments</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Payments</div>
+                            </a>
+                            <a href="subscriptions.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i class="fas fa-sync-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Subscriptions</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Subscriptions</div>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- RESOURCES Section -->
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Resources</p>
+                        </div>
+                        <div class="space-y-1">
+                            <a href="file-manager.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i
+                                    class="fas fa-cloud-upload-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">File Manager</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    File Manager</div>
+                            </a>
+                            <a href="reports.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i class="fas fa-chart-bar w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Reports</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Reports</div>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- SYSTEM Section -->
+                    <div>
+                        <div class="px-4 mb-2 category-header">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">System</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="relative">
+                                <button id="teamMenuBtn"
+                                    class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group">
+                                    <div class="flex items-center space-x-3">
+                                        <i
+                                            class="fas fa-user-friends w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                        <span class="font-medium">Team</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                        id="teamDropdownIcon"></i>
+                                </button>
+                                <div id="teamSubmenu" class="submenu hidden ml-8 mt-1 space-y-1">
+                                    <a href="team-members.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-users w-4 text-gray-400"></i><span class="text-sm">Team
+                                            Members</span>
+                                    </a>
+                                    <a href="activities.html"
+                                        class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50 transition">
+                                        <i class="fas fa-history w-4 text-gray-400"></i><span class="text-sm">Activity
+                                            Logs</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <a href="settings.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i class="fas fa-cog w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Settings</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Settings</div>
+                            </a>
+                            <a href="support-tickets.html"
+                                class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition-all duration-200 group relative">
+                                <i class="fas fa-ticket-alt w-5 text-gray-400 group-hover:text-blue-500 transition"></i>
+                                <span class="font-medium">Support Tickets</span>
+                                <div
+                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                                    Support Tickets</div>
+                            </a>
+                        </div>
+                    </div>
                 </nav>
                 <div class="p-4 border-t border-gray-100">
+                    <div class="flex items-center space-x-3 mb-4 px-2 user-avatar-container">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
+                            AJ</div>
+                        <div class="user-info-text">
+                            <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
+                            <p class="text-xs text-gray-400">Admin</p>
+                        </div>
+                    </div>
                     <button id="sidebarLogoutBtn"
-                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition"><i
-                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button>
-                    <p class="text-xs text-gray-400 text-center mt-3">© 2024 AgencyDash</p>
+                        class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-200 group relative">
+                        <i class="fas fa-sign-out-alt w-5"></i>
+                        <span class="font-medium">Logout</span>
+                        <div
+                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-50 hidden lg:block">
+                            Logout</div>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
                 </div>
             </aside>
 
@@ -125,7 +443,6 @@
                     <div class="flex justify-between items-center">
                         <h2 class="text-2xl font-semibold text-gray-800">Profile</h2>
                         <div class="relative">
-                            <!-- FIXED: Changed div to span and p to span inside button -->
                             <button id="profileDropdownBtn"
                                 class="flex items-center space-x-3 focus:outline-none group">
                                 <span class="text-right hidden sm:block">
@@ -139,19 +456,26 @@
                             </button>
                             <div id="profileDropdown"
                                 class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
-                                <div class="p-3 border-b">
-                                    <p class="font-semibold">Alex Johnson</p>
+                                <div class="p-3 border-b border-gray-100">
+                                    <p class="font-semibold text-gray-800">Alex Johnson</p>
                                     <p class="text-sm text-gray-500">alex@agency.com</p>
                                 </div>
-                                <div class="py-2"><a href="profile.html"
-                                        class="flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50"><i
-                                            class="fas fa-user w-5 text-gray-400"></i><span>Profile</span></a><a
-                                        href="settings.html"
-                                        class="flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50"><i
-                                            class="fas fa-cog w-5 text-gray-400"></i><span>Settings</span></a></div>
-                                <div class="border-t py-2"><button id="dropdownLogoutBtn"
-                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
-                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                                <div class="py-2">
+                                    <a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition">
+                                        <i class="fas fa-user w-5 text-gray-400"></i><span>Profile</span>
+                                    </a>
+                                    <a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition">
+                                        <i class="fas fa-cog w-5 text-gray-400"></i><span>Settings</span>
+                                    </a>
+                                </div>
+                                <div class="border-t border-gray-100 py-2">
+                                    <button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition">
+                                        <i class="fas fa-sign-out-alt w-5"></i><span>Logout</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -170,8 +494,8 @@
                                         AJ
                                     </div>
                                     <div class="sm:ml-6 mt-4 sm:mt-0 text-center sm:text-left">
-                                        <h2 class="text-2xl font-bold text-gray-800">Alex Johnson</h2>
-                                        <p class="text-gray-500">Administrator</p>
+                                        <h2 class="text-2xl font-bold text-gray-800" id="profileName">Alex Johnson</h2>
+                                        <p class="text-gray-500" id="profileRole">Administrator</p>
                                         <div class="flex flex-wrap gap-2 mt-2">
                                             <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs"><i
                                                     class="fas fa-check-circle"></i> Verified</span>
@@ -180,7 +504,7 @@
                                         </div>
                                     </div>
                                     <div class="sm:ml-auto mt-4 sm:mt-0">
-                                        <button
+                                        <button id="editProfileBtn"
                                             class="border border-blue-500 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-50 transition"><i
                                                 class="fas fa-edit mr-2"></i>Edit Profile</button>
                                     </div>
@@ -198,29 +522,32 @@
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <label class="block text-gray-500 text-sm mb-1">Full Name</label>
-                                                <p class="text-gray-800 font-medium">Alex Johnson</p>
+                                                <p class="text-gray-800 font-medium" id="displayFullName">Alex Johnson
+                                                </p>
                                             </div>
                                             <div>
                                                 <label class="block text-gray-500 text-sm mb-1">Username</label>
-                                                <p class="text-gray-800 font-medium">@alexjohnson</p>
+                                                <p class="text-gray-800 font-medium" id="displayUsername">@alexjohnson
+                                                </p>
                                             </div>
                                         </div>
                                         <div>
                                             <label class="block text-gray-500 text-sm mb-1">Email Address</label>
-                                            <p class="text-gray-800 font-medium">alex@agency.com</p>
+                                            <p class="text-gray-800 font-medium" id="displayEmail">alex@agency.com</p>
                                         </div>
                                         <div>
                                             <label class="block text-gray-500 text-sm mb-1">Phone Number</label>
-                                            <p class="text-gray-800 font-medium">+1 (234) 567-8900</p>
+                                            <p class="text-gray-800 font-medium" id="displayPhone">+1 (234) 567-8900</p>
                                         </div>
                                         <div>
                                             <label class="block text-gray-500 text-sm mb-1">Location</label>
-                                            <p class="text-gray-800 font-medium">New York, United States</p>
+                                            <p class="text-gray-800 font-medium" id="displayLocation">New York, United
+                                                States</p>
                                         </div>
                                         <div>
                                             <label class="block text-gray-500 text-sm mb-1">Bio</label>
-                                            <p class="text-gray-700">Experienced agency manager with over 5 years in
-                                                digital marketing and team leadership.</p>
+                                            <p class="text-gray-700" id="displayBio">Experienced agency manager with
+                                                over 5 years in digital marketing and team leadership.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -228,52 +555,7 @@
                                 <!-- Activity Timeline -->
                                 <div class="bg-white rounded-2xl shadow-sm p-6 mt-6">
                                     <h3 class="font-bold text-lg text-gray-800 mb-4">Recent Activity</h3>
-                                    <div class="space-y-4">
-                                        <div class="flex items-start space-x-3">
-                                            <div
-                                                class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <i class="fas fa-user-plus text-green-600 text-sm"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-gray-800">Added new client <span
-                                                        class="font-semibold">Creative Studio</span></p>
-                                                <p class="text-xs text-gray-400">2 hours ago</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start space-x-3">
-                                            <div
-                                                class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <i class="fas fa-check-circle text-blue-600 text-sm"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-gray-800">Completed project <span
-                                                        class="font-semibold">Brand Identity</span></p>
-                                                <p class="text-xs text-gray-400">Yesterday</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start space-x-3">
-                                            <div
-                                                class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <i class="fas fa-calendar-alt text-purple-600 text-sm"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-gray-800">Meeting scheduled with <span
-                                                        class="font-semibold">ABC Corp</span></p>
-                                                <p class="text-xs text-gray-400">Tomorrow, 10:00 AM</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start space-x-3">
-                                            <div
-                                                class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <i class="fas fa-chart-line text-yellow-600 text-sm"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-gray-800">Generated monthly report for <span
-                                                        class="font-semibold">March 2024</span></p>
-                                                <p class="text-xs text-gray-400">3 days ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div class="space-y-4" id="activityList"></div>
                                 </div>
                             </div>
 
@@ -293,7 +575,7 @@
                                 <!-- Contact Info Card -->
                                 <div class="bg-white rounded-2xl shadow-sm p-6">
                                     <h3 class="font-semibold text-gray-800 mb-3">Contact Information</h3>
-                                    <div class="space-y-3">
+                                    <div class="space-y-3" id="contactInfo">
                                         <div class="flex items-center space-x-3 text-gray-600">
                                             <i class="fas fa-envelope w-5 text-gray-400"></i>
                                             <span class="text-sm">alex@agency.com</span>
@@ -316,7 +598,7 @@
                                 <!-- Skills Card -->
                                 <div class="bg-white rounded-2xl shadow-sm p-6">
                                     <h3 class="font-semibold text-gray-800 mb-3">Skills</h3>
-                                    <div class="flex flex-wrap gap-2">
+                                    <div class="flex flex-wrap gap-2" id="skillsList">
                                         <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Project
                                             Management</span>
                                         <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Team
@@ -337,10 +619,66 @@
             </main>
         </div>
 
+        <!-- Edit Profile Modal -->
+        <div id="editProfileModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Edit Profile</h3>
+                        <button id="closeEditModalBtn" class="text-gray-400 hover:text-gray-600 text-xl"><i
+                                class="fas fa-times"></i></button>
+                    </div>
+                    <form id="editProfileForm">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" id="editFullName"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                value="Alex Johnson">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                            <input type="text" id="editUsername"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                value="@alexjohnson">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="editEmail"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                value="alex@agency.com">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="editPhone"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                value="+1 (234) 567-8900">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                            <input type="text" id="editLocation"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                value="New York, United States">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                            <textarea id="editBio" rows="3"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">Experienced agency manager with over 5 years in digital marketing and team leadership.</textarea>
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="submit"
+                                class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Save
+                                Changes</button>
+                            <button type="button" id="cancelEditBtn"
+                                class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Logout Modal -->
-        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10">
+        <div id="logoutModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-sign-out-alt text-red-500 text-2xl"></i>
@@ -356,9 +694,315 @@
                 </div>
             </div>
         </div>
-        <!--==========Js add-->
-        <script src="main.js"></script>
 
+        <!-- Toast Container -->
+        <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
+        <script>
+            // ==================== PROFILE DATA ====================
+            let profileData = JSON.parse(localStorage.getItem('profileData')) || {
+                fullName: "Alex Johnson",
+                username: "@alexjohnson",
+                email: "alex@agency.com",
+                phone: "+1 (234) 567-8900",
+                location: "New York, United States",
+                bio: "Experienced agency manager with over 5 years in digital marketing and team leadership."
+            };
+
+            // ==================== TOAST FUNCTION ====================
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                const toast = document.createElement('div');
+                let bgColor = 'bg-green-500', icon = 'fa-check-circle';
+                if (type === 'error') { bgColor = 'bg-red-500'; icon = 'fa-exclamation-circle'; }
+                else if (type === 'info') { bgColor = 'bg-blue-500'; icon = 'fa-info-circle'; }
+                toast.className = `toast-message ${bgColor} text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 min-w-[280px]`;
+                toast.innerHTML = `<i class="fas ${icon} text-lg"></i><span class="text-sm font-medium">${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 2000);
+            }
+
+            // ==================== UPDATE PROFILE DISPLAY ====================
+            function updateProfileDisplay() {
+                document.getElementById('profileName').textContent = profileData.fullName;
+                document.getElementById('displayFullName').textContent = profileData.fullName;
+                document.getElementById('displayUsername').textContent = profileData.username;
+                document.getElementById('displayEmail').textContent = profileData.email;
+                document.getElementById('displayPhone').textContent = profileData.phone;
+                document.getElementById('displayLocation').textContent = profileData.location;
+                document.getElementById('displayBio').textContent = profileData.bio;
+
+                const contactInfo = document.getElementById('contactInfo');
+                if (contactInfo) {
+                    contactInfo.innerHTML = `
+                <div class="flex items-center space-x-3 text-gray-600"><i class="fas fa-envelope w-5 text-gray-400"></i><span class="text-sm">${profileData.email}</span></div>
+                <div class="flex items-center space-x-3 text-gray-600"><i class="fas fa-phone w-5 text-gray-400"></i><span class="text-sm">${profileData.phone}</span></div>
+                <div class="flex items-center space-x-3 text-gray-600"><i class="fab fa-linkedin w-5 text-gray-400"></i><span class="text-sm">linkedin.com/in/${profileData.username.replace('@', '')}</span></div>
+                <div class="flex items-center space-x-3 text-gray-600"><i class="fab fa-github w-5 text-gray-400"></i><span class="text-sm">github.com/${profileData.username.replace('@', '')}</span></div>
+            `;
+                }
+            }
+
+            // ==================== ACTIVITY DATA ====================
+            let activities = JSON.parse(localStorage.getItem('activities')) || [
+                { id: 1, user: "Alex Johnson", action: "create", type: "client", item: "Creative Studio", details: "Added new client", timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
+                { id: 2, user: "Alex Johnson", action: "update", type: "project", item: "Brand Identity", details: "Completed project", timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
+                { id: 3, user: "Alex Johnson", action: "create", type: "meeting", item: "ABC Corp", details: "Scheduled meeting", timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
+                { id: 4, user: "Alex Johnson", action: "create", type: "report", item: "March Report", details: "Generated monthly report", timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString() }
+            ];
+
+            function formatTimeAgo(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                if (diffMins < 1) return 'Just now';
+                if (diffMins < 60) return `${diffMins} minutes ago`;
+                if (diffHours < 24) return `${diffHours} hours ago`;
+                return `${diffDays} days ago`;
+            }
+
+            function getActivityIcon(action) {
+                const icons = {
+                    create: { icon: 'fa-plus-circle', color: 'text-green-600', bg: 'bg-green-100' },
+                    update: { icon: 'fa-edit', color: 'text-blue-600', bg: 'bg-blue-100' },
+                    delete: { icon: 'fa-trash-alt', color: 'text-red-600', bg: 'bg-red-100' },
+                    meeting: { icon: 'fa-calendar-alt', color: 'text-purple-600', bg: 'bg-purple-100' }
+                };
+                return icons[action] || { icon: 'fa-circle', color: 'text-gray-600', bg: 'bg-gray-100' };
+            }
+
+            function renderActivities() {
+                const container = document.getElementById('activityList');
+                if (!container) return;
+                const userActivities = activities.filter(a => a.user === "Alex Johnson").slice(0, 5);
+                if (userActivities.length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-gray-500">No recent activities</div>';
+                    return;
+                }
+                container.innerHTML = userActivities.map(activity => {
+                    const iconStyle = getActivityIcon(activity.action);
+                    const actionText = {
+                        create: 'added',
+                        update: 'updated',
+                        delete: 'deleted',
+                        meeting: 'scheduled meeting with'
+                    }[activity.action] || activity.action;
+                    return `
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 ${iconStyle.bg} rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas ${iconStyle.icon} ${iconStyle.color} text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-800">${actionText} <span class="font-semibold">${activity.item}</span></p>
+                        <p class="text-xs text-gray-400">${formatTimeAgo(activity.timestamp)}</p>
+                    </div>
+                </div>
+            `;
+                }).join('');
+            }
+
+            // ==================== EDIT PROFILE MODAL FUNCTIONS ====================
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            const editProfileModal = document.getElementById('editProfileModal');
+            const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const editProfileForm = document.getElementById('editProfileForm');
+
+            function openEditModal() {
+                document.getElementById('editFullName').value = profileData.fullName;
+                document.getElementById('editUsername').value = profileData.username;
+                document.getElementById('editEmail').value = profileData.email;
+                document.getElementById('editPhone').value = profileData.phone;
+                document.getElementById('editLocation').value = profileData.location;
+                document.getElementById('editBio').value = profileData.bio;
+                if (editProfileModal) {
+                    editProfileModal.classList.remove('hidden-modal');
+                    editProfileModal.classList.add('flex-modal');
+                }
+            }
+
+            function closeEditModal() {
+                if (editProfileModal) {
+                    editProfileModal.classList.add('hidden-modal');
+                    editProfileModal.classList.remove('flex-modal');
+                }
+            }
+
+            function saveProfile() {
+                const fullName = document.getElementById('editFullName').value.trim();
+                const username = document.getElementById('editUsername').value.trim();
+                const email = document.getElementById('editEmail').value.trim();
+                const phone = document.getElementById('editPhone').value.trim();
+                const location = document.getElementById('editLocation').value.trim();
+                const bio = document.getElementById('editBio').value.trim();
+
+                profileData = { fullName, username, email, phone, location, bio };
+                localStorage.setItem('profileData', JSON.stringify(profileData));
+
+                updateProfileDisplay();
+                closeEditModal();
+                showToast('Profile updated successfully!', 'success');
+
+                activities.unshift({
+                    id: Date.now(),
+                    user: "Alex Johnson",
+                    action: "update",
+                    type: "profile",
+                    item: "Profile",
+                    details: "Updated profile information",
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('activities', JSON.stringify(activities.slice(0, 50)));
+                renderActivities();
+            }
+
+            // ==================== EDIT PROFILE EVENT LISTENERS ====================
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    openEditModal();
+                });
+            }
+
+            if (closeEditModalBtn) closeEditModalBtn.addEventListener('click', closeEditModal);
+            if (cancelEditBtn) cancelEditBtn.addEventListener('click', closeEditModal);
+            if (editProfileModal) {
+                editProfileModal.addEventListener('click', function (e) {
+                    if (e.target === editProfileModal) closeEditModal();
+                });
+            }
+            if (editProfileForm) {
+                editProfileForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    saveProfile();
+                });
+            }
+
+            // ==================== SIDEBAR FUNCTIONS ====================
+            function checkAuth() {
+                const a = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn");
+                if (!a || a !== "true") window.location.href = "login.html";
+            }
+            checkAuth();
+
+            const cp = window.location.pathname.split("/").pop() || "profile.html";
+            document.querySelectorAll(".menu-item").forEach(i => {
+                if (i.getAttribute("href") === cp) i.classList.add("active");
+            });
+
+            const s = document.getElementById("sidebar"),
+                cb = document.getElementById("collapseSidebarBtn"),
+                ci = document.getElementById("collapseIcon");
+            let ic = localStorage.getItem('sidebarCollapsed') === 'true';
+
+            function updateSidebar() {
+                if (!s) return;
+                if (ic) {
+                    s.classList.remove('lg:w-72');
+                    s.classList.add('lg:w-20');
+                    if (ci) ci.style.transform = 'rotate(180deg)';
+                    document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.add('lg:hidden'));
+                    document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.add('lg:hidden'));
+                    document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.add('lg:justify-center'));
+                    document.querySelectorAll('.submenu').forEach(e => e.classList.add('hidden'));
+                } else {
+                    s.classList.remove('lg:w-20');
+                    s.classList.add('lg:w-72');
+                    if (ci) ci.style.transform = 'rotate(0deg)';
+                    document.querySelectorAll('.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]').forEach(e => e.classList.remove('lg:hidden'));
+                    document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.remove('lg:hidden'));
+                    document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.remove('lg:justify-center'));
+                }
+            }
+
+            function toggleSidebar() {
+                ic = !ic;
+                localStorage.setItem('sidebarCollapsed', ic);
+                updateSidebar();
+            }
+            if (cb) {
+                cb.addEventListener('click', toggleSidebar);
+                updateSidebar();
+            }
+
+            function setupSubmenu(b, m, i) {
+                const btn = document.getElementById(b), menu = document.getElementById(m), icon = document.getElementById(i);
+                if (btn && menu) btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!ic) {
+                        const hidden = menu.classList.contains('hidden');
+                        document.querySelectorAll('.submenu').forEach(m2 => { if (m2 !== menu) m2.classList.add('hidden'); });
+                        document.querySelectorAll('[id$="DropdownIcon"]').forEach(ic2 => { if (ic2 !== icon && ic2.style.transform === 'rotate(180deg)') ic2.style.transform = 'rotate(0deg)'; });
+                        menu.classList.toggle('hidden');
+                        if (icon) icon.style.transform = hidden ? 'rotate(180deg)' : 'rotate(0deg)';
+                    }
+                });
+            }
+            setupSubmenu('projectsMenuBtn', 'projectsSubmenu', 'projectsDropdownIcon');
+            setupSubmenu('tasksMenuBtn', 'tasksSubmenu', 'tasksDropdownIcon');
+            setupSubmenu('clientsMenuBtn', 'clientsSubmenu', 'clientsDropdownIcon');
+            setupSubmenu('teamMenuBtn', 'teamSubmenu', 'teamDropdownIcon');
+
+            document.addEventListener('click', e => {
+                if (ic) return;
+                if (!e.target.closest('[id$="MenuBtn"]') && !e.target.closest('.submenu')) {
+                    document.querySelectorAll('.submenu').forEach(m => m.classList.add('hidden'));
+                    document.querySelectorAll('[id$="DropdownIcon"]').forEach(i => i.style.transform = 'rotate(0deg)');
+                }
+            });
+
+            const mobileToggle = document.getElementById("mobileMenuToggle");
+            if (mobileToggle) {
+                mobileToggle.addEventListener("click", () => s.classList.toggle("-translate-x-full"));
+                document.addEventListener("click", e => {
+                    if (window.innerWidth < 1024 && s && !s.contains(e.target) && !mobileToggle.contains(e.target)) s.classList.add("-translate-x-full");
+                });
+            }
+
+            // ==================== LOGOUT ====================
+            const logoutModal = document.getElementById("logoutModal"),
+                sidebarLogout = document.getElementById("sidebarLogoutBtn"),
+                dropdownLogout = document.getElementById("dropdownLogoutBtn"),
+                confirmLogout = document.getElementById("confirmLogoutBtn"),
+                cancelLogout = document.getElementById("cancelLogoutBtn");
+
+            function showLogoutModal() {
+                if (logoutModal) {
+                    logoutModal.classList.remove('hidden-modal');
+                    logoutModal.classList.add('flex-modal');
+                }
+            }
+            function hideLogoutModal() {
+                if (logoutModal) {
+                    logoutModal.classList.add('hidden-modal');
+                    logoutModal.classList.remove('flex-modal');
+                }
+            }
+            function handleLogout() {
+                localStorage.removeItem("isLoggedIn");
+                sessionStorage.removeItem("isLoggedIn");
+                showToast("Logged out successfully!", "success");
+                hideLogoutModal();
+                setTimeout(() => window.location.href = "login.html", 1500);
+            }
+            if (sidebarLogout) sidebarLogout.addEventListener("click", showLogoutModal);
+            if (dropdownLogout) dropdownLogout.addEventListener("click", showLogoutModal);
+            if (confirmLogout) confirmLogout.addEventListener("click", handleLogout);
+            if (cancelLogout) cancelLogout.addEventListener("click", hideLogoutModal);
+            if (logoutModal) logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) hideLogoutModal(); });
+
+            // ==================== INITIALIZE ====================
+            document.addEventListener("DOMContentLoaded", () => {
+                if (window.innerWidth < 1024) s.classList.add("-translate-x-full");
+                updateProfileDisplay();
+                renderActivities();
+            });
+        </script>
 
     </body>
 

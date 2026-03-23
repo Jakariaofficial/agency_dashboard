@@ -1,106 +1,154 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Agency Dashboard | Calendar</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>Agency Dashboard | Premium Calendar</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <style>
             * {
                 margin: 0;
                 padding: 0;
-                box-sizing: border-box
+                box-sizing: border-box;
             }
 
             ::-webkit-scrollbar {
-                width: 6px
+                width: 6px;
+                height: 6px;
             }
 
             ::-webkit-scrollbar-track {
-                background: #f1f1f1
+                background: #f1f1f1;
+                border-radius: 10px;
             }
 
             ::-webkit-scrollbar-thumb {
                 background: #cbd5e1;
-                border-radius: 3px
+                border-radius: 10px;
             }
 
             .menu-item.active {
                 background: linear-gradient(135deg, #3b82f6, #2563eb);
-                color: white
+                color: white;
             }
 
             .menu-item.active i {
-                color: white
+                color: white;
             }
 
             .dropdown-menu {
-                animation: slideDown .2s ease
+                animation: slideDown 0.2s ease;
             }
 
             @keyframes slideDown {
                 from {
                     opacity: 0;
-                    transform: translateY(-10px)
+                    transform: translateY(-10px);
                 }
 
                 to {
                     opacity: 1;
-                    transform: translateY(0)
+                    transform: translateY(0);
                 }
             }
 
             .modal-backdrop {
                 background-color: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px)
+                backdrop-filter: blur(4px);
             }
 
             .sidebar {
-                transition: width .3s ease-in-out, transform .3s ease-in-out
+                transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
             }
 
-            .sidebar .submenu {
-                transition: all .2s ease
+            /* PREMIUM CALENDAR STYLES */
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 8px;
+                background: transparent;
             }
 
-            .menu-item {
-                transition: all .2s ease
+            .calendar-day-premium {
+                background: white;
+                border-radius: 20px;
+                padding: 12px 8px;
+                min-height: 130px;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+                border: 1px solid #f0f2f5;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+                position: relative;
+                overflow: hidden;
             }
 
-            .lg\:w-20 {
-                width: 5rem
+            .calendar-day-premium::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec489a);
+                opacity: 0;
+                transition: opacity 0.3s ease;
             }
 
-            .lg\:w-72 {
-                width: 18rem
+            .calendar-day-premium:hover::before {
+                opacity: 1;
             }
 
-            .lg\:justify-center {
-                justify-content: center
+            .calendar-day-premium:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
+                border-color: #e0e7ff;
             }
 
-            .lg\:hidden {
-                display: none
+            .calendar-day-current {
+                background: linear-gradient(135deg, #fef9e3, #fff);
+                border: 2px solid #f59e0b;
             }
 
-            .tooltip-text {
-                transition: opacity .2s ease
+            .day-number {
+                font-size: 1.1rem;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+                transition: all 0.2s;
             }
 
-            .group:hover .tooltip-text {
-                opacity: 1
+            .day-number.today {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+                box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
             }
 
-            .calendar-day {
-                transition: all .2s ease;
-                cursor: pointer
+            .event-badge-mini {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 10px;
+                padding: 3px 6px;
+                border-radius: 20px;
+                background: #f8fafc;
+                margin: 2px 0;
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                transition: all 0.2s;
             }
 
-            .calendar-day:hover {
+            .event-badge-mini:hover {
+                transform: translateX(2px);
                 background: #eff6ff;
-                transform: scale(1.05)
             }
 
             .event-dot {
@@ -108,7 +156,129 @@
                 height: 6px;
                 border-radius: 50%;
                 display: inline-block;
-                margin: 0 2px
+                flex-shrink: 0;
+            }
+
+            /* Premium Event Card */
+            .event-card-premium {
+                background: white;
+                border-radius: 20px;
+                padding: 16px;
+                transition: all 0.25s ease;
+                border: 1px solid #f1f5f9;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .event-card-premium::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+                transform: scaleY(0);
+                transition: transform 0.2s ease;
+            }
+
+            .event-card-premium:hover::before {
+                transform: scaleY(1);
+            }
+
+            .event-card-premium:hover {
+                transform: translateX(6px);
+                box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.15);
+                border-color: #cbdffc;
+            }
+
+            /* Premium Inputs */
+            .premium-input {
+                transition: all 0.2s;
+                border: 1px solid #e2e8f0;
+            }
+
+            .premium-input:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                outline: none;
+            }
+
+            .floating-action-btn {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                z-index: 40;
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+                transition: all 0.3s;
+            }
+
+            .floating-action-btn:hover {
+                transform: scale(1.08);
+                box-shadow: 0 20px 30px -10px rgba(59, 130, 246, 0.5);
+            }
+
+            /* Modal Overlay Styles */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 9998;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-overlay.flex-modal {
+                display: flex !important;
+            }
+
+            .modal-overlay.hidden-modal {
+                display: none !important;
+            }
+
+            .modal-container {
+                position: relative;
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                z-index: 9999;
+                width: 90%;
+                max-width: 500px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .toast-message {
+                animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    visibility: hidden;
+                }
             }
         </style>
     </head>
@@ -117,6 +287,7 @@
         <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg"><i
                 class="fas fa-bars"></i></button>
         <div class="flex h-screen overflow-hidden">
+            <!-- SIDEBAR -->
             <aside id="sidebar"
                 class="sidebar fixed lg:relative inset-y-0 left-0 z-40 w-72 bg-white shadow-2xl transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col overflow-y-auto">
                 <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
@@ -141,19 +312,14 @@
                         <div class="px-4 mb-2 category-header">
                             <p class="text-xs font-semibold text-gray-400 uppercase">Main</p>
                         </div>
-                        <div class="space-y-1"><a href="dashboard.html"
+                        <div class="space-y-1">
+                            <a href="dashboard.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Dashboard</div>
-                            </a><a href="analytics.html"
+                                    class="fas fa-th-large w-5"></i><span class="font-medium">Dashboard</span></a>
+                            <a href="analytics.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Analytics</div>
-                            </a></div>
+                                    class="fas fa-chart-line w-5"></i><span class="font-medium">Analytics</span></a>
+                        </div>
                     </div>
                     <div>
                         <div class="px-4 mb-2 category-header">
@@ -192,7 +358,8 @@
                                             Board</span></a><a href="calendar.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
                                             class="fas fa-calendar-alt w-4"></i><span
-                                            class="text-sm">Calendar</span></a></div>
+                                            class="text-sm">Calendar</span></a>
+                                </div>
                             </div>
                             <div class="relative"><button id="clientsMenuBtn"
                                     class="menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition">
@@ -223,23 +390,14 @@
                         </div>
                         <div class="space-y-1"><a href="invoices.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-file-invoice-dollar w-5"></i><span class="font-medium">Invoices</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Invoices</div>
-                            </a><a href="payments.html"
+                                    class="fas fa-file-invoice-dollar w-5"></i><span
+                                    class="font-medium">Invoices</span></a><a href="payments.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Payments</div>
-                            </a><a href="subscriptions.html"
+                                    class="fas fa-credit-card w-5"></i><span class="font-medium">Payments</span></a><a
+                                href="subscriptions.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Subscriptions</div>
-                            </a></div>
+                                    class="fas fa-sync-alt w-5"></i><span class="font-medium">Subscriptions</span></a>
+                        </div>
                     </div>
                     <div>
                         <div class="px-4 mb-2 category-header">
@@ -248,17 +406,9 @@
                         <div class="space-y-1"><a href="file-manager.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
                                     class="fas fa-cloud-upload-alt w-5"></i><span class="font-medium">File
-                                    Manager</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    File Manager</div>
-                            </a><a href="reports.html"
+                                    Manager</span></a><a href="reports.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Reports</div>
-                            </a></div>
+                                    class="fas fa-chart-bar w-5"></i><span class="font-medium">Reports</span></a></div>
                     </div>
                     <div>
                         <div class="px-4 mb-2 category-header">
@@ -280,20 +430,16 @@
                                         href="activities.html"
                                         class="flex items-center space-x-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-blue-50"><i
                                             class="fas fa-history w-4"></i><span class="text-sm">Activity
-                                            Logs</span></a></div>
-                            </div><a href="settings.html"
+                                            Logs</span></a>
+                                </div>
+                            </div>
+                            <a href="settings.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Settings</div>
-                            </a><a href="support-tickets.html"
+                                    class="fas fa-cog w-5"></i><span class="font-medium">Settings</span></a>
+                            <a href="support-tickets.html"
                                 class="menu-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 transition group relative"><i
-                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support Tickets</span>
-                                <div
-                                    class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                                    Support Tickets</div>
-                            </a>
+                                    class="fas fa-ticket-alt w-5"></i><span class="font-medium">Support
+                                    Tickets</span></a>
                         </div>
                     </div>
                 </nav>
@@ -306,96 +452,191 @@
                             <p class="text-sm font-semibold text-gray-700">Alex Johnson</p>
                             <p class="text-xs text-gray-400">Admin</p>
                         </div>
-                    </div><button id="sidebarLogoutBtn"
+                    </div>
+                    <button id="sidebarLogoutBtn"
                         class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition group relative"><i
-                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span>
-                        <div
-                            class="tooltip-text absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 hidden lg:block">
-                            Logout</div>
-                    </button>
+                            class="fas fa-sign-out-alt w-5"></i><span class="font-medium">Logout</span></button>
                     <p class="text-xs text-gray-400 text-center mt-3 copyright-text">© 2024 AgencyDash Pro</p>
                 </div>
             </aside>
 
-            <main class="flex-1 overflow-y-auto">
+            <!-- MAIN CONTENT -->
+            <main class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-slate-50">
                 <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 px-6 py-4">
                     <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-semibold text-gray-800">Calendar</h2>
-                        <div class="relative"><button id="profileDropdownBtn" class="flex items-center space-x-3"><span
-                                    class="text-right hidden sm:block"><span
-                                        class="block text-sm font-semibold text-gray-700">Alex Johnson</span><span
-                                        class="block text-xs text-gray-400">Admin</span></span><span
-                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span><i
-                                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
-                                    id="dropdownIcon"></i></button>
+                        <h2 class="text-2xl font-semibold text-gray-800">Premium Calendar</h2>
+                        <div class="relative">
+                            <button id="profileDropdownBtn"
+                                class="flex items-center space-x-3 focus:outline-none group">
+                                <span class="text-right hidden sm:block">
+                                    <span class="block text-sm font-semibold text-gray-700">Alex Johnson</span>
+                                    <span class="block text-xs text-gray-400">Admin</span>
+                                </span>
+                                <span
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md">AJ</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    id="dropdownIcon"></i>
+                            </button>
+
                             <div id="profileDropdown"
                                 class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50">
                                 <div class="p-3 border-b border-gray-100">
                                     <p class="font-semibold text-gray-800">Alex Johnson</p>
                                     <p class="text-sm text-gray-500">alex@agency.com</p>
                                 </div>
-                                <div class="py-2"><a href="profile.html"
-                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
-                                            class="fas fa-user w-5"></i><span>Profile</span></a><a href="settings.html"
-                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50"><i
-                                            class="fas fa-cog w-5"></i><span>Settings</span></a></div>
-                                <div class="border-t border-gray-100 py-2"><button id="dropdownLogoutBtn"
-                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50"><i
-                                            class="fas fa-sign-out-alt w-5"></i><span>Logout</span></button></div>
+                                <div class="py-2">
+                                    <a href="profile.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition">
+                                        <i class="fas fa-user w-5 text-gray-400"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                    <a href="settings.html"
+                                        class="flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition">
+                                        <i class="fas fa-cog w-5 text-gray-400"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </div>
+                                <div class="border-t border-gray-100 py-2">
+                                    <button id="dropdownLogoutBtn"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition">
+                                        <i class="fas fa-sign-out-alt w-5"></i>
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </header>
 
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-6"><button id="prevMonth"
-                            class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg"><i
-                                class="fas fa-chevron-left"></i></button>
-                        <h3 id="currentMonth" class="text-xl font-semibold text-gray-800">March 2024</h3><button
-                            id="nextMonth" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg"><i
-                                class="fas fa-chevron-right"></i></button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                        <div class="grid grid-cols-7 gap-px bg-gray-200">
-                            <div class="bg-gray-50 p-3 text-center text-sm font-semibold text-gray-600">Sun</div>
-                            <div class="bg-gray-50 p-3 text-center text-sm font-semibold text-gray-600">Mon</div>
-                            <div class="bg-gray-50 p-3 text-center text-sm font-semibold text-gray-600">Tue</div>
-                            <div class="bg-gray-50 p-3 text-center text-sm font-semibold text-gray-600">Wed</div>
-                            <div class="bg-gray-50 p-3 text-center text-sm font-semibold text-gray-600">Thu</div>
-                            <div class="bg-gray-50 p-3 text-center text-sm font-semibold text-gray-600">Fri</div>
-                            <div class="bg-gray-50 p-3 text-center text-sm font-semibold text-gray-600">Sat</div>
+                <!-- PREMIUM CALENDAR CONTENT -->
+                <div class="p-6 lg:p-8">
+                    <!-- Calendar Controls Premium -->
+                    <div class="flex flex-wrap justify-between items-center mb-8 gap-4">
+                        <div
+                            class="flex items-center gap-3 bg-white rounded-2xl shadow-sm p-1.5 border border-gray-100">
+                            <button id="prevMonth"
+                                class="w-10 h-10 rounded-xl hover:bg-gray-100 transition text-gray-600"><i
+                                    class="fas fa-chevron-left"></i></button>
+                            <h3 id="currentMonth" class="text-xl font-bold text-gray-800 min-w-[180px] text-center">
+                                March 2025</h3>
+                            <button id="nextMonth"
+                                class="w-10 h-10 rounded-xl hover:bg-gray-100 transition text-gray-600"><i
+                                    class="fas fa-chevron-right"></i></button>
                         </div>
-                        <div id="calendarDays" class="grid grid-cols-7 gap-px bg-gray-200"></div>
+                        <button id="floatingAddDesktop"
+                            class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-2xl shadow-md shadow-blue-200 flex items-center gap-2 font-medium transition hover:shadow-lg"><i
+                                class="fas fa-plus-circle"></i> Add Event</button>
                     </div>
-                    <div class="mt-6 bg-white rounded-2xl shadow-sm p-6">
-                        <h3 class="font-semibold text-lg text-gray-800 mb-4">Upcoming Events</h3>
-                        <div id="eventList" class="space-y-3"></div>
+
+                    <!-- Premium Calendar Grid -->
+                    <div
+                        class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100/80 p-4 transition-all">
+                        <div class="calendar-grid mb-2">
+                            <div
+                                class="text-center py-3 font-bold text-sm bg-blue-50 text-blue-700 rounded-lg mx-1 shadow-sm">
+                                SUN</div>
+                            <div
+                                class="text-center py-3 font-bold text-sm bg-blue-50 text-blue-700 rounded-lg mx-1 shadow-sm">
+                                MON</div>
+                            <div
+                                class="text-center py-3 font-bold text-sm bg-blue-50 text-blue-700 rounded-lg mx-1 shadow-sm">
+                                TUE</div>
+                            <div
+                                class="text-center py-3 font-bold text-sm bg-blue-50 text-blue-700 rounded-lg mx-1 shadow-sm">
+                                WED</div>
+                            <div
+                                class="text-center py-3 font-bold text-sm bg-blue-50 text-blue-700 rounded-lg mx-1 shadow-sm">
+                                THU</div>
+                            <div
+                                class="text-center py-3 font-bold text-sm bg-red-500 text-white rounded-lg mx-1 shadow-sm">
+                                FRI</div>
+                            <div
+                                class="text-center py-3 font-bold text-sm bg-blue-50 text-blue-700 rounded-lg mx-1 shadow-sm">
+                                SAT</div>
+                        </div>
+                        <div id="calendarDays" class="calendar-grid"></div>
+                    </div>
+
+                    <!-- Upcoming Events Premium Section -->
+                    <div class="mt-10">
+                        <div class="flex items-center justify-between mb-5">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i
+                                        class="fas fa-calendar-week text-blue-500"></i> Upcoming Events</h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Next 5 priority events</p>
+                            </div>
+                            <span
+                                class="text-xs bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-200 font-medium"
+                                id="eventsCounter">0 events</span>
+                        </div>
+                        <div id="eventList" class="space-y-3 max-h-[360px] overflow-y-auto pr-2"></div>
                     </div>
                 </div>
+
+                <!-- Floating Action Button for Mobile -->
+                <button id="floatingAddMobile"
+                    class="floating-action-btn lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-2xl flex items-center justify-center"><i
+                        class="fas fa-plus text-xl"></i></button>
             </main>
         </div>
 
-        <div id="addEventModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-            <div class="absolute inset-0 modal-backdrop" id="modalBackdropEvent"></div>
-            <div
-                class="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto relative z-50">
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Add Event</h3><input type="text"
-                        id="eventTitle" placeholder="Event title"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"><input type="date"
-                        id="eventDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"><textarea
-                        id="eventDesc" rows="2" placeholder="Description"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"></textarea>
-                    <div class="flex gap-3"><button id="saveEventBtn"
-                            class="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg">Add Event</button><button
-                            id="cancelEventBtn"
-                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">Cancel</button></div>
+        <!-- Premium Add Event Modal -->
+        <div id="addEventModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-800"><i
+                            class="fas fa-calendar-plus text-blue-500 mr-2"></i>Create
+                        New Event</h3>
+                </div>
+                <div class="p-6 space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Event Title *</label>
+                        <input type="text" id="eventTitle" placeholder="e.g., Client Workshop, Design Review"
+                            class="premium-input w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-300 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Date *</label>
+                        <input type="date" id="eventDate"
+                            class="premium-input w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-300">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Description (optional)</label>
+                        <textarea id="eventDesc" rows="3" placeholder="Add details, agenda, or meeting link..."
+                            class="premium-input w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-300"></textarea>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button id="saveEventBtn"
+                            class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-md">Add
+                            Event</button>
+                        <button id="cancelEventBtn"
+                            class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="logoutModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-            <div class="absolute inset-0 modal-backdrop" id="modalBackdrop"></div>
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-trash-alt text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Delete Event</h3>
+                    <p class="text-gray-500 mb-4">Are you sure you want to delete this event?</p>
+                    <p class="text-sm font-medium text-gray-700 mb-6" id="deleteEventTitle"></p>
+                    <div class="flex gap-3">
+                        <button id="confirmDeleteBtn"
+                            class="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+                        <button id="cancelDeleteBtn"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="logoutModal" class="modal-overlay hidden-modal">
+            <div class="modal-container">
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i
                             class="fas fa-sign-out-alt text-red-500 text-2xl"></i></div>
@@ -409,258 +650,298 @@
             </div>
         </div>
 
+        <!-- Toast Container -->
+        <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
         <script>
-            /**
- * CALENDAR & UI MANAGEMENT SYSTEM
- * Project: SaaSFlow / Dashboard
- */
-
-            // ==================== 1. AUTH & INITIALIZATION ====================
-            function checkAuth() {
-                const auth = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn");
-                if (!auth || auth !== "true") {
-                    window.location.href = "login.html";
-                }
-            }
-            checkAuth();
-
-            // Active Menu Highlighting
-            const currentPage = window.location.pathname.split("/").pop() || "calendar.html";
-            document.querySelectorAll(".menu-item").forEach(item => {
-                if (item.getAttribute("href") === currentPage) {
-                    item.classList.add("active");
-                }
-            });
-
-            // ==================== 2. SIDEBAR STATE MANAGEMENT ====================
-            const sidebar = document.getElementById("sidebar");
-            const collapseBtn = document.getElementById("collapseSidebarBtn");
-            const collapseIcon = document.getElementById("collapseIcon");
-            let isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-
-            function updateSidebarUI() {
-                if (!sidebar) return;
-
-                if (isCollapsed) {
-                    sidebar.classList.replace('lg:w-72', 'lg:w-20');
-                    if (collapseIcon) collapseIcon.style.transform = 'rotate(180deg)';
-
-                    // Hide text elements
-                    const elementsToHide = '.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]';
-                    document.querySelectorAll(elementsToHide).forEach(e => e.classList.add('lg:hidden'));
-                    document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.add('lg:hidden'));
-                    document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.add('lg:justify-center'));
-                    document.querySelectorAll('.submenu').forEach(e => e.classList.add('hidden'));
-                } else {
-                    sidebar.classList.replace('lg:w-20', 'lg:w-72');
-                    if (collapseIcon) collapseIcon.style.transform = 'rotate(0deg)';
-
-                    // Show text elements
-                    const elementsToShow = '.logo-text, .category-header, .user-info-text, .copyright-text, [id$="DropdownIcon"]';
-                    document.querySelectorAll(elementsToShow).forEach(e => e.classList.remove('lg:hidden'));
-                    document.querySelectorAll('.menu-item span.font-medium').forEach(e => e.classList.remove('lg:hidden'));
-                    document.querySelectorAll('.user-avatar-container, .menu-item').forEach(e => e.classList.remove('lg:justify-center'));
-                }
-            }
-
-            function toggleSidebar() {
-                isCollapsed = !isCollapsed;
-                localStorage.setItem('sidebarCollapsed', isCollapsed);
-                updateSidebarUI();
-            }
-
-            if (collapseBtn) {
-                collapseBtn.addEventListener('click', toggleSidebar);
-                updateSidebarUI();
-            }
-
-            // ==================== 3. DROPDOWNS & NAVIGATION ====================
-            function setupSubmenu(btnId, menuId, iconId) {
-                const btn = document.getElementById(btnId);
-                const menu = document.getElementById(menuId);
-                const icon = document.getElementById(iconId);
-
-                if (btn && menu) {
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        if (!isCollapsed) {
-                            const isHidden = menu.classList.contains('hidden');
-
-                            // Close other submenus
-                            document.querySelectorAll('.submenu').forEach(m => m.classList.add('hidden'));
-                            document.querySelectorAll('[id$="DropdownIcon"]').forEach(ic => {
-                                ic.style.transform = 'rotate(0deg)';
-                            });
-
-                            // Toggle current
-                            menu.classList.toggle('hidden', !isHidden);
-                            if (icon) icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
-                        }
-                    });
-                }
-            }
-
-            // Initialize Submenus
-            ['projects', 'tasks', 'clients', 'team'].forEach(key => {
-                setupSubmenu(`${key}MenuBtn`, `${key}Submenu`, `${key}DropdownIcon`);
-            });
-
-            // Click outside to close menus
-            document.addEventListener('click', (e) => {
-                if (isCollapsed) return;
-                if (!e.target.closest('[id$="MenuBtn"]') && !e.target.closest('.submenu')) {
-                    document.querySelectorAll('.submenu').forEach(m => m.classList.add('hidden'));
-                    document.querySelectorAll('[id$="DropdownIcon"]').forEach(i => i.style.transform = 'rotate(0deg)');
-                }
-            });
-
-            // Mobile Sidebar Toggle
-            const mobileToggle = document.getElementById("mobileMenuToggle");
-            if (mobileToggle) {
-                mobileToggle.addEventListener("click", () => sidebar.classList.toggle("-translate-x-full"));
-                document.addEventListener("click", (e) => {
-                    if (window.innerWidth < 1024 && sidebar && !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
-                        sidebar.classList.add("-translate-x-full");
-                    }
-                });
-            }
-
-            // ==================== 4. CALENDAR LOGIC ====================
+            // ========== PREMIUM CALENDAR LOGIC ==========
             let currentDate = new Date();
-            let events = JSON.parse(localStorage.getItem('calendarEvents')) || [
-                { id: 1, title: "Team Meeting", date: "2024-03-25", desc: "Discuss project progress" },
-                { id: 2, title: "Client Call", date: "2024-03-28", desc: "Call with ABC Corp" },
-                { id: 3, title: "Deadline", date: "2024-03-30", desc: "Project submission" }
+            let events = JSON.parse(localStorage.getItem('agencyCalendarEvents')) || [
+                { id: 1, title: "Team Strategy Meeting", date: new Date().toISOString().slice(0, 10), desc: "Q2 planning session" },
+                { id: 2, title: "Client Discovery Call", date: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString().slice(0, 10), desc: "Zoom with ABC Corp" },
+                { id: 3, title: "Design Review", date: new Date(new Date().setDate(new Date().getDate() + 4)).toISOString().slice(0, 10), desc: "Figma handoff" }
             ];
 
-            function saveEvents() {
-                localStorage.setItem('calendarEvents', JSON.stringify(events));
+            let deleteEventId = null;
+
+            function saveEvents() { localStorage.setItem('agencyCalendarEvents', JSON.stringify(events)); }
+
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                const toast = document.createElement('div');
+                let bgColor = 'bg-green-500', icon = 'fa-check-circle';
+                if (type === 'error') { bgColor = 'bg-red-500'; icon = 'fa-exclamation-circle'; }
+                else if (type === 'info') { bgColor = 'bg-blue-500'; icon = 'fa-info-circle'; }
+                toast.className = `toast-message ${bgColor} text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 min-w-[280px]`;
+                toast.innerHTML = `<i class="fas ${icon} text-lg"></i><span class="text-sm font-medium">${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { if (toast && toast.remove) toast.remove(); }, 2000);
             }
 
-            function renderCalendar() {
+            function getEventColorClass(title) {
+                if (title.toLowerCase().includes('meeting')) return 'bg-indigo-100 text-indigo-700';
+                if (title.toLowerCase().includes('call')) return 'bg-emerald-100 text-emerald-700';
+                if (title.toLowerCase().includes('review')) return 'bg-amber-100 text-amber-700';
+                if (title.toLowerCase().includes('deadline')) return 'bg-rose-100 text-rose-700';
+                return 'bg-blue-100 text-blue-700';
+            }
+
+            function renderPremiumCalendar() {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
-                const calendarDays = document.getElementById('calendarDays');
-                if (!calendarDays) return;
+                const container = document.getElementById('calendarDays');
+                if (!container) return;
 
                 const firstDay = new Date(year, month, 1).getDay();
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                document.getElementById('currentMonth').innerHTML = `${monthNames[month]} ${year}`;
 
-                calendarDays.innerHTML = '';
-                document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+                container.innerHTML = '';
+                const todayStr = new Date().toISOString().slice(0, 10);
 
-                // Empty slots for previous month
                 for (let i = 0; i < firstDay; i++) {
-                    const emptyDiv = document.createElement('div');
-                    emptyDiv.className = 'bg-white p-4 min-h-[100px] border-b border-r border-gray-100';
-                    calendarDays.appendChild(emptyDiv);
+                    let empty = document.createElement('div');
+                    empty.className = 'calendar-day-premium bg-gray-50/30 min-h-[120px] opacity-60';
+                    empty.style.background = '#fafcff';
+                    container.appendChild(empty);
                 }
 
-                // Current month days
                 for (let d = 1; d <= daysInMonth; d++) {
-                    const dayDiv = document.createElement('div');
-                    dayDiv.className = 'bg-white p-4 min-h-[100px] border-b border-r border-gray-100 calendar-day hover:bg-gray-50 transition cursor-pointer';
-
                     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                    const dayEvents = events.filter(e => e.date === dateStr);
+                    const dayEvents = events.filter(ev => ev.date === dateStr);
+                    const isToday = dateStr === todayStr;
 
-                    dayDiv.innerHTML = `
-      <div class="font-semibold text-gray-700 mb-2">${d}</div>
-      <div class="space-y-1">
-        ${dayEvents.map(e => {
-                        let colorClass = e.title.includes('Meeting') ? 'text-blue-600' :
-                            e.title.includes('Call') ? 'text-green-600' : 'text-red-600';
-                        return `<div class="text-[10px] sm:text-xs ${colorClass} truncate font-medium">
-                    <i class="fas fa-circle text-[6px] mr-1"></i>${e.title}
-                  </div>`;
-                    }).join('')}
-      </div>
-    `;
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = `calendar-day-premium ${isToday ? 'calendar-day-current' : ''}`;
 
-                    dayDiv.onclick = () => showAddEventModal(dateStr);
-                    calendarDays.appendChild(dayDiv);
-                }
-                updateEventList();
-            }
+                    const dayNumSpan = document.createElement('div');
+                    dayNumSpan.className = `day-number ${isToday ? 'today' : ''}`;
+                    dayNumSpan.innerHTML = `<span>${d}</span>`;
 
-            // ==================== 5. UTILITIES & TOAST ====================
-            function showToast(msg, type = "success") {
-                const oldToast = document.getElementById("centerToast");
-                if (oldToast) oldToast.remove();
+                    const eventsContainer = document.createElement('div');
+                    eventsContainer.className = 'space-y-1 mt-2';
 
-                const toast = document.createElement("div");
-                toast.id = "centerToast";
-                const colors = {
-                    success: "bg-green-500",
-                    error: "bg-red-500",
-                    info: "bg-blue-500"
-                };
-                const icons = {
-                    success: "fa-check-circle",
-                    error: "fa-exclamation-circle",
-                    info: "fa-info-circle"
-                };
+                    dayEvents.slice(0, 3).forEach(ev => {
+                        const badge = document.createElement('div');
+                        badge.className = `event-badge-mini ${getEventColorClass(ev.title)}`;
+                        badge.innerHTML = `<span class="event-dot" style="background:currentColor"></span><span class="truncate text-xs font-medium">${ev.title.length > 18 ? ev.title.substring(0, 16) + '..' : ev.title}</span>`;
+                        eventsContainer.appendChild(badge);
+                    });
 
-                toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${colors[type]} text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 z-50`;
-                toast.innerHTML = `<i class="fas ${icons[type]} text-2xl"></i><span class="text-lg font-medium">${msg}</span>`;
-
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 2000);
-            }
-
-            // ==================== 6. DOM LOAD & EVENTS ====================
-            document.addEventListener("DOMContentLoaded", () => {
-                if (window.innerWidth < 1024) sidebar?.classList.add("-translate-x-full");
-                renderCalendar();
-
-                // Month Navigation
-                document.getElementById('prevMonth')?.addEventListener('click', () => {
-                    currentDate.setMonth(currentDate.getMonth() - 1);
-                    renderCalendar();
-                });
-
-                document.getElementById('nextMonth')?.addEventListener('click', () => {
-                    currentDate.setMonth(currentDate.getMonth() + 1);
-                    renderCalendar();
-                });
-
-                // Event Modal Handlers
-                const saveEventBtn = document.getElementById('saveEventBtn');
-                saveEventBtn?.addEventListener('click', () => {
-                    const title = document.getElementById('eventTitle').value.trim();
-                    const date = document.getElementById('eventDate').value;
-                    const desc = document.getElementById('eventDesc').value.trim();
-
-                    if (title && date) {
-                        events.push({ id: Date.now(), title, date, desc });
-                        saveEvents();
-                        renderCalendar();
-                        closeEventModal();
-                        showToast('Event added successfully!', 'success');
-                    } else {
-                        showToast('Please enter event title!', 'error');
+                    if (dayEvents.length > 3) {
+                        const moreBadge = document.createElement('div');
+                        moreBadge.className = 'text-[10px] text-gray-400 font-semibold mt-1';
+                        moreBadge.innerText = `+${dayEvents.length - 3} more`;
+                        eventsContainer.appendChild(moreBadge);
                     }
+
+                    dayDiv.appendChild(dayNumSpan);
+                    dayDiv.appendChild(eventsContainer);
+                    dayDiv.onclick = () => openAddModalWithDate(dateStr);
+                    container.appendChild(dayDiv);
+                }
+                updateUpcomingEvents();
+                updateEventCount();
+            }
+
+            function updateUpcomingEvents() {
+                const listDiv = document.getElementById('eventList');
+                if (!listDiv) return;
+                const sorted = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const upcoming = sorted.filter(ev => new Date(ev.date) >= new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 6);
+                if (upcoming.length === 0) {
+                    listDiv.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-gray-400 border-2 border-dashed border-gray-200"><i class="fas fa-calendar-check text-4xl mb-3 opacity-50"></i><p class="font-medium">No upcoming events</p><p class="text-xs mt-1">Click + to create your first event</p></div>`;
+                    return;
+                }
+                listDiv.innerHTML = upcoming.map(ev => {
+                    const evDate = new Date(ev.date);
+                    const formatted = evDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    return `
+                    <div class="event-card-premium group flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 flex-wrap mb-1">
+                                <span class="font-bold text-gray-800">${escapeHtml(ev.title)}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"><i class="far fa-calendar-alt mr-1 text-[9px]"></i>${formatted}</span>
+                            </div>
+                            <p class="text-xs text-gray-500 line-clamp-1">${escapeHtml(ev.desc || 'No additional details')}</p>
+                        </div>
+                        <button class="delete-event-btn opacity-0 group-hover:opacity-100 transition-all text-gray-400 hover:text-red-500 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm" data-id="${ev.id}" data-title="${escapeHtml(ev.title)}"><i class="fas fa-trash-alt text-sm"></i></button>
+                    </div>
+                `;
+                }).join('');
+                document.querySelectorAll('.delete-event-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        const title = btn.dataset.title;
+                        showDeleteModal(id, title);
+                    });
                 });
-            });
+            }
+
+            function showDeleteModal(id, title) {
+                deleteEventId = id;
+                document.getElementById('deleteEventTitle').textContent = title;
+                const modal = document.getElementById('deleteModal');
+                if (modal) {
+                    modal.classList.remove('hidden-modal');
+                    modal.classList.add('flex-modal');
+                }
+            }
+
+            function closeDeleteModal() {
+                deleteEventId = null;
+                const modal = document.getElementById('deleteModal');
+                if (modal) {
+                    modal.classList.add('hidden-modal');
+                    modal.classList.remove('flex-modal');
+                }
+            }
+
+            function updateEventCount() {
+                const upcomingCount = events.filter(ev => new Date(ev.date) >= new Date(new Date().setHours(0, 0, 0, 0))).length;
+                document.getElementById('eventsCounter').innerText = `${upcomingCount} event${upcomingCount !== 1 ? 's' : ''}`;
+            }
+
+            let currentModalDate = '';
+            function openAddModalWithDate(date) {
+                currentModalDate = date;
+                document.getElementById('eventDate').value = date;
+                document.getElementById('eventTitle').value = '';
+                document.getElementById('eventDesc').value = '';
+                const modal = document.getElementById('addEventModal');
+                if (modal) {
+                    modal.classList.remove('hidden-modal');
+                    modal.classList.add('flex-modal');
+                }
+            }
 
             function closeEventModal() {
                 const modal = document.getElementById('addEventModal');
-                modal?.classList.add('hidden');
-                modal?.classList.remove('flex');
-                document.getElementById('eventTitle').value = '';
-                document.getElementById('eventDesc').value = '';
+                if (modal) {
+                    modal.classList.add('hidden-modal');
+                    modal.classList.remove('flex-modal');
+                }
             }
 
-            function showAddEventModal(date) {
-                document.getElementById('eventDate').value = date;
-                const modal = document.getElementById('addEventModal');
-                modal?.classList.remove('hidden');
-                modal?.classList.add('flex');
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : m);
             }
+
+            // Event Listeners
+            document.addEventListener('DOMContentLoaded', () => {
+                renderPremiumCalendar();
+
+                document.getElementById('prevMonth')?.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderPremiumCalendar(); });
+                document.getElementById('nextMonth')?.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderPremiumCalendar(); });
+                document.getElementById('floatingAddDesktop')?.addEventListener('click', () => openAddModalWithDate(new Date().toISOString().slice(0, 10)));
+                document.getElementById('floatingAddMobile')?.addEventListener('click', () => openAddModalWithDate(new Date().toISOString().slice(0, 10)));
+
+                document.getElementById('saveEventBtn')?.addEventListener('click', () => {
+                    const title = document.getElementById('eventTitle').value.trim();
+                    const date = document.getElementById('eventDate').value;
+                    const desc = document.getElementById('eventDesc').value.trim();
+                    if (!title || !date) { showToast('Please enter event title and date', 'error'); return; }
+                    const newEvent = { id: Date.now(), title, date, desc: desc || 'No description' };
+                    events.push(newEvent);
+                    saveEvents();
+                    renderPremiumCalendar();
+                    closeEventModal();
+                    showToast(`✓ "${title}" added successfully`, 'success');
+                });
+                document.getElementById('cancelEventBtn')?.addEventListener('click', closeEventModal);
+
+                // Delete modal handlers
+                const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+                const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+                const deleteModal = document.getElementById('deleteModal');
+
+                if (confirmDeleteBtn) {
+                    confirmDeleteBtn.addEventListener('click', () => {
+                        if (deleteEventId) {
+                            events = events.filter(ev => ev.id !== deleteEventId);
+                            saveEvents();
+                            renderPremiumCalendar();
+                            closeDeleteModal();
+                            showToast('Event deleted successfully', 'success');
+                        }
+                    });
+                }
+                if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+                if (deleteModal) {
+                    deleteModal.addEventListener('click', (e) => {
+                        if (e.target === deleteModal) closeDeleteModal();
+                    });
+                }
+
+                // Add event modal close handlers
+                const addEventModal = document.getElementById('addEventModal');
+                if (addEventModal) {
+                    addEventModal.addEventListener('click', (e) => {
+                        if (e.target === addEventModal) closeEventModal();
+                    });
+                }
+
+                // ========== LOGOUT ==========
+                function logout() {
+                    localStorage.removeItem('isLoggedIn');
+                    sessionStorage.removeItem('isLoggedIn');
+                    window.location.href = "login.html";
+                }
+
+                const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
+                const dropdownLogoutBtn = document.getElementById('dropdownLogoutBtn');
+                const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+                const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+                const logoutModal = document.getElementById('logoutModal');
+
+                if (sidebarLogoutBtn) {
+                    sidebarLogoutBtn.addEventListener('click', () => {
+                        if (logoutModal) {
+                            logoutModal.classList.remove('hidden-modal');
+                            logoutModal.classList.add('flex-modal');
+                        }
+                    });
+                }
+                if (dropdownLogoutBtn) {
+                    dropdownLogoutBtn.addEventListener('click', () => {
+                        if (logoutModal) {
+                            logoutModal.classList.remove('hidden-modal');
+                            logoutModal.classList.add('flex-modal');
+                        }
+                    });
+                }
+                if (confirmLogoutBtn) confirmLogoutBtn.addEventListener('click', logout);
+                if (cancelLogoutBtn) {
+                    cancelLogoutBtn.addEventListener('click', () => {
+                        if (logoutModal) {
+                            logoutModal.classList.add('hidden-modal');
+                            logoutModal.classList.remove('flex-modal');
+                        }
+                    });
+                }
+                if (logoutModal) {
+                    logoutModal.addEventListener('click', (e) => {
+                        if (e.target === logoutModal) {
+                            logoutModal.classList.add('hidden-modal');
+                            logoutModal.classList.remove('flex-modal');
+                        }
+                    });
+                }
+
+                // Mobile sidebar toggle
+                const mobileToggle = document.getElementById('mobileMenuToggle');
+                const sidebar = document.getElementById('sidebar');
+                if (mobileToggle) {
+                    mobileToggle.addEventListener('click', () => sidebar?.classList.toggle('-translate-x-full'));
+                }
+                if (window.innerWidth < 1024) sidebar?.classList.add('-translate-x-full');
+            });
         </script>
+        <script src="main.js"></script>
     </body>
 
 </html>

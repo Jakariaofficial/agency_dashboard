@@ -429,7 +429,8 @@
       cancelTaskBtn.addEventListener('click', () => { taskForm.classList.add('hidden'); addTaskBtn.classList.remove('hidden'); newTaskInput.value = ''; });
       saveTaskBtn.addEventListener('click', () => { if (newTaskInput.value.trim()) { tasks.push({ text: newTaskInput.value, priority: taskPriority.value, completed: false }); saveTasks(); loadTasks(); newTaskInput.value = ''; taskForm.classList.add('hidden'); addTaskBtn.classList.remove('hidden'); st('Task added!', 'success'); } else { st('Please enter a task!', 'error'); } });
     </script>
-    <script src="main.js"></script>
+    
+    
   </body>
 
 </html>
